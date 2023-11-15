@@ -1,5 +1,7 @@
 # TypeScript Node Editor
 
+> Note: This is a work in progress.
+
 Build self contained TypeScript friendly scripts that can be modified with a no-code node editor.
 
 - 0 dependencies (TypeScript is an assumed peer dependency)
@@ -79,12 +81,13 @@ All node functions must return an array of nodes. Always return `[0]` instead of
 get    api/
 {
     comments: [
-        { $x: 1, $x: 10, $width: 10, $height: 10, text: 'Describe the script use here.' }
+        { $x: 1, $y: 10, $width: 10, $height: 10, text: 'Describe the script use here.' }
     ],
     nodes: [
-        { $name: 'start', $x: 1, $x: 1, $width: 2, $height: 2, nodes: [2] },
-        { $name: 'entry', $x: 3, $x: 2, $width: 10, $height: 10, nodes: [2, 4] },
-        { $name: 'coinFlip', $x: 3, $x: 2, $width: 10, $height: 10, t: [2, 4], f: [5] }
+        { $name: 'start', $x: 1, $y: 1, $width: 2, $height: 2, nodes: [1] },
+        { $name: 'coinFlip', $x: 3, $y: 2, $width: 6, $height: 6, t: [2], f: [3] },
+        { $name: 'log', $x: 10, $y: 2, $width: 6, $height: 6, text: 'Heads' },
+        { $name: 'log', $x: 10, $y: 7, $width: 6, $height: 6, text: 'Tails' },
     ]
 }
 
