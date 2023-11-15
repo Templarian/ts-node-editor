@@ -41,6 +41,38 @@ npm run editor src/scripts/helloWorld.ts
 
 In the editor the `Hello ${name}!` gets transformed into a string literal pulling the `state.get('name')` value.
 
+### Node
+
+Every node script starts with the same line importing the `Node` type (an alias for `number`);
+
+```ts
+import type { Node } from './node';
+```
+
+Define a node by exporting a named function.
+
+- `myNode` - The name of the method can be anything.
+- `state` - An optional `Map` type of shared state passed between nodes.
+- `nodes` - An optional list of nodes connect to the top right of the node
+
+```ts
+/**
+ * My Node Name
+ */
+export function myNode({ state, nodes }: {
+    state: Map<string, any>
+    nodes: Node[]
+}): Node[] {
+
+}
+```
+
+All node functions must return an array of nodes. Always return `[0]` instead of an empty array to ensure `noop` correctly loop back.
+
+```ts
+    return nodes;
+```
+
 ## Endpoints
 
 ```
