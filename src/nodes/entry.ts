@@ -7,7 +7,9 @@ import { EntryType } from "./entryType";
 export function Entry({ state, nodes, entryType }: {
    state: Map<string, string | number | boolean>
    nodes: Node[],
-   // Entry Type
+   /**
+    * Entry Type
+    */
    entryType: EntryType
 }): Node[] {
    // Activate differently based on the entry

@@ -1,12 +1,22 @@
 import type { Node } from './node';
 
-// Set State
+/**
+ * Set State
+ * @width 6
+ * @height 6
+ */
 export function setState({ state, nodes, key, value }: {
     state: Map<string, any>
     nodes: Node[]
-    // Key
-    key: string,
-    // Value; Use ${key} to reference state values.
+    /**
+     * Key
+     * @description Unique value.
+     */
+    key: string
+    /**
+     * Value
+     * @description Use ${key} to reference state values.
+     */
     value: string
 }): Node[] {
     state.set(key, value);

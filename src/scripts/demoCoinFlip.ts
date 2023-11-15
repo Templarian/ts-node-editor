@@ -6,7 +6,7 @@ import { log } from "../nodes/log";
 // Flip a coin and log which is selected
 
 export async function run(state: Map<string, any>) {
-    // 1 1 2 2 script
+    // 1 1 - - script
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
@@ -21,7 +21,7 @@ export async function run(state: Map<string, any>) {
                 }
                 break loop;
             case 1:
-                // 0 0 2 2
+                // 4 1 - -
                 const r1 = coinFlip({
                     t: [2],
                     f: [3]
@@ -29,6 +29,7 @@ export async function run(state: Map<string, any>) {
                 stack.unshift(...r1);
                 break;
             case 2:
+                // 11 1 - -
                 const r2 = log({
                     message: `Heads`,
                     nodes: [0]
@@ -36,6 +37,7 @@ export async function run(state: Map<string, any>) {
                 stack.unshift(...r2);
                 break;
             case 3:
+                // 11 8 - -
                 const r3 = log({
                     message: `Tails`,
                     nodes: [0]

@@ -1,8 +1,14 @@
 export enum EntryType {
-    // Action
+    /**
+     * Action
+     */
     Action,
-    // Enter Tile
+    /**
+     * Enter Tile
+     */
     Enter,
-    // Leave Tile
+    /**
+     * Leave Tile
+     */
     Leave
 }

@@ -2,14 +2,20 @@ import type { Node } from './node';
 
 /**
  * Dialog
+ * @width 6
+ * @height 6
  */
 export async function Dialog({ state, node, nodes, character, text }: {
     state: Map<string, any>,
     node: Node,
     nodes: Node[],
-    // Character
+    /**
+     * Character
+     */
     character: string,
-    // Text
+    /**
+     * Text
+     */
     text: string
 }): Promise<Node[]> {
     if (nodes.length === 0) {

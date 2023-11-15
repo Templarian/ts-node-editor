@@ -6,7 +6,7 @@ import { setState } from "./../nodes/setState";
 // This allows multiple line comment blocks also.
 
 export async function run(state: Map<string, any>) {
-    // 1 1 2 2 script
+    // 1 1 - - script
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
@@ -21,7 +21,7 @@ export async function run(state: Map<string, any>) {
                 }
                 break loop;
             case 1:
-                // 0 0 2 2
+                // 4 1 - -
                 const r1 = setState({
                     state,
                     nodes: [0],

@@ -1,10 +1,16 @@
 import type { Node } from './node';
 
-// Coin Flip
+/**
+ * Coin Flip
+ */
 export function coinFlip({ t, f }: {
-    // True
+    /**
+     * True
+     */
     t: Node[],
-    // False
+    /**
+     * True
+     */
     f: Node[],
 }): Node[] {
     return Math.random() < 0.5 ? t : f;
