@@ -22,7 +22,7 @@ npm run editor
 
 ## Usage
 
-Generated scripts can either be imported normally or dynamically. The Hello World example adds a `message` to the state.
+Generated scripts can either be imported normally or dynamically. The [Hello World](./src/scripts/helloWorld.ts) example adds a `message` to the state.
 
 ```ts
 const { run } = await import('./scripts/helloWorld');
@@ -33,10 +33,10 @@ console.log(state);
 // Map(2) {'name' => 'John', 'message' => 'Hello John!'}
 ```
 
-This simple example makes use of the [`setState`](./nodes/setState.ts) function to update or set a variables state.
+This simple example makes use of the [`setState`](./src/nodes/setState.ts) function to update or set a variables state.
 
 ```
-npm run editor ./scripts/helloWorld.ts
+npm run editor src/scripts/helloWorld.ts
 ```
 
 In the editor the `Hello ${name}!` gets transformed into a string literal pulling the `state.get('name')` value.
