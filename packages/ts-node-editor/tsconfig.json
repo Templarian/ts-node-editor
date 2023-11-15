@@ -1,0 +1,13 @@
+{
+  "include": [
+    "src/server.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
+    "target": "ESNext"
+  }
+}

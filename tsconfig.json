@@ -1,0 +1,13 @@
+{
+    "include": [
+        "src/scripts/helloWorld.ts"
+    ],
+    "compilerOptions": {
+      "baseUrl": ".",
+      "module": "ESNext",
+      "lib": [
+        "ESNext"
+      ],
+      "target": "ESNext"
+    }
+  }

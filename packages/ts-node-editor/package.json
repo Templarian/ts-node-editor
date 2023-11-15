@@ -1,0 +1,22 @@
+{
+  "name": "ts-node-editor",
+  "version": "1.0.0",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Austin Andrews",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Templarian/ts-node-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Templarian/ts-node-editor/issues"
+  },
+  "homepage": "https://github.com/Templarian/ts-node-editor#readme",
+  "description": ""
+}

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>TypeScript Node Editor</title>
+    <script>
+        const icons = {
+            script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
+        };
+    </script>
+    <style>
+        :root {
+            --grid-light: #353535;
+            --grid-dark: #464646;
+            --node-light: #666666;
+            --node-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: grid;
+            grid-template-columns: auto;
+            grid-template-rows: auto 1fr;
+            margin: 0;
+            background: #262626;
+            width: 100vw;
+            height: 100vh;
+            font-family: var(--node-font);
+        }
+
+        div.header {
+            display: flex;
+            grid-row: 1;
+            grid-column: 1;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            order: 1;
+            padding: 0.25rem;
+            border-bottom: 2px solid #2B2B2B;
+            background: #181818;
+        }
+
+        div.header button {
+            display: flex;
+            align-items: center;
+            border: 0;
+            background: transparent;
+            color: #FFF;
+            padding: 0.25rem 0.5rem;
+            font-family: var(--node-font);
+            border-radius: 0.25rem;
+        }
+        div.header button:hover {
+            background: #2B2B2B;
+        }
+        div.header button.menu > span {
+            margin-right: 0.25rem;
+        }
+        div.header button.check > span {
+            margin-left: 0.315rem;
+        }
+        div.header button > svg {
+            width: 1rem;
+            height: 1rem;
+        }
+        div.header span.seperator {
+            border-right: 2px solid #2B2B2B;
+            margin: 0.25rem;
+        }
+        div.header .dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            background: #181818;
+            padding: 0 0.25rem 0.25rem 0.25rem;
+            top: 2.125rem;
+            left: 0;
+            z-index: 1;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.4);
+            border-right: 2px solid #2B2B2B;
+            border-bottom: 2px solid #2B2B2B;
+            min-width: 6rem;
+        }
+
+        /* ===== Scrollbar CSS ===== */
+        /* Firefox */
+        div.scroll {
+            scrollbar-width: auto;
+            scrollbar-color: #8f54a0 #ffffff;
+            grid-row: 2;
+            grid-column: 1;
+            overflow: auto;
+        }
+
+        /* Chrome, Edge, and Safari */
+        div.scroll::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        div.scroll::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        div.scroll::-webkit-scrollbar-thumb {
+            background-color: #8f54a0;
+            border-radius: 10px;
+            border: 3px solid #ffffff;
+        }
+
+        div.grid {
+            display: grid;
+            background-size: 100px 100px;
+            background-image:
+                linear-gradient(to right, transparent 98px, var(--grid-dark) 98px, var(--grid-dark) 100px),
+                linear-gradient(to bottom, transparent 98px, var(--grid-dark) 98px, var(--grid-dark) 100px),
+                linear-gradient(to right, transparent 18px, var(--grid-light) 18px, var(--grid-light) 20px, transparent 20px,
+                    transparent 38px, var(--grid-light) 38px, var(--grid-light) 40px, transparent 40px,
+                    transparent 58px, var(--grid-light) 58px, var(--grid-light) 60px, transparent 60px,
+                    transparent 78px, var(--grid-light) 78px, var(--grid-light) 80px, transparent 80px),
+                linear-gradient(to bottom, transparent 18px, var(--grid-light) 18px, var(--grid-light) 20px, transparent 20px,
+                    transparent 38px, var(--grid-light) 38px, var(--grid-light) 40px, transparent 40px,
+                    transparent 58px, var(--grid-light) 58px, var(--grid-light) 60px, transparent 60px,
+                    transparent 78px, var(--grid-light) 78px, var(--grid-light) 80px, transparent 80px);
+            width: 100%;
+            height: 100%;
+            grid-template-columns: 19px repeat(auto-fill, 20px);
+            grid-template-rows: 19px repeat(auto-fill, 20px);
+            gap: 0px 0px;
+            grid-template-areas:
+                ". ."
+                ". .";
+        }
+
+        div.node {
+            display: flex;
+            flex-direction: column;
+            grid-row-start: calc(1 + var(--node-y));
+            grid-column-start: calc(1 + var(--node-x));
+            grid-row-end: calc(1 + var(--node-y) + var(--node-height));
+            grid-column-end: calc(1 + var(--node-x) + var(--node-width));
+            border-radius: 4px;
+            background: #181818;
+            border: 1px solid var(--node-light);
+            color: #FFF;
+        }
+
+        div.node>div:nth-child(1) {
+            display: flex;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            cursor: default;
+            font-weight: bold;
+        }
+
+        div.node>div:nth-child(1)>span {
+            flex: 1;
+        }
+
+        div.node.drag>div:nth-child(1)>svg {
+            display: flex;
+        }
+
+        div.node>div:nth-child(1)>svg {
+            display: none;
+            width: 0.5rem;
+        }
+
+        div.node:hover:not(.drag)>div:nth-child(1)>button {
+            display: flex;
+        }
+
+        div.node>div:nth-child(1)>button {
+            display: none;
+            background: transparent;
+            border: 0;
+            color: #FFF;
+            padding: 0.25rem;
+            margin: -0.25rem -0.5rem -0.25rem -0.25rem;
+            border-radius: 0 0.25rem 0 0;
+        }
+
+        div.node>div:nth-child(1)>button:hover {
+            background: #2B2B2B;
+        }
+
+        div.node>div:nth-child(1)>button>svg {
+            width: 18px;
+        }
+
+        div.node>div:nth-child(2) {
+            display: flex;
+            flex-direction: column;
+            background: #1D1D1D;
+            flex: 1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+
+        div.node-input-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        div.node-input-text label {
+            font-size: 0.875rem;
+        }
+
+        div.node-input-text>div {
+            display: flex;
+            flex-direction: row;
+            margin-top: 0.25rem;
+        }
+
+        div.node-input-text input {
+            background: #2B2B2B;
+            border: 0;
+            flex: 1;
+            color: #FFF;
+            outline: 0;
+            padding: 0.125rem 0.25rem;
+            font-size: 0.875rem;
+            font-family: var(--node-font);
+            min-width: 50px;
+        }
+
+        div.node-input-text span {
+            width: 0.25rem;
+        }
+
+        div.node-input-text button {
+            display: flex;
+            background: #2B2B2B;
+            border: 0;
+            padding: 0.125rem;
+            color: #FFF;
+        }
+
+        div.node-entry {
+            align-items: center;
+            justify-content: center;
+        }
+
+        div.node-entry textarea {
+            background: transparent;
+            border: 0;
+            flex: 1;
+            color: #FFF;
+            outline: 0;
+            padding: 0;
+            font-size: 0.875rem;
+            font-family: var(--node-font);
+            min-width: 50px;
+            resize: none;
+            padding: 0.25rem 0.5rem;
+            margin: -0.25rem -0.5rem;
+        }
+
+        div.node-entry textarea:focus {
+            background: #2B2B2B;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+
+        div.node-comment {
+            border-color: #85BBDA;
+        }
+
+        div.node-comment textarea {
+            background: transparent;
+            border: 0;
+            flex: 1;
+            color: #FFF;
+            outline: 0;
+            padding: 0;
+            font-size: 0.875rem;
+            font-family: var(--node-font);
+            min-width: 50px;
+            resize: none;
+            padding: 0.25rem 0.5rem;
+            margin: -0.25rem -0.5rem;
+        }
+
+        div.node-comment textarea:focus {
+            background: #2B2B2B;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+
+        .node-handle {
+            display: flex;
+            border-radius: 50%;
+            background: #FFF;
+            width: 0.5rem;
+            height: 0.5rem;
+            grid-column-start: calc(var(--node-x) + 1);
+            grid-row-start: calc(var(--node-y) + 1);
+            transform: translate(-0.25rem, -0.25rem);
+            border: 0;
+            color: #222;
+            padding: 0;
+        }
+
+        .node-handle:hover {
+            width: 1rem;
+            height: 1rem;
+            transform: translate(-0.5rem, -0.5rem);
+        }
+
+        .node-handle:hover svg {
+            display: block;
+        }
+
+        .node-handle svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .node-handle.end:hover {
+            border-radius: 50% 0 0 50%;
+        }
+
+        .items {
+            display: none;
+            flex-direction: column;
+            padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+            margin-left: 1rem;
+            background: #FFF;
+            border-radius: 0 0.5rem 0.5rem 0.5rem;
+            height: 3rem;
+        }
+
+        .item {
+            display: flex;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        .item:hover {
+            background: #DDD;
+        }
+        .item button:not(:last-child) {
+            margin-right: 0.25rem;
+        }
+
+        .node-handle.end:hover .items {
+            display: flex;
+        }
+
+        .item button {
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: #222;
+        }
+        .item button svg {
+            pointer-events: none;
+        }
+        .item button:disabled {
+            color: #999;
+        }
+        .item button:not(:disabled):hover {
+            color: #3CA9FB;
+        }
+        div.header .dropdown.show {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <!--<script src="test.js"></script>-->
+    <div class="header">
+        <button class="menu" id="select">
+            <span>script.ts</span>
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor" d="M6 7V8H7V9H9V8H10V7H11V6H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V8H3V6H5V7H6Z" />
+            </svg>
+        </button>
+        <div class="dropdown" id="menu">
+            <button>script2.ts</button>
+            <button>script3.ts</button>
+        </div>
+        <span class="seperator"></span>
+        <button class="check" id="debug">
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor" id="check" d="M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z" />
+            </svg>
+            <span>Debug Mode</span>
+        </button>
+        <span style="flex: 1"></span>
+        <button>
+            New Script
+        </button>
+    </div>
+    <div class="scroll">
+        <div class="grid">
+            <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
+                <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                    <path fill="currentColor"
+                        d="M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20" />
+                </svg>
+            </div>
+            <div class="node-handle" style="--node-x: 3;--node-y: 2;"></div>
+            <div class="node" style="--node-x: 4;--node-y: 1;--node-width: 10;--node-height:5">
+                <div>Entry Node</div>
+                <div>
+                    <div class="node-input-text">
+                        <label>Type</label>
+                        <div>
+                            <input type="text" />
+                            <span></span>
+                            <button>
+                                <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                                    <path fill="currentColor"
+                                        d="M12 13H10V12H9V10H10V9H12V10H13V12H12M12 21H10V20H8V19H6V18H4V17H2V5H4V4H6V3H8V2H10V1H12V2H14V3H16V4H18V5H20V17H18V18H16V19H14V20H12M12 19V18H14V17H16V16H18V6H16V5H14V4H12V3H10V4H8V5H6V6H4V16H6V17H8V18H10V19Z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-handle" style="--node-x: 4;--node-y: 2;"></div>
+            <div class="node-handle" style="--node-x: 14;--node-y: 2;"></div>
+            <div class="node" style="--node-x: 15;--node-y: 1;--node-width: 10;--node-height:10">
+                <div>Dialog</div>
+                <div>Content</div>
+            </div>
+            <div class="node-handle end" style="--node-x: 15;--node-y: 2;">
+                <div class="items">
+                    <div class="item">
+                        <button disabled>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M9 14H7V6H6V7H5V8H4V9H2V7H3V6H4V5H5V4H6V3H7V2H9V3H10V4H11V5H12V6H13V7H14V9H12V8H11V7H10V6H9V14Z" />
+                            </svg>
+                        </button>
+                        <button>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M7 2H9V10H10V9H11V8H12V7H14V9H13V10H12V11H11V12H10V13H9V14H7V13H6V12H5V11H4V10H3V9H2V7H4V8H5V9H6V10H7V2Z" />
+                            </svg>
+                        </button>
+                        <button>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M2 2H4V3H5V4H6V5H7V6H9V5H10V4H11V3H12V2H14V4H13V5H12V6H11V7H10V9H11V10H12V11H13V12H14V14H12V13H11V12H10V11H9V10H7V11H6V12H5V13H4V14H2V12H3V11H4V10H5V9H6V7H5V6H4V5H3V4H2V2Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="item">
+                        <button>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M9 14H7V6H6V7H5V8H4V9H2V7H3V6H4V5H5V4H6V3H7V2H9V3H10V4H11V5H12V6H13V7H14V9H12V8H11V7H10V6H9V14Z" />
+                            </svg>
+                        </button>
+                        <button disabled>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M7 2H9V10H10V9H11V8H12V7H14V9H13V10H12V11H11V12H10V13H9V14H7V13H6V12H5V11H4V10H3V9H2V7H4V8H5V9H6V10H7V2Z" />
+                            </svg>
+                        </button>
+                        <button>
+                            <svg viewBox="0 0 16 16">
+                                <path fill="currentColor"
+                                    d="M2 2H4V3H5V4H6V5H7V6H9V5H10V4H11V3H12V2H14V4H13V5H12V6H11V7H10V9H11V10H12V11H13V12H14V14H12V13H11V12H10V11H9V10H7V11H6V12H5V13H4V14H2V12H3V11H4V10H5V9H6V7H5V6H4V5H3V4H2V2Z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="node node-comment" style="--node-x: 26;--node-y: 1;--node-width: 10;--node-height:10">
+                <div>
+                    <span data-drag>Comment</span>
+                    <svg viewBox="0 0 8 18">
+                        <path fill="currentColor"
+                            d="M7 6V8H5V6H7M7 2V4H5V2H7M7 10V12H5V10H7M7 14V16H5V14H7M3 6V8H1V6H3M3 2V4H1V2H3M3 10V12H1V10H3M3 14V16H1V14H3Z" />
+                    </svg>
+                    <button id="delete">
+                        <svg viewBox="0 0 18 18">
+                            <path fill="currentColor"
+                                d="M2 2H4V3H5V4H6V5H7V6H8V7H10V6H11V5H12V4H13V3H14V2H16V4H15V5H14V6H13V7H12V8H11V10H12V11H13V12H14V13H15V14H16V16H14V15H13V14H12V13H11V12H10V11H8V12H7V13H6V14H5V15H4V16H2V14H3V13H4V12H5V11H6V10H7V8H6V7H5V6H4V5H3V4H2V2Z" />
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <textarea>Comment block...</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const drags = document.querySelectorAll('[data-drag]');
+        let clientX, clientY, pX, pY, parent;
+        function handler(e) {
+            if (clientX && clientY) {
+                const x = Math.floor((e.clientX - clientX) / 20);
+                const y = Math.floor((e.clientY - clientY) / 20);
+                if (pX + x >= 0) {
+                    parent.style.setProperty('--node-x', pX + x);
+                }
+                if (pY + y >= 0) {
+                    parent.style.setProperty('--node-y', pY + y);
+                }
+            }
+        }
+        function handleUp(e) {
+            clientX = null;
+            clientY = null;
+            document.removeEventListener('pointermove', handler);
+            parent.style.setProperty('user-select', null);
+            parent.classList.remove('drag');
+        }
+        drags.forEach(drag => {
+            drag.addEventListener('pointerdown', (e) => {
+                clientX = e.clientX;
+                clientY = e.clientY;
+                parent = e.currentTarget.parentNode.parentNode;
+                parent.style.setProperty('user-select', 'none');
+                parent.classList.add('drag');
+                pX = parseInt(parent.style.getPropertyValue('--node-x'), 10);
+                pY = parseInt(parent.style.getPropertyValue('--node-y'), 10);
+                document.addEventListener('pointermove', handler);
+                document.addEventListener('pointerup', handleUp);
+            });
+        });
+        const del = document.getElementById('delete');
+        del.addEventListener('click', (e) => {
+            console.log('delete');
+            e.preventDefault();
+        });
+        let showMenu = false;
+        document.getElementById('select').addEventListener('mousedown', (e) => {
+            document.getElementById('menu').classList.toggle('show', !showMenu);
+            showMenu = !showMenu;
+        });
+        let debugMode = true;
+        document.getElementById('debug').addEventListener('click', (e) => {
+            document.getElementById('check').setAttribute('d', debugMode
+                ? 'M7 8V9H9V8H10V7H11V6H12V5H13V4H14V3H16V5H15V6H14V7H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V7H6V8H7M1 1H2V0H14V1H15V2H3V3H2V13H3V14H13V13H14V8H15V7H16V14H15V15H14V16H2V15H1V14H0V2H1V1Z'
+                : 'M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z'
+            );
+            debugMode = !debugMode;
+        });
+    </script>
+</body>
+
+</html>
