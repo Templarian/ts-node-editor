@@ -24,6 +24,13 @@ npm run editor
 
 ## Usage
 
+The node editor is split into Nodes and Scripts TypeScript files.
+
+- Nodes are modular self contained functions.
+- Scripts are a braching of nodes and the TypeScript files are what your parent application will execute.
+
+### Scripts
+
 Generated scripts can either be imported normally or dynamically. The [Hello World](./src/scripts/helloWorld.ts) example adds a `message` to the state.
 
 ```ts
@@ -35,7 +42,7 @@ console.log(state);
 // Map(2) {'name' => 'John', 'message' => 'Hello John!'}
 ```
 
-This simple example makes use of the [`setState`](./src/nodes/setState.ts) function to update or set a variables state.
+This simple example makes use of the [`setState`](./src/nodes/setState.ts) function to update or set a variable's state.
 
 ```
 npm run editor src/scripts/helloWorld.ts
