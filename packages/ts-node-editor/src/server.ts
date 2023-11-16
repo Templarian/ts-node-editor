@@ -1,0 +1,70 @@
+import { createServer } from 'http';
+import { readFileSync } from 'fs';
+import { getApi } from './endpoint/api';
+import {
+  getApiComment,
+  postApiComment,
+  patchApiComment,
+  deleteApiComment
+} from './endpoint/apiComment';
+import {
+  getApiNode,
+  postApiNode,
+  patchApiNode,
+  deleteApiNode
+} from './endpoint/apiNode';
+import { getGit, getScript } from './endpoint/apiScript';
+
+createServer((req, res) => {
+  console.log('Server Started: localhost:3002');
+  let p = null;
+  if (p = req.url.match(/^\/$/)) {
+    if (req.method === "GET") {
+      res.setHeader('content-type', 'text/html');
+      res.end(readFileSync('index.html'));
+    } else {
+      throw new Error('Only get supported for /')
+    }
+  } else if (req.url.match(/^\/api$/)) {
+    getApi(req, res);
+  } else if (p = req.url.match(/^\/api\/comment$/)) {
+    if (req.method === 'POST') {
+      postApiComment(req, res);
+    }
+  } else if (p = req.url.match(/^\/api\/comment\/(\d+)$/)) {
+    if (req.method === 'GET') {
+      getApiComment(req, res);
+    } else if (req.method === 'POST') {
+      res.end('Invalid. You meant: /api/comment');
+    } else if (req.method === 'PATCH') {
+      patchApiComment(req, res);
+    } else if (req.method === 'DELETE') {
+      deleteApiComment(req, res);
+    }
+  } else if (p = req.url.match(/^\/api\/node$/)) {
+    if (req.method === 'POST') {
+      postApiNode(req, res);
+    }
+  } else if (p = req.url.match(/^\/api\/node\/(\d+)$/)) {
+    if (req.method === 'GET') {
+      getApiNode(req, res);
+    } else if (req.method === 'POST') {
+      res.end('Invalid. You meant: /api/node');
+    } else if (req.method === 'PATCH') {
+      patchApiNode(req, res);
+    } else if (req.method === 'DELETE') {
+      deleteApiNode(req, res);
+    }
+  } else if (req.url.match(/^\/api\/script$/)) {
+    if (req.method === 'GET') {
+      getScript(req, res);
+    }
+  } else if (req.url.match(/^\/api\/git$/)) {
+    if (req.method === 'GET') {
+      getGit(req, res);
+    }
+  } else {
+      res.statusCode = 404;
+      res.end("Page not found!");
+  }
+}).listen(3002);

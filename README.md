@@ -10,13 +10,13 @@ Build self contained TypeScript friendly scripts that can be modified with a no-
 
 ## Install
 
-```
+```bash
 npm install ts-node-editor
 ```
 
 In the `package.json` add a line in `scripts`: `"editor": "ts-node-editor"`
 
-```
+```bash
 npm run editor
 ```
 
@@ -44,7 +44,7 @@ console.log(state);
 
 This simple example makes use of the [`setState`](./src/nodes/setState.ts) function to update or set a variable's state.
 
-```
+```bash
 npm run editor src/scripts/helloWorld.ts
 ```
 

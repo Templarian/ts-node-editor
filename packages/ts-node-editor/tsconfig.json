@@ -4,10 +4,12 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "lib": [
       "ESNext"
     ],
-    "target": "ESNext"
+    "target": "ESNext",
+    "outDir": "dist"
   }
 }
