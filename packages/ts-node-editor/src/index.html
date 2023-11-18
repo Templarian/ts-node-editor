@@ -137,6 +137,46 @@
                 ". .";
         }
 
+        div.grid-hover {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            grid-row-start: calc(1 + var(--node-y));
+            grid-column-start: calc(1 + var(--node-x));
+            grid-row-end: calc(2 + var(--node-y));
+            grid-column-end: calc(2 + var(--node-x));
+        }
+
+        div.grid-hover.open {
+            border-color: #FFF;
+        }
+
+        div.grid-menu.open {
+            display: flex;
+        }
+        div.grid-menu {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: calc(var(--menu-y, 0) * 1px);
+            left: calc(var(--menu-x, 0) * 1px);
+            background: #2D2D2D;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            box-shadow: 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
+        }
+
+        div.grid-menu>button {
+            background: transparent;
+            color: #FFF;
+            border-radius: calc(0.25rem + 0.125rem);
+            padding: 0.25rem 0.5rem;
+            font-family: var(--node-font);
+            border: 0;
+        }
+
+        div.grid-menu>button:hover {
+            background: #484848;
+        }
+
         div.node {
             display: flex;
             flex-direction: column;
@@ -403,8 +443,13 @@
             New Script
         </button>
     </div>
+    <div class="grid-menu" id="gridMenu">
+        <button>Node Name 1</button>
+        <button>Node Name 2</button>
+    </div>
     <div class="scroll">
         <div class="grid" id="grid">
+            <div class="grid-hover" id="gridHover"></div>
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
                 <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
                     <path fill="currentColor"
@@ -512,7 +557,7 @@
         // Init
         async function init() {
             const scripts = await fetch('api/script');
-            
+
         }
         init();
         const drags = document.querySelectorAll('[data-drag]');
@@ -576,9 +621,35 @@
             });
         });
         const grid = document.getElementById('grid');
+        const gridHover = document.getElementById('gridHover');
+        const gridMenu = document.getElementById('gridMenu');
         const gridRect = grid.getBoundingClientRect();
-        let hoverX = 0;
-        let hoverY = 0;
+        let gridOpen = false;
+        function updateHover(e) {
+            const x = Math.floor((e.clientX - gridRect.left) / 20);
+            const y = Math.floor((e.clientY - gridRect.top) / 20);
+            gridHover.style.setProperty('--node-x', x);
+            gridHover.style.setProperty('--node-y', y);
+        }
+        grid.addEventListener('contextmenu', (e) => {
+            updateHover(e);
+            // Other
+            gridOpen = true;
+            const menuX = Math.floor(e.clientX);
+            const menuY = Math.floor(e.clientY);
+            gridMenu.style.setProperty('--menu-x', menuX);
+            gridMenu.style.setProperty('--menu-y', menuY);
+            gridMenu.classList.add('open');
+            gridHover.classList.add('open');
+            e.preventDefault();
+            function clickOff() {
+                gridOpen = false;
+                gridMenu.classList.remove('open');
+                gridHover.classList.remove('open');
+                document.removeEventListener('pointerdown', clickOff);
+            }
+            document.addEventListener('pointerdown', clickOff);
+        });
         grid.addEventListener('pointerenter', () => {
             console.log('enter');
         });
@@ -586,9 +657,12 @@
             console.log('leave');
         });
         grid.addEventListener('pointermove', (e) => {
-            const x = Math.floor((e.clientX - gridRect.left) / 20);
-            const y = Math.floor((e.clientY - gridRect.top) / 20);
-            console.log('move', x, y);
+            if (!gridOpen) {
+                updateHover(e);
+            }
+        });
+        grid.addEventListener('pointerdown', (e) => {
+            updateHover(e);
         });
     </script>
 </body>
