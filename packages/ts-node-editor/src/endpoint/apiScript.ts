@@ -49,3 +49,11 @@ export function getScript(
     res.setHeader('content-type', 'application/json');
     res.end(JSON.stringify(fromDir('./src', '.ts')));
 }
+
+export function postScript(
+    req: IncomingMessage,
+    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+) {
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify(true));
+}

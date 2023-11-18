@@ -1,6 +1,9 @@
+#!/usr/bin/env node
+
 import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { getApi } from './endpoint/api';
+import { getIndex } from './endpoint/app';
 import {
   getApiComment,
   postApiComment,
@@ -13,17 +16,21 @@ import {
   patchApiNode,
   deleteApiNode
 } from './endpoint/apiNode';
-import { getGit, getScript } from './endpoint/apiScript';
+import {
+  getGit,
+  getScript
+} from './endpoint/apiScript';
+
+console.log('Server Started: localhost:3002');
 
 createServer((req, res) => {
-  console.log('Server Started: localhost:3002');
+  console.log(`- Request: ${req.url}`);
   let p = null;
   if (p = req.url.match(/^\/$/)) {
     if (req.method === "GET") {
-      res.setHeader('content-type', 'text/html');
-      res.end(readFileSync('index.html'));
+      getIndex(req, res);
     } else {
-      throw new Error('Only get supported for /')
+      throw new Error('Only get supported for /');
     }
   } else if (req.url.match(/^\/api$/)) {
     getApi(req, res);

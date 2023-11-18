@@ -23,7 +23,9 @@ export function patchApiNode(
     req: IncomingMessage,
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
-
+    res.setHeader('content-type', 'application/json');
+    const id = req.url.match(/^\/api\/node\/(\d+)$/)[1];
+    res.end(id);
 }
 
 export function deleteApiNode(

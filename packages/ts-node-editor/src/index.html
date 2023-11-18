@@ -50,23 +50,29 @@
             font-family: var(--node-font);
             border-radius: 0.25rem;
         }
+
         div.header button:hover {
             background: #2B2B2B;
         }
-        div.header button.menu > span {
+
+        div.header button.menu>span {
             margin-right: 0.25rem;
         }
-        div.header button.check > span {
+
+        div.header button.check>span {
             margin-left: 0.315rem;
         }
-        div.header button > svg {
+
+        div.header button>svg {
             width: 1rem;
             height: 1rem;
         }
+
         div.header span.seperator {
             border-right: 2px solid #2B2B2B;
             margin: 0.25rem;
         }
+
         div.header .dropdown {
             display: none;
             flex-direction: column;
@@ -333,9 +339,11 @@
             border-radius: 0.25rem;
             margin-bottom: 0.25rem;
         }
+
         .item:hover {
             background: #DDD;
         }
+
         .item button:not(:last-child) {
             margin-right: 0.25rem;
         }
@@ -350,15 +358,19 @@
             background: transparent;
             color: #222;
         }
+
         .item button svg {
             pointer-events: none;
         }
+
         .item button:disabled {
             color: #999;
         }
+
         .item button:not(:disabled):hover {
             color: #3CA9FB;
         }
+
         div.header .dropdown.show {
             display: flex;
         }
@@ -366,27 +378,28 @@
 </head>
 
 <body>
-    <!--<script src="test.js"></script>-->
     <div class="header">
         <button class="menu" id="select">
             <span>script.ts</span>
             <svg viewBox="0 0 16 16">
-                <path fill="currentColor" d="M6 7V8H7V9H9V8H10V7H11V6H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V8H3V6H5V7H6Z" />
+                <path fill="currentColor"
+                    d="M6 7V8H7V9H9V8H10V7H11V6H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V8H3V6H5V7H6Z" />
             </svg>
         </button>
-        <div class="dropdown" id="menu">
+        <div class="dropdown" id="scriptMenu">
             <button>script2.ts</button>
             <button>script3.ts</button>
         </div>
         <span class="seperator"></span>
         <button class="check" id="debug">
             <svg viewBox="0 0 16 16">
-                <path fill="currentColor" id="check" d="M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z" />
+                <path fill="currentColor" id="check"
+                    d="M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z" />
             </svg>
             <span>Debug Mode</span>
         </button>
         <span style="flex: 1"></span>
-        <button>
+        <button id="newScript">
             New Script
         </button>
     </div>
@@ -488,6 +501,20 @@
         </div>
     </div>
     <script>
+        // Dom Functions
+        function addScript(filename, path) {
+            const scriptMenu = document.getElementById('scriptMenu');
+            const button = document.createElement('button');
+            button.appendChild(document.createTextNode(filename));
+            button.setAttribute('title', `${path}/${filename}`);
+            scriptMenu.appendChild('button');
+        }
+        // Init
+        async function init() {
+            const scripts = await fetch('api/script');
+            
+        }
+        init();
         const drags = document.querySelectorAll('[data-drag]');
         let clientX, clientY, pX, pY, parent;
         function handler(e) {
@@ -539,6 +566,14 @@
                 : 'M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z'
             );
             debugMode = !debugMode;
+        });
+        document.getElementById('newScript').addEventListener('click', async () => {
+            const foo = await fetch("api/node/1", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
         });
     </script>
 </body>
