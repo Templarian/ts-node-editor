@@ -2,11 +2,15 @@ import { IncomingMessage, ServerResponse } from 'http';
 import {
     existsSync,
     readdirSync,
-    lstatSync
+    lstatSync,
+    createReadStream
 } from 'fs';
 import {
     join
 } from 'path';
+
+// All scripts have to start with a node definition
+const startScriptOrNode = 'import type { Node } from ';
 
 function fromDir(startPath, filter) {
 
@@ -30,6 +34,19 @@ function fromDir(startPath, filter) {
     };
     return filenames;
 };
+
+function isValidNodeOrScript(filename) {
+    var readable = createReadStream(filename, {
+        encoding: 'utf8',
+        fd: null,
+    });
+    readable.on('readable', function() {
+      var chunk;
+      while (null !== (chunk = readable.read(1) /* here */)) {
+        console.log(chunk); // chunk is one byte
+      }
+    });
+}
 
 /**
  * Display a warning if executed outside of a git repo

@@ -404,7 +404,7 @@
         </button>
     </div>
     <div class="scroll">
-        <div class="grid">
+        <div class="grid" id="grid">
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
                 <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
                     <path fill="currentColor"
@@ -502,7 +502,7 @@
     </div>
     <script>
         // Dom Functions
-        function addScript(filename, path) {
+        function addScript(filename) {
             const scriptMenu = document.getElementById('scriptMenu');
             const button = document.createElement('button');
             button.appendChild(document.createTextNode(filename));
@@ -574,6 +574,21 @@
                     "Content-Type": "application/json"
                 }
             });
+        });
+        const grid = document.getElementById('grid');
+        const gridRect = grid.getBoundingClientRect();
+        let hoverX = 0;
+        let hoverY = 0;
+        grid.addEventListener('pointerenter', () => {
+            console.log('enter');
+        });
+        grid.addEventListener('pointerleave', () => {
+            console.log('leave');
+        });
+        grid.addEventListener('pointermove', (e) => {
+            const x = Math.floor((e.clientX - gridRect.left) / 20);
+            const y = Math.floor((e.clientY - gridRect.top) / 20);
+            console.log('move', x, y);
         });
     </script>
 </body>
