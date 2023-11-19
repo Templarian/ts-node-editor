@@ -14,7 +14,7 @@ const startScriptOrNode = 'import type { Node } from ';
 
 function fromDir(startPath, filter) {
 
-    console.log('Starting from dir '+startPath+'/');
+    console.log(`Starting from dir ${startPath}/`);
 
     if (!existsSync(startPath)) {
         console.log("no dir ", startPath);
@@ -35,16 +35,22 @@ function fromDir(startPath, filter) {
     return filenames;
 };
 
-function isValidNodeOrScript(filename) {
-    var readable = createReadStream(filename, {
+async function isValidNodeOrScript(filename: string) {
+    let readable = createReadStream(filename, {
         encoding: 'utf8',
         fd: null,
     });
-    readable.on('readable', function() {
-      var chunk;
-      while (null !== (chunk = readable.read(1) /* here */)) {
-        console.log(chunk); // chunk is one byte
-      }
+    return new Promise((resolve) => {
+        readable.on('readable', function() {
+            let chunk = readable.read(startScriptOrNode.length);
+            if (chunk) {
+                console.log(startScriptOrNode, '=', chunk);
+                resolve(startScriptOrNode === chunk);
+                readable.destroy();
+                return;
+            }
+            resolve(false);
+        });
     });
 }
 
@@ -59,12 +65,20 @@ export function getGit(
     res.end(JSON.stringify(existsSync('.git')));
 }
 
-export function getScript(
+export async function getScript(
     req: IncomingMessage,
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify(fromDir('./src', '.ts')));
+    const files = fromDir('./src', '.ts');
+    const list = [];
+    for(let i = 0; i < files.length; i++) {
+        const result = await isValidNodeOrScript(files[i]);
+        if (result) {
+            list.push(files[i]);
+        }
+    }
+    res.end(JSON.stringify(list));
 }
 
 export function postScript(

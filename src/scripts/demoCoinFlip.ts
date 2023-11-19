@@ -2,7 +2,7 @@ import type { Node } from '../nodes/node';
 import { coinFlip } from "../nodes/coinFlip";
 import { log } from "../nodes/log";
 
-// 0 5 10 10
+// 0 5 - -
 // Flip a coin and log which is selected
 
 export async function run(state: Map<string, any>) {

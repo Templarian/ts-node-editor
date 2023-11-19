@@ -55,15 +55,19 @@
             background: #2B2B2B;
         }
 
-        div.header button.menu>span {
+        div.header button:disabled {
+            color: #999;
+        }
+
+        div.header button.menu > span {
             margin-right: 0.25rem;
         }
 
-        div.header button.check>span {
+        div.header button.check > span {
             margin-left: 0.315rem;
         }
 
-        div.header button>svg {
+        div.header button > svg {
             width: 1rem;
             height: 1rem;
         }
@@ -202,6 +206,11 @@
             flex: 1;
         }
 
+        div.node.debug {
+            box-shadow: 0 0 10px rgba(133, 187, 218, 0.3);
+            border: 1px solid #248AE4;
+        }
+
         div.node.drag>div:nth-child(1)>svg {
             display: flex;
         }
@@ -240,6 +249,10 @@
             flex: 1;
             padding: 0.25rem 0.5rem;
             border-radius: 0 0 0.25rem 0.25rem;
+        }
+
+        div.node div.node-input:not(:first-child) {
+            margin-top: 0.25rem;
         }
 
         div.node-input-text {
@@ -307,7 +320,7 @@
         }
 
         div.node-comment {
-            border-color: #85BBDA;
+            border-color: #EFAD03;
         }
 
         div.node-comment textarea {
@@ -361,6 +374,11 @@
 
         .node-handle.end:hover {
             border-radius: 50% 0 0 50%;
+        }
+
+        .node-handle.debug {
+            box-shadow: 0 0 10px rgba(133, 187, 218, 0.6);
+            background: #248AE4;
         }
 
         .items {
@@ -438,6 +456,31 @@
             </svg>
             <span>Debug Mode</span>
         </button>
+        <span class="seperator"></span>
+        <button class="play" id="debugPlay" title="Play">
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor"
+                    d="M4 1H7V2H8V3H9V4H10V5H11V6H12V7H13V9H12V10H11V11H10V12H9V13H8V14H7V15H4V1M8 6V5H7V4H6V12H7V11H8V10H9V9H10V7H9V6H8Z" />
+            </svg>
+        </button>
+        <button class="previous" id="debugPrevious" title="Previous" disabled>
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor"
+                    d="M16 9H14V7H16V9M12 9H5V10H6V11H7V12H8V14H6V13H5V12H4V11H3V10H2V9H1V7H2V6H3V5H4V4H5V3H6V2H8V4H7V5H6V6H5V7H12V9Z" />
+            </svg>
+        </button>
+        <button class="next" id="debugNext" title="Next">
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor"
+                    d="M0 7H2V9H0V7M4 7H11V6H10V5H9V4H8V2H10V3H11V4H12V5H13V6H14V7H15V9H14V10H13V11H12V12H11V13H10V14H8V12H9V11H10V10H11V9H4V7Z" />
+            </svg>
+        </button>
+        <button class="restart" id="debugRestart" title="Restart">
+            <svg viewBox="0 0 16 16">
+                <path fill="currentColor"
+                    d="M1 5H2V4H3V3H4V2H5V1H7V3H6V4H5V5H12V6H13V7H14V8H15V13H14V14H13V15H12V16H5V14H11V13H12V12H13V9H12V8H11V7H5V8H6V9H7V11H5V10H4V9H3V8H2V7H1V5M1 16V14H3V16H1Z" />
+            </svg>
+        </button>
         <span style="flex: 1"></span>
         <button id="newScript">
             New Script
@@ -457,20 +500,33 @@
                 </svg>
             </div>
             <div class="node-handle" style="--node-x: 3;--node-y: 2;"></div>
-            <div class="node" style="--node-x: 4;--node-y: 1;--node-width: 10;--node-height:5">
-                <div>Entry Node</div>
+            <div class="node" style="--node-x: 4;--node-y: 1;--node-width: 10;--node-height:7">
+                <div>Set Variable</div>
                 <div>
-                    <div class="node-input-text">
-                        <label>Type</label>
+                    <div class="node-input node-input-text">
+                        <label>Key</label>
                         <div>
-                            <input type="text" />
-                            <span></span>
+                            <input type="text" value="message" />
+                            <!--<span></span>
                             <button>
                                 <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
                                     <path fill="currentColor"
                                         d="M12 13H10V12H9V10H10V9H12V10H13V12H12M12 21H10V20H8V19H6V18H4V17H2V5H4V4H6V3H8V2H10V1H12V2H14V3H16V4H18V5H20V17H18V18H16V19H14V20H12M12 19V18H14V17H16V16H18V6H16V5H14V4H12V3H10V4H8V5H6V6H4V16H6V17H8V18H10V19Z" />
                                 </svg>
-                            </button>
+                            </button>-->
+                        </div>
+                    </div>
+                    <div class="node-input node-input-text">
+                        <label>Value</label>
+                        <div>
+                            <input type="text" value="Hello ${name}!" />
+                            <!--<span></span>
+                            <button>
+                                <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                                    <path fill="currentColor"
+                                        d="M12 13H10V12H9V10H10V9H12V10H13V12H12M12 21H10V20H8V19H6V18H4V17H2V5H4V4H6V3H8V2H10V1H12V2H14V3H16V4H18V5H20V17H18V18H16V19H14V20H12M12 19V18H14V17H16V16H18V6H16V5H14V4H12V3H10V4H8V5H6V6H4V16H6V17H8V18H10V19Z" />
+                                </svg>
+                            </button>-->
                         </div>
                     </div>
                 </div>
@@ -553,6 +609,9 @@
             button.appendChild(document.createTextNode(filename));
             button.setAttribute('title', `${path}/${filename}`);
             scriptMenu.appendChild('button');
+        }
+        function addNode(node) {
+            
         }
         // Init
         async function init() {
@@ -647,8 +706,10 @@
                 gridMenu.classList.remove('open');
                 gridHover.classList.remove('open');
                 document.removeEventListener('pointerdown', clickOff);
+                document.body.removeEventListener('pointerleave', clickOff);
             }
             document.addEventListener('pointerdown', clickOff);
+            document.body.addEventListener('pointerleave', clickOff);
         });
         grid.addEventListener('pointerenter', () => {
             console.log('enter');
