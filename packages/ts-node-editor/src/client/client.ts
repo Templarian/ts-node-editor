@@ -108,12 +108,6 @@ grid.addEventListener('contextmenu', (e) => {
     document.addEventListener('pointerdown', clickOff);
     document.body.addEventListener('pointerleave', clickOff);
 });
-grid.addEventListener('pointerenter', () => {
-    console.log('enter');
-});
-grid.addEventListener('pointerleave', () => {
-    console.log('leave');
-});
 grid.addEventListener('pointermove', (e) => {
     if (!gridOpen) {
         updateHover(e);

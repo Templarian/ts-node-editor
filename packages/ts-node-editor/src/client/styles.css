@@ -134,6 +134,7 @@ div.grid-hover {
     grid-column-start: calc(1 + var(--node-x));
     grid-row-end: calc(2 + var(--node-y));
     grid-column-end: calc(2 + var(--node-x));
+    pointer-events: none;
 }
 
 div.grid-hover.open {
