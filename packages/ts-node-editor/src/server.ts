@@ -3,7 +3,10 @@
 import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { getApi } from './endpoint/api';
-import { getIndex } from './endpoint/app';
+import {
+  getIndex,
+  getStyles
+} from './endpoint/app';
 import {
   getApiComment,
   postApiComment,
@@ -29,6 +32,12 @@ createServer((req, res) => {
   if (p = req.url.match(/^\/$/)) {
     if (req.method === "GET") {
       getIndex(req, res);
+    } else {
+      throw new Error('Only get supported for /');
+    }
+  } else if (p = req.url.match(/^\/styles\.css$/)) {
+    if (req.method === "GET") {
+      getStyles(req, res);
     } else {
       throw new Error('Only get supported for /');
     }

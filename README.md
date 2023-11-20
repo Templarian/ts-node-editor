@@ -84,7 +84,7 @@ All node functions must return an array of nodes. Always return `[0]` instead of
 
 ## Endpoints
 
-```
+```text
 get    api/
 {
     comments: [
@@ -108,7 +108,14 @@ delete api/node/2
 post   api/node/2    { $x: 1, $y, 2, $width: 10, $height: 10 }
 patch  api/node/2    { nodes: [2, 4] }
 
-get    api/scripts   ['src/scripts/script1.ts']
+get    api/scripts
+[{
+    name: 'src', directory: [{
+        name: 'script', directory: [{
+            name: 'script1.ts'
+        }]
+    }]
+}]
 ```
 
 ## TS Wrapper
