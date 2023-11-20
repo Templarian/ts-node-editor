@@ -203,6 +203,9 @@ div.node.debug {
     box-shadow: 0 0 10px rgba(133, 187, 218, 0.3);
     border: 1px solid #248AE4;
 }
+div.node.drag {
+    box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.5);
+}
 
 div.node.drag>div:nth-child(1)>svg {
     display: flex;

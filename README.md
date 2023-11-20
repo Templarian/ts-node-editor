@@ -97,6 +97,11 @@ get    api/
         { $name: 'log', $x: 10, $y: 7, $width: 6, $height: 6, text: 'Tails' },
     ]
 }
+post   api/
+{
+    path: ['src', 'scripts']
+    file: 'filename.ts'
+}
 
 delete api/comment/0
 patch  api/comment/0 { text: 'Updated value.' }
@@ -116,6 +121,11 @@ get    api/scripts
         }]
     }]
 }]
+post   api/script
+{
+    path: ['src', 'scripts']
+    file: 'filename.ts'
+}
 ```
 
 ## TS Wrapper
