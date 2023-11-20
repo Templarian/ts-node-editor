@@ -96,7 +96,7 @@ function updateHover(e) {
         gridHover.classList.add('hide');
     }
 }
-grid.addEventListener('contextmenu', (e) => {
+grid.addEventListener('contextmenu', async (e) => {
     updateHover(e);
     // Ignore
     const target = e.target as Element;
@@ -112,6 +112,11 @@ grid.addEventListener('contextmenu', (e) => {
     gridMenu.classList.add('open');
     gridHover.classList.add('open');
     e.preventDefault();
+    // Fetch
+    const items = await (await fetch('api/nodes')).json();
+    (items as any).forEach((item) => {
+        console.log(item);
+    })
     function clickOff() {
         gridOpen = false;
         gridMenu.classList.remove('open');

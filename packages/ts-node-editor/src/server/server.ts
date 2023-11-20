@@ -16,6 +16,7 @@ import {
   deleteApiComment
 } from './endpoint/apiComment';
 import {
+  getApiNodes,
   getApiNode,
   postApiNode,
   patchApiNode,
@@ -68,6 +69,10 @@ createServer((req, res) => {
   } else if (p = req.url.match(/^\/api\/node$/)) {
     if (req.method === 'POST') {
       postApiNode(req, res);
+    }
+  } else if (p = req.url.match(/^\/api\/nodes$/)) {
+    if (req.method === 'GET') {
+      getApiNodes(req, res);
     }
   } else if (p = req.url.match(/^\/api\/node\/(\d+)$/)) {
     if (req.method === 'GET') {
