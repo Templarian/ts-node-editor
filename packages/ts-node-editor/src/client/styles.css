@@ -137,6 +137,10 @@ div.grid-hover {
     pointer-events: none;
 }
 
+div.grid-hover.hide {
+    display: none;
+}
+
 div.grid-hover.open {
     border-color: #FFF;
 }

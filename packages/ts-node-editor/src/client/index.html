@@ -5,11 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover">
     <title>TypeScript Node Editor</title>
-    <script>
-        const icons = {
-            script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
-        };
-    </script>
     <link href="styles.css" rel="stylesheet"></link>
 </head>
 
@@ -70,7 +65,7 @@
     </div>
     <div class="scroll">
         <div class="grid" id="grid">
-            <div class="grid-hover" id="gridHover"></div>
+            <div class="grid-hover hide" id="gridHover"></div>
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
                 <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
                     <path fill="currentColor"

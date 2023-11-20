@@ -1,3 +1,7 @@
+const icons = {
+    script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
+};
+
 // Dom Functions
 function addScript(filename) {
     const scriptMenu = document.getElementById('scriptMenu');
@@ -82,13 +86,23 @@ const gridMenu = document.getElementById('gridMenu');
 const gridRect = grid.getBoundingClientRect();
 let gridOpen = false;
 function updateHover(e) {
-    const x = Math.floor((e.clientX - gridRect.left) / 20);
-    const y = Math.floor((e.clientY - gridRect.top) / 20);
-    gridHover.style.setProperty('--node-x', `${x}`);
-    gridHover.style.setProperty('--node-y', `${y}`);
+    if (e.target.classList.contains('grid')) {
+        const x = Math.floor((e.clientX - gridRect.left) / 20);
+        const y = Math.floor((e.clientY - gridRect.top) / 20);
+        gridHover.style.setProperty('--node-x', `${x}`);
+        gridHover.style.setProperty('--node-y', `${y}`);
+        gridHover.classList.remove('hide');
+    } else {
+        gridHover.classList.add('hide');
+    }
 }
 grid.addEventListener('contextmenu', (e) => {
     updateHover(e);
+    // Ignore
+    const target = e.target as Element;
+    if (!target.classList.contains('grid')) {
+        return;
+    }
     // Other
     gridOpen = true;
     const menuX = Math.floor(e.clientX);
