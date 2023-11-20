@@ -1,0 +1,15 @@
+{
+    "extends": "./../../tsconfig.json",
+    "include": [
+      "client.ts"
+    ],
+    "compilerOptions": {
+      "baseUrl": ".",
+      "module": "ES6",
+      "lib": [
+        "ES6",
+        "DOM"
+      ],
+      "target": "ES2023"
+    }
+  }

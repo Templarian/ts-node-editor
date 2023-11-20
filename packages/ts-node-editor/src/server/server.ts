@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import { createServer } from 'http';
-import { getApi } from './endpoint/api';
+import {
+  getApi
+} from './endpoint/api';
 import {
   getIndex,
   getStyles,

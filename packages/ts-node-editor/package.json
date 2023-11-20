@@ -4,10 +4,10 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/server.js"
+    "start": "tsc && node dist/server/server.js"
   },
   "bin": {  
-    "ts-node-editor": "./dist/server.js"  
+    "ts-node-editor": "./dist/server/server.js"  
   },
   "author": "Austin Andrews",
   "license": "ISC",

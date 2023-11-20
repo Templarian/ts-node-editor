@@ -7,7 +7,7 @@ export function getIndex(
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'text/html');
-    res.end(readFileSync(join(__dirname, '..', '..', 'src', 'index.html')));
+    res.end(readFileSync(join(__dirname, '..', '..', '..', 'src', 'client', 'index.html')));
 }
 
 export function getStyles(
@@ -15,7 +15,7 @@ export function getStyles(
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'text/css');
-    res.end(readFileSync(join(__dirname, '..', '..', 'src', 'styles.css')));
+    res.end(readFileSync(join(__dirname, '..', '..', '..', 'src', 'client', 'styles.css')));
 }
 
 export function getClient(
@@ -23,5 +23,5 @@ export function getClient(
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'text/javascript');
-    res.end(readFileSync(join(__dirname, '..', 'client.js')));
+    res.end(readFileSync(join(__dirname, '..', '..', 'client', 'client.js')));
 }

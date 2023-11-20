@@ -1,17 +1,5 @@
 {
-  "include": [
-    "src/server.ts",
-    "src/client.ts"
-  ],
   "compilerOptions": {
-    "baseUrl": ".",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "target": "ESNext",
     "outDir": "dist"
   }
 }

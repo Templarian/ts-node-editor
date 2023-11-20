@@ -16,16 +16,16 @@ async function init() {
 }
 init();
 const drags = document.querySelectorAll('[data-drag]');
-let clientX, clientY, pX, pY, parent;
+let clientX, clientY, pX, pY, parents;
 function handler(e) {
     if (clientX && clientY) {
         const x = Math.floor((e.clientX - clientX) / 20);
         const y = Math.floor((e.clientY - clientY) / 20);
         if (pX + x >= 0) {
-            parent.style.setProperty('--node-x', pX + x);
+            parents.style.setProperty('--node-x', pX + x);
         }
         if (pY + y >= 0) {
-            parent.style.setProperty('--node-y', pY + y);
+            parents.style.setProperty('--node-y', pY + y);
         }
     }
 }
@@ -33,19 +33,19 @@ function handleUp(e) {
     clientX = null;
     clientY = null;
     document.removeEventListener('pointermove', handler);
-    parent.style.setProperty('user-select', null);
-    parent.classList.remove('drag');
+    parents.style.setProperty('user-select', null);
+    parents.classList.remove('drag');
 }
 drags.forEach(drag => {
     drag.addEventListener('pointerdown', (e: PointerEvent) => {
         clientX = e.clientX;
         clientY = e.clientY;
         const currentTarget = e.currentTarget as Element;
-        parent = currentTarget.parentNode.parentNode;
-        parent.style.setProperty('user-select', 'none');
-        parent.classList.add('drag');
-        pX = parseInt(parent.style.getPropertyValue('--node-x'), 10);
-        pY = parseInt(parent.style.getPropertyValue('--node-y'), 10);
+        parents = currentTarget.parentNode.parentNode;
+        parents.style.setProperty('user-select', 'none');
+        parents.classList.add('drag');
+        pX = parseInt(parents.style.getPropertyValue('--node-x'), 10);
+        pY = parseInt(parents.style.getPropertyValue('--node-y'), 10);
         document.addEventListener('pointermove', handler);
         document.addEventListener('pointerup', handleUp);
     });
