@@ -17,3 +17,11 @@ export function getStyles(
     res.setHeader('content-type', 'text/css');
     res.end(readFileSync(join(__dirname, '..', '..', 'src', 'styles.css')));
 }
+
+export function getClient(
+    req: IncomingMessage,
+    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+) {
+    res.setHeader('content-type', 'text/javascript');
+    res.end(readFileSync(join(__dirname, '..', 'client.js')));
+}

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import { createServer } from 'http';
-import { readFileSync } from 'fs';
 import { getApi } from './endpoint/api';
 import {
   getIndex,
-  getStyles
+  getStyles,
+  getClient
 } from './endpoint/app';
 import {
   getApiComment,
@@ -39,7 +39,13 @@ createServer((req, res) => {
     if (req.method === "GET") {
       getStyles(req, res);
     } else {
-      throw new Error('Only get supported for /');
+      throw new Error('Only get supported for /styles.css');
+    }
+  } else if (p = req.url.match(/^\/client\.js$/)) {
+    if (req.method === "GET") {
+      getClient(req, res);
+    } else {
+      throw new Error('Only get supported for /styles.css');
     }
   } else if (req.url.match(/^\/api$/)) {
     getApi(req, res);

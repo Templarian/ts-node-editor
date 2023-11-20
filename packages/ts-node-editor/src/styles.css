@@ -38,7 +38,7 @@ div.header button {
     border-radius: 0.25rem;
 }
 
-div.header button:hover {
+div.header button:not(:disabled):hover {
     background: #2B2B2B;
 }
 
