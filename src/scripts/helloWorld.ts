@@ -1,11 +1,11 @@
-import type { Node } from './../nodes/node';
+import type { Node, State } from './../nodes/node';
 import { setState } from "./../nodes/setState";
 
 // 0 5 - -
 // The hello world script takes in a name.
 // This allows multiple line comment blocks also.
 
-export async function run(state: Map<string, any>) {
+export async function run(state: State): Promise<State> {
     // 1 1 - - script
     const stack: Node[] = [1];
     const callstack: Node[] = [];
