@@ -2,12 +2,13 @@
   "name": "ts-node-editor",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node dist/server/server.js"
+    "build": "tsc --build && node ./scripts/fixPaths.js",
+    "start": "tsc --build && node ./scripts/fixPaths.js && node dist/server/server.js"
   },
-  "bin": {  
-    "ts-node-editor": "./dist/server/server.js"  
+  "bin": {
+    "ts-node-editor": "./dist/server/server.js"
   },
   "author": "Austin Andrews",
   "license": "ISC",
@@ -21,6 +22,8 @@
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
   "description": "",
   "devDependencies": {
+    "@pictogrammers/element": "^0.0.24",
+    "@pictogrammers/element-jest": "^0.1.4",
     "@types/node": "^20.9.0",
     "typescript": "^5.2.2"
   }

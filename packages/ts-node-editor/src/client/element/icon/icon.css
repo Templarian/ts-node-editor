@@ -1,0 +1,5 @@
+:host,
+svg {
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
+}

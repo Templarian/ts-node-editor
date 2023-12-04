@@ -1,3 +1,6 @@
+import './element/menu/menu';
+import './element/icon/icon';
+
 const icons = {
     script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
 };

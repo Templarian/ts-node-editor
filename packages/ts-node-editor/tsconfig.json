@@ -1,5 +1,7 @@
 {
-  "compilerOptions": {
-    "outDir": "dist"
-  }
+  "files": [],
+  "references": [
+    {"path": "./src/client"},
+    {"path": "./src/server"}
+  ]
 }

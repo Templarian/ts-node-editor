@@ -3,6 +3,8 @@
     --grid-dark: #464646;
     --node-light: #666666;
     --node-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --line-normal: #FFF;
+    --line-hover: #248AE4;
 }
 
 body {
@@ -315,6 +317,23 @@ div.node-entry textarea:focus {
     border-radius: 0 0 0.25rem 0.25rem;
 }
 
+div.node-import {
+    flex-direction: row;
+}
+div.node-import > div.icon {
+    width: 2rem;
+}
+div.node-import input {
+    background: #2B2B2B;
+    border: 0;
+    flex: 1;
+    color: #FFF;
+    outline: 0;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.875rem;
+    font-family: var(--node-font);
+}
+
 div.node-comment {
     border-color: #EFAD03;
 }
@@ -354,9 +373,9 @@ div.node-comment textarea:focus {
 }
 
 .node-handle:hover {
-    width: 1rem;
-    height: 1rem;
     transform: translate(-0.5rem, -0.5rem);
+    background-color: #248AE4;
+    border: 0.25rem solid #FFF;
 }
 
 .node-handle:hover svg {
@@ -427,4 +446,26 @@ div.node-comment textarea:focus {
 
 div.header .dropdown.show {
     display: flex;
+}
+
+.line {
+    stroke-width: 8;
+    stroke: #000;
+    stroke-opacity: 0.3;
+    stroke-linecap: round;
+    fill: none;
+}
+.line:hover {
+    stroke-width: 10px;
+    stroke-opacity: 0.2;
+}
+.line + path {
+    stroke-width: 2;
+    stroke: var(--line-normal);
+    stroke-linecap: round;
+    fill: none;
+}
+.line:hover + path {
+    stroke: var(--line-hover);
+    stroke-width: 4;
 }

@@ -1,15 +1,31 @@
 {
   "extends": "./../../tsconfig.json",
   "include": [
-    "client.ts"
+    "client.ts",
+    "element/icon/icon.ts",
+    "element/menu/menu.ts"
   ],
   "compilerOptions": {
+    "outDir": "./../../dist/client",
     "baseUrl": ".",
-    "module": "ES6",
+    "composite": true,
+    "module": "NodeNext",
+    "target": "ES6",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "lib": [
-      "ES6",
+      "ESNext",
       "DOM"
     ],
-    "target": "ES2023"
+    "types": [
+      "node",
+      "jest",
+      "@pictogrammers/element-jest"
+    ],
+    "paths": {
+      "@pictogrammers/element": [
+        "./node_modules/@pictogrammers/element"
+      ]
+    }
   }
 }

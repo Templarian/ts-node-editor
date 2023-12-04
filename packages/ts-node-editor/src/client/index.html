@@ -31,10 +31,7 @@
         </button>
         <span class="seperator"></span>
         <button class="play" id="debugPlay" title="Play">
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor"
-                    d="M4 1H7V2H8V3H9V4H10V5H11V6H12V7H13V9H12V10H11V11H10V12H9V13H8V14H7V15H4V1M8 6V5H7V4H6V12H7V11H8V10H9V9H10V7H9V6H8Z" />
-            </svg>
+            <ui-icon name="play" size="16"></ui-icon>
         </button>
         <button class="previous" id="debugPrevious" title="Previous" disabled>
             <svg viewBox="0 0 16 16">
@@ -69,16 +66,20 @@
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
                 <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
                     <path fill="currentColor"
-                        d="M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20" />
+                        d="M19 20H3V19H2V3H3V2H19V3H20V19H19ZM18 6V4H4V6ZM18 18V8H4V18Z" />
                 </svg>
             </div>
             <div class="node-handle" style="--node-x: 3;--node-y: 2;"></div>
             <svg viewBox="0 0 28 168" style="grid-column: 4;grid-row: 3;margin:-4px;">
-                <path style="stroke-width: 2;
-                    stroke: #FFF;
-                    stroke-linecap: round;
-                    fill: none;" d="M4,4 C24,4 4,164 24,164" />
+                <path class="line" d="M4,4 C24,4 4,164 24,164" id="tester" pointer-events="stroke" />
+                <path d="M4,4 C24,4 4,164 24,164" pointer-events="none" />
             </svg>
+            <script>
+                const path = document.getElementById('tester');
+                path.addEventListener('pointerenter', () => {
+
+                });
+            </script>
             <div class="node" style="--node-x: 4;--node-y: 1;--node-width: 10;--node-height:7">
                 <div>Set Variable</div>
                 <div>
@@ -178,9 +179,21 @@
                     <textarea>Comment block...</textarea>
                 </div>
             </div>
+            <div class="node-handle" style="--node-x: 4;--node-y: 10;"></div>
+            <div class="node node-import" style="--node-x: 4;--node-y: 9;--node-width: 10;--node-height:2">
+                <span class="icon" style="display:flex;align-items:center;justify-content:center;width:2.5rem;">
+                    <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                        <path fill="currentColor"
+                            d="M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20" />
+                    </svg>
+                </span>
+                <span style="display: flex;align-items: center;margin-right:0.5rem;">
+                    <ui-menu message="Hello"></ui-menu>
+                </span>
+            </div>
         </div>
     </div>
-    <script src="client.js"></script>
+    <script type="module" src="client.js"></script>
 </body>
 
 </html>

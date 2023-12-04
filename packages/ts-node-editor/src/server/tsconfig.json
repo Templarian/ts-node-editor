@@ -1,12 +1,15 @@
 {
   "extends": "./../../tsconfig.json",
+  "composite": true,
   "include": [
-    "server.ts"
+    "**/*"
   ],
   "compilerOptions": {
+    "outDir": "./../../dist/server",
     "baseUrl": ".",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "lib": [
       "ESNext"
     ],
