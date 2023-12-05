@@ -1,10 +1,10 @@
-import type { Node } from './node';
+import type { Node, State } from './node';
 
 /**
  * Choices
  */
 export function Choice({ state, callstack, node, nodes, text }: {
-    state: Map<string, any>,
+    state: State,
     callstack: Node[],
     node: Node,
     nodes: Node[],

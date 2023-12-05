@@ -34,22 +34,13 @@
             <ui-icon name="play" size="16"></ui-icon>
         </button>
         <button class="previous" id="debugPrevious" title="Previous" disabled>
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor"
-                    d="M16 9H14V7H16V9M12 9H5V10H6V11H7V12H8V14H6V13H5V12H4V11H3V10H2V9H1V7H2V6H3V5H4V4H5V3H6V2H8V4H7V5H6V6H5V7H12V9Z" />
-            </svg>
+            <ui-icon name="step-backward" size="16"></ui-icon>
         </button>
         <button class="next" id="debugNext" title="Next">
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor"
-                    d="M0 7H2V9H0V7M4 7H11V6H10V5H9V4H8V2H10V3H11V4H12V5H13V6H14V7H15V9H14V10H13V11H12V12H11V13H10V14H8V12H9V11H10V10H11V9H4V7Z" />
-            </svg>
+            <ui-icon name="step-forward" size="16"></ui-icon>
         </button>
         <button class="restart" id="debugRestart" title="Restart">
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor"
-                    d="M1 5H2V4H3V3H4V2H5V1H7V3H6V4H5V5H12V6H13V7H14V8H15V13H14V14H13V15H12V16H5V14H11V13H12V12H13V9H12V8H11V7H5V8H6V9H7V11H5V10H4V9H3V8H2V7H1V5M1 16V14H3V16H1Z" />
-            </svg>
+            <ui-icon name="restart" size="16"></ui-icon>
         </button>
         <span style="flex: 1"></span>
         <button id="newScript">
@@ -57,6 +48,11 @@
         </button>
     </div>
     <div class="grid-menu" id="gridMenu">
+        <button>
+            <ui-icon name="comment" size="16"></ui-icon>
+            Comment
+        </button>
+        <div class="seperator"></div>
         <button>Node Name 1</button>
         <button>Node Name 2</button>
     </div>
@@ -69,7 +65,7 @@
                         d="M19 20H3V19H2V3H3V2H19V3H20V19H19ZM18 6V4H4V6ZM18 18V8H4V18Z" />
                 </svg>
             </div>
-            <div class="node-handle" style="--node-x: 3;--node-y: 2;"></div>
+            <ui-node-handle x="3" y="2"></ui-node-handle>
             <svg viewBox="0 0 28 168" style="grid-column: 4;grid-row: 3;margin:-4px;">
                 <path class="line" d="M4,4 C24,4 4,164 24,164" id="tester" pointer-events="stroke" />
                 <path d="M4,4 C24,4 4,164 24,164" pointer-events="none" />
@@ -111,8 +107,8 @@
                     </div>
                 </div>
             </div>
-            <div class="node-handle" style="--node-x: 4;--node-y: 2;"></div>
-            <div class="node-handle" style="--node-x: 14;--node-y: 2;"></div>
+            <ui-node-handle x="4" y="2"></ui-node-handle>
+            <ui-node-handle x="14" y="2"></ui-node-handle>
             <div class="node" style="--node-x: 15;--node-y: 1;--node-width: 10;--node-height:10">
                 <div>Dialog</div>
                 <div>Content</div>
@@ -161,25 +157,8 @@
                     </div>
                 </div>
             </div>
-            <div class="node node-comment" style="--node-x: 26;--node-y: 1;--node-width: 10;--node-height:10">
-                <div>
-                    <span data-drag>Comment</span>
-                    <svg viewBox="0 0 8 18">
-                        <path fill="currentColor"
-                            d="M7 6V8H5V6H7M7 2V4H5V2H7M7 10V12H5V10H7M7 14V16H5V14H7M3 6V8H1V6H3M3 2V4H1V2H3M3 10V12H1V10H3M3 14V16H1V14H3Z" />
-                    </svg>
-                    <button id="delete">
-                        <svg viewBox="0 0 18 18">
-                            <path fill="currentColor"
-                                d="M2 2H4V3H5V4H6V5H7V6H8V7H10V6H11V5H12V4H13V3H14V2H16V4H15V5H14V6H13V7H12V8H11V10H12V11H13V12H14V13H15V14H16V16H14V15H13V14H12V13H11V12H10V11H8V12H7V13H6V14H5V15H4V16H2V14H3V13H4V12H5V11H6V10H7V8H6V7H5V6H4V5H3V4H2V2Z" />
-                        </svg>
-                    </button>
-                </div>
-                <div>
-                    <textarea>Comment block...</textarea>
-                </div>
-            </div>
-            <div class="node-handle" style="--node-x: 4;--node-y: 10;"></div>
+            <ui-comment x="26" y="1" width="10" height="10"></ui-comment>
+            <ui-node-handle x="4" y="10"></ui-node-handle>
             <div class="node node-import" style="--node-x: 4;--node-y: 9;--node-width: 10;--node-height:2">
                 <span class="icon" style="display:flex;align-items:center;justify-content:center;width:2.5rem;">
                     <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">

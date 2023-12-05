@@ -1,0 +1,12 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    grid-row-start: calc(1 + var(--node-y));
+    grid-column-start: calc(1 + var(--node-x));
+    grid-row-end: calc(1 + var(--node-y) + var(--node-height));
+    grid-column-end: calc(1 + var(--node-x) + var(--node-width));
+    border-radius: 4px;
+    background: #181818;
+    border: 1px solid var(--node-light);
+    color: #FFF;
+}

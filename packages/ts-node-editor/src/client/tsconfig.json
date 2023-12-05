@@ -3,7 +3,10 @@
   "include": [
     "client.ts",
     "element/icon/icon.ts",
-    "element/menu/menu.ts"
+    "element/menu/menu.ts",
+    "element/node/node.ts",
+    "element/comment/comment.ts",
+    "element/nodeHandle/nodeHandle.ts"
   ],
   "compilerOptions": {
     "outDir": "./../../dist/client",

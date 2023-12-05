@@ -1,4 +1,6 @@
 :root {
+    --grid-size: 1rem;
+    --grid-gap: 0.25rem;
     --grid-light: #353535;
     --grid-dark: #464646;
     --node-light: #666666;
@@ -108,26 +110,23 @@ div.scroll::-webkit-scrollbar-thumb {
 
 div.grid {
     display: grid;
-    background-size: 100px 100px;
+    --grid-total: calc(var(--grid-size) + var(--grid-gap));
+    background-position: -0.125rem -0.125rem;
+    background-size: calc(var(--grid-total) * 4) calc(var(--grid-total) * 4);
     background-image:
-        linear-gradient(to right, transparent 98px, var(--grid-dark) 98px, var(--grid-dark) 100px),
-        linear-gradient(to bottom, transparent 98px, var(--grid-dark) 98px, var(--grid-dark) 100px),
-        linear-gradient(to right, transparent 18px, var(--grid-light) 18px, var(--grid-light) 20px, transparent 20px,
-            transparent 38px, var(--grid-light) 38px, var(--grid-light) 40px, transparent 40px,
-            transparent 58px, var(--grid-light) 58px, var(--grid-light) 60px, transparent 60px,
-            transparent 78px, var(--grid-light) 78px, var(--grid-light) 80px, transparent 80px),
-        linear-gradient(to bottom, transparent 18px, var(--grid-light) 18px, var(--grid-light) 20px, transparent 20px,
-            transparent 38px, var(--grid-light) 38px, var(--grid-light) 40px, transparent 40px,
-            transparent 58px, var(--grid-light) 58px, var(--grid-light) 60px, transparent 60px,
-            transparent 78px, var(--grid-light) 78px, var(--grid-light) 80px, transparent 80px);
+        linear-gradient(to right, transparent calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4)),
+        linear-gradient(to bottom, transparent calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4)),
+        linear-gradient(to right, transparent calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total)), transparent var(--grid-total),
+            transparent calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2), transparent calc(var(--grid-total) * 2),
+            transparent calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3), transparent calc(var(--grid-total) * 3)),
+        linear-gradient(to bottom, transparent calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total)), transparent var(--grid-total),
+            transparent calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2), transparent calc(var(--grid-total) * 2),
+            transparent calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3), transparent calc(var(--grid-total) * 3));
     width: 100%;
     height: 100%;
-    grid-template-columns: 19px repeat(auto-fill, 20px);
-    grid-template-rows: 19px repeat(auto-fill, 20px);
-    gap: 0px 0px;
-    grid-template-areas:
-        ". ."
-        ". .";
+    grid-template-columns: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
+    grid-template-rows: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
+    gap: var(--grid-gap) var(--grid-gap);
 }
 
 div.grid-hover {
@@ -164,6 +163,9 @@ div.grid-menu {
 }
 
 div.grid-menu>button {
+    display: flex;
+    justify-content: left;
+    align-items: center;
     background: transparent;
     color: #FFF;
     border-radius: calc(0.25rem + 0.125rem);
@@ -172,8 +174,17 @@ div.grid-menu>button {
     border: 0;
 }
 
+div.grid-menu>button ui-icon {
+    margin-right: 0.5rem;
+}
+
 div.grid-menu>button:hover {
     background: #484848;
+}
+
+div.grid-menu>div.seperator {
+    border-top: 1px solid #484848;
+    margin: 0.25rem 0;
 }
 
 div.node {
@@ -183,10 +194,11 @@ div.node {
     grid-column-start: calc(1 + var(--node-x));
     grid-row-end: calc(1 + var(--node-y) + var(--node-height));
     grid-column-end: calc(1 + var(--node-x) + var(--node-width));
-    border-radius: 4px;
+    border-radius: 0.25rem;
     background: #181818;
     border: 1px solid var(--node-light);
     color: #FFF;
+    margin: -0.125rem;
 }
 
 div.node>div:nth-child(1) {
@@ -332,30 +344,6 @@ div.node-import input {
     padding: 0.125rem 0.25rem;
     font-size: 0.875rem;
     font-family: var(--node-font);
-}
-
-div.node-comment {
-    border-color: #EFAD03;
-}
-
-div.node-comment textarea {
-    background: transparent;
-    border: 0;
-    flex: 1;
-    color: #FFF;
-    outline: 0;
-    padding: 0;
-    font-size: 0.875rem;
-    font-family: var(--node-font);
-    min-width: 50px;
-    resize: none;
-    padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
-}
-
-div.node-comment textarea:focus {
-    background: #2B2B2B;
-    border-radius: 0 0 0.25rem 0.25rem;
 }
 
 .node-handle {

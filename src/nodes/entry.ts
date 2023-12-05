@@ -1,11 +1,11 @@
-import type { Node } from './node';
+import type { Node, State } from './node';
 import { EntryType } from "./entryType";
 
 /**
 * Entry
 */
 export function Entry({ state, nodes, entryType }: {
-   state: Map<string, string | number | boolean>
+   state: State,
    nodes: Node[],
    /**
     * Entry Type

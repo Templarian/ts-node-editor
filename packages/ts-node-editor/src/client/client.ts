@@ -1,5 +1,8 @@
 import './element/menu/menu';
 import './element/icon/icon';
+import './element/comment/comment';
+import './element/node/node';
+import './element/nodeHandle/nodeHandle';
 
 const icons = {
     script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
@@ -57,11 +60,6 @@ drags.forEach(drag => {
         document.addEventListener('pointerup', handleUp);
     });
 });
-const del = document.getElementById('delete');
-del.addEventListener('click', (e) => {
-    console.log('delete');
-    e.preventDefault();
-});
 let showMenu = false;
 document.getElementById('select').addEventListener('mousedown', (e) => {
     document.getElementById('menu').classList.toggle('show', !showMenu);
@@ -89,9 +87,10 @@ const gridMenu = document.getElementById('gridMenu');
 const gridRect = grid.getBoundingClientRect();
 let gridOpen = false;
 function updateHover(e) {
+    const gridSize = 20;
     if (e.target.classList.contains('grid')) {
-        const x = Math.floor((e.clientX - gridRect.left) / 20);
-        const y = Math.floor((e.clientY - gridRect.top) / 20);
+        const x = Math.floor((e.clientX - gridRect.left) / gridSize);
+        const y = Math.floor((e.clientY - gridRect.top) / gridSize);
         gridHover.style.setProperty('--node-x', `${x}`);
         gridHover.style.setProperty('--node-y', `${y}`);
         gridHover.classList.remove('hide');

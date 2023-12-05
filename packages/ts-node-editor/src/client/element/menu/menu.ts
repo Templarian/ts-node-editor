@@ -8,7 +8,7 @@ import style from './menu.css';
   style,
   template
 })
-export default class HelloWorld extends HTMLElement {
+export default class UiMenu extends HTMLElement {
   @Prop() message = 'Hello World';
 
   @Part() $message: HTMLDivElement;

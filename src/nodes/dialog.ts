@@ -1,4 +1,4 @@
-import type { Node } from './node';
+import type { Node, State } from './node';
 
 /**
  * Dialog
@@ -6,7 +6,7 @@ import type { Node } from './node';
  * @height 6
  */
 export async function Dialog({ state, node, nodes, character, text }: {
-    state: Map<string, any>,
+    state: State,
     node: Node,
     nodes: Node[],
     /**
