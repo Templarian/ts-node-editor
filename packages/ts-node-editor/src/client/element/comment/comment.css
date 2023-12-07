@@ -12,12 +12,24 @@
     border-color: #EFAD03;
 }
 
+div:nth-child(1) {
+    display: flex;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    cursor: default;
+    font-weight: bold;
+}
+div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
 
 :host(.drag) div:nth-child(1)>svg {
     display: flex;
 }
 
-:host div:nth-child(1)>svg {
+div:nth-child(1)>svg {
     display: none;
     width: 0.5rem;
 }
@@ -56,7 +68,6 @@ textarea {
     min-width: 50px;
     resize: none;
     padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
 }
 
 textarea:focus {

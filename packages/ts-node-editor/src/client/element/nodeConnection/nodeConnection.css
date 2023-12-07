@@ -1,0 +1,34 @@
+
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-items: start;
+    grid-row-start: calc(1 + var(--node-y));
+    grid-column-start: calc(1 + var(--node-x));
+    grid-row-end: calc(1 + var(--node-y) + var(--node-height));
+    grid-column-end: calc(1 + var(--node-x) + var(--node-width));
+    margin: -0.5rem;
+}
+
+.line {
+    stroke-width: 8;
+    stroke: #000;
+    stroke-opacity: 0.3;
+    stroke-linecap: round;
+    fill: none;
+}
+.line:hover {
+    stroke-width: 10px;
+    stroke-opacity: 0.2;
+}
+.line + path {
+    stroke-width: 2;
+    stroke: var(--line-normal);
+    stroke-linecap: round;
+    fill: none;
+}
+.line:hover + path {
+    stroke: var(--line-hover);
+    stroke-width: 4;
+}

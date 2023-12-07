@@ -6,7 +6,8 @@
     "element/menu/menu.ts",
     "element/node/node.ts",
     "element/comment/comment.ts",
-    "element/nodeHandle/nodeHandle.ts"
+    "element/nodeHandle/nodeHandle.ts",
+    "element/nodeConnection/nodeConnection.ts"
   ],
   "compilerOptions": {
     "outDir": "./../../dist/client",
