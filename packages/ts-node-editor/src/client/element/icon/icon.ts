@@ -13,23 +13,23 @@ const icons = {
 };
 
 @Component({
-  selector: 'ui-icon',
-  style,
-  template
+    selector: 'ui-icon',
+    style,
+    template
 })
-export default class HelloWorld extends HTMLElement {
-  @Prop() name = 'box';
-  @Prop() size = 22;
+export default class UiIcon extends HTMLElement {
+    @Prop() name = 'box';
+    @Prop() size = 22;
 
-  @Part() $svg: SVGSVGElement;
-  @Part() $path: SVGPathElement;
+    @Part() $svg: SVGSVGElement;
+    @Part() $path: SVGPathElement;
 
-  render(changes) {
-    if (changes.name || changes.size) {
-      const path = icons[`${this.size}:${this.name}`];
-      this.$svg.setAttribute('viewBox', `0 0 ${this.size} ${this.size}`)
-      this.$path.setAttribute('d', path);
-      this.style.setProperty('--icon-size', `${this.size}`);
+    render(changes) {
+        if (changes.name || changes.size) {
+            const path = icons[`${this.size}:${this.name}`];
+            this.$svg.setAttribute('viewBox', `0 0 ${this.size} ${this.size}`)
+            this.$path.setAttribute('d', path);
+            this.style.setProperty('--icon-size', `${this.size}`);
+        }
     }
-  }
 }

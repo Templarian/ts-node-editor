@@ -43,11 +43,11 @@ createServer((req, res) => {
     } else {
       throw new Error('Only get supported for /styles.css');
     }
-  } else if (p = req.url.match(/^\/(client\.js|element\/.+\.js)$/)) {
+  } else if (p = req.url.match(/^\/(client\.js|element\/.+\.js|utils\/.+\.js)$/)) {
     if (req.method === "GET") {
       getClient(req, res);
     } else {
-      throw new Error('Only get supported for /styles.css');
+      throw new Error('Only get supported for scripts');
     }
   } else if (req.url.match(/^\/api$/)) {
     getApi(req, res);

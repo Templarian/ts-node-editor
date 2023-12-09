@@ -1,0 +1,18 @@
+button {
+    display: flex;
+    align-items: center;
+    border: 0;
+    background: transparent;
+    color: #FFF;
+    padding: 0.25rem 0.5rem;
+    font-family: var(--node-font);
+    border-radius: 0.25rem;
+}
+
+button:not(:disabled):hover {
+    background: #2B2B2B;
+}
+
+button:disabled {
+    color: #999;
+}

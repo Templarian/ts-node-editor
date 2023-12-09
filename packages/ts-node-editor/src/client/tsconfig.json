@@ -2,12 +2,15 @@
   "extends": "./../../tsconfig.json",
   "include": [
     "client.ts",
+    "element/button/button.ts",
     "element/icon/icon.ts",
     "element/menu/menu.ts",
     "element/node/node.ts",
     "element/comment/comment.ts",
     "element/nodeHandle/nodeHandle.ts",
-    "element/nodeConnection/nodeConnection.ts"
+    "element/nodeConnection/nodeConnection.ts",
+    "element/tooltip/tooltip.ts",
+    "utils/tooltip.ts"
   ],
   "compilerOptions": {
     "outDir": "./../../dist/client",

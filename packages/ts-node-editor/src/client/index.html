@@ -9,6 +9,15 @@
 </head>
 
 <body>
+    <div class="grid-menu" id="gridMenu">
+        <button>
+            <ui-icon name="comment" size="16"></ui-icon>
+            Comment
+        </button>
+        <div class="seperator"></div>
+        <button>Node Name 1</button>
+        <button>Node Name 2</button>
+    </div>
     <div class="header">
         <button class="menu" id="select">
             <span>script.ts</span>
@@ -30,31 +39,25 @@
             <span>Debug Mode</span>
         </button>
         <span class="seperator"></span>
-        <button class="play" id="debugPlay" title="Play">
+        <ui-button id="debugPlay" tooltip="Play">
             <ui-icon name="play" size="16"></ui-icon>
-        </button>
-        <button class="previous" id="debugPrevious" title="Previous" disabled>
+        </ui-button>
+        <ui-button id="debugPrevious" tooltip="Previous" disabled>
             <ui-icon name="step-backward" size="16"></ui-icon>
-        </button>
-        <button class="next" id="debugNext" title="Next">
+        </ui-button>
+        <ui-button id="debugNext" tooltip="Next">
             <ui-icon name="step-forward" size="16"></ui-icon>
-        </button>
-        <button class="restart" id="debugRestart" title="Restart">
+        </ui-button>
+        <ui-button id="debugRestart" tooltip="Restart">
             <ui-icon name="restart" size="16"></ui-icon>
-        </button>
+        </ui-button>
         <span style="flex: 1"></span>
         <button id="newScript">
             New Script
         </button>
     </div>
-    <div class="grid-menu" id="gridMenu">
-        <button>
-            <ui-icon name="comment" size="16"></ui-icon>
-            Comment
-        </button>
-        <div class="seperator"></div>
-        <button>Node Name 1</button>
-        <button>Node Name 2</button>
+    <div>
+        File Menu...
     </div>
     <div class="scroll">
         <div class="grid" id="grid">

@@ -35,5 +35,7 @@ files.forEach((file) => {
     let content = readFileSync(file).toString();
     content = content.replace(/(import\s+|from\s+)(["'])(?!.*\.js)(\.?\.\/.*)(["'])/g, '$1$2$3.js$4');
     content = content.replace(/@pictogrammers\/element/, './../element.js');
+    content = content.replace(/@element\/([^']+)/, './../../utils/$1/$1.js');
+    content = content.replace(/@utils\/([^']+)/, './../../element/$1/$1.js');
     writeFileSync(file, content, { encoding: 'utf8' });
 });
