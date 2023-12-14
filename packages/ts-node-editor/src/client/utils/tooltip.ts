@@ -20,7 +20,7 @@ export function wireTooltip(element: HTMLElement | SVGElement, value: () => stri
         cacheTooltip = document.createElement('ui-tooltip') as UiTooltip;
         const rect = element.getBoundingClientRect();
         cacheTooltip.style.setProperty('--ui-tooltip-x', `${rect.left}px`);
-        cacheTooltip.style.setProperty('--ui-tooltip-y', `${rect.bottom}px`);
+        cacheTooltip.style.setProperty('--ui-tooltip-y', `${rect.bottom + 6}px`);
         cacheTooltip.text = value();
         document.body.appendChild(cacheTooltip);
         element.addEventListener('pointerleave', handlePointerLeave);

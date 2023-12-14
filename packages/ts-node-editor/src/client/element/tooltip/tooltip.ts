@@ -17,12 +17,46 @@ export default class UiTooltip extends HTMLElement {
 
   @Part() $content: HTMLDivElement;
 
+  updatePath(width: number, height: number) {
+    const halfWidth = Math.floor(width / 2); // 102, 51
+    const halfHeight = Math.floor(height / 2); // 28, 14
+    const offsetHeight = 6;
+    const path = [
+      `M 5,7`,
+      `L ${halfWidth - 5}, 7`,
+      `C ${halfWidth - 4},5 ${halfWidth - 1},1 ${halfWidth},1C ${halfWidth + 1},1 ${halfWidth + 4},5 ${halfWidth + 5},7`,
+      `L ${width - 5},7`,
+      `C ${width - 3},7 ${width - 1},9 ${width - 1},11`,
+      `L ${width - 1},${height - 1 - offsetHeight}`,
+      `C ${width - 1},${height + 1 - offsetHeight} ${width - 3},${height + 3 - offsetHeight} ${width - 5},${height + 3 - offsetHeight}`,
+      `L 5,${height + 3 - offsetHeight}`,
+      `C 3,${height + 3 - offsetHeight} 1,${height + 1 - offsetHeight} 1,${height - 1 - offsetHeight}`,
+      `L 1,11`,
+      `C 1,9 3,7 5,7`,
+      `Z`
+    ].join('');
+    this.$content.style.setProperty(
+      '--ui-tooltip-path',
+      `path('${path}')`
+    );
+    this.$content.style.setProperty(
+      '--ui-tooltip-image',
+      `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width} ${height}'%3E%3Cpath d='${path}' fill='%23181818' stroke='white' stroke-opacity='0.2' stroke-width='2' /%3E%3C/svg%3E")`
+    );
+  }
+
   render(changes) {
     if (changes.text) {
       this.$content.innerText = this.text;
       const rect = this.$content.getBoundingClientRect();
       const half = Math.floor(rect.width / 2);
-      
+      const resizeObserver = new ResizeObserver(([entry]) => {
+        const { inlineSize: width, blockSize: height } = entry.borderBoxSize[0];
+        if (width === 0 || height === 0) { return; }
+        this.updatePath(width, height);
+        console.log(width, height, '-');
+      });
+      resizeObserver.observe(this.$content);
     }
   }
 }
