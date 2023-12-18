@@ -23,12 +23,11 @@
             <ui-icon name="panel-expand-right" size="16"></ui-icon>
         </ui-button>
         <ui-seperator></ui-seperator>
-        <span class="seperator"></span>
         <ui-button id="debug">
             <ui-icon id="debugCheck" name="checkbox-blank" size="16" slot="start"></ui-icon>
             Debug Mode
         </ui-button>
-        <span class="seperator"></span>
+        <ui-seperator></ui-seperator>
         <ui-button id="debugPlay" tooltip="Play">
             <ui-icon name="play" size="16"></ui-icon>
         </ui-button>
@@ -42,7 +41,10 @@
             <ui-icon name="restart" size="16"></ui-icon>
         </ui-button>
         <span style="flex: 1"></span>
-        <span>Right Side</span>
+        <ui-button id="debugRestart" tooltip="View on GitHub">
+            <ui-icon name="link-external" size="16" slot="end"></ui-icon>
+            Documentation
+        </ui-button>
     </ui-header>
     <div style="grid-row: 2;grid-column: 1;">
         <ui-button id="newScript">
@@ -55,10 +57,7 @@
         <div class="grid" id="grid">
             <div class="grid-hover hide" id="gridHover"></div>
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
-                <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
-                    <path fill="currentColor"
-                        d="M19 20H3V19H2V3H3V2H19V3H20V19H19ZM18 6V4H4V6ZM18 18V8H4V18Z" />
-                </svg>
+                <ui-icon name="application" size="22"></ui-icon>
             </div>
             <ui-node-handle x="3" y="2"></ui-node-handle>
             <ui-node-connection x1="3" y1="2" x2="4" y2="10"></ui-node-connection>
@@ -147,10 +146,7 @@
             <ui-node-handle x="4" y="10"></ui-node-handle>
             <div class="node node-import" style="--node-x: 4;--node-y: 9;--node-width: 10;--node-height:2">
                 <span class="icon" style="display:flex;align-items:center;justify-content:center;width:2.5rem;">
-                    <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
-                        <path fill="currentColor"
-                            d="M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20" />
-                    </svg>
+                    <ui-icon name="script" size="22"></ui-icon>
                 </span>
                 <span style="display: flex;align-items: center;margin-right:0.5rem;">
                     <ui-menu message="Hello"></ui-menu>

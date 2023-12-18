@@ -9,6 +9,7 @@
     grid-row-end: calc(1 + var(--node-y) + var(--node-height));
     grid-column-end: calc(1 + var(--node-x) + var(--node-width));
     margin: -0.5rem;
+    user-select: none;
 }
 
 .line {

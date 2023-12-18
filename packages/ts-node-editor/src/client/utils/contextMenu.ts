@@ -4,12 +4,13 @@ function handleContextMenu() {
 
 /**
  * 
- * @param $part Attach to a part in connectedCallback
+ * @param element Attach to a part in connectedCallback
+ * @param options Ex: [{ label, value }, null]
  */
-export function wireContextMenu($part: HTMLElement, options: () => {}) {
-    this.$part.addEventListener('contextmenu', handleContextMenu);
+export function wireContextMenu(element: HTMLElement, options: () => {}) {
+    element.addEventListener('contextmenu', handleContextMenu);
 }
 
 export function unwireContextMenu($part: HTMLElement) {
-
+    
 }
