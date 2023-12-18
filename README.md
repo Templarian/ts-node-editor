@@ -5,8 +5,13 @@
 Build self contained TypeScript friendly scripts that can be modified with a no-code node editor.
 
 - 0 dependencies (TypeScript is an assumed peer dependency)
-- Lots of example nodes (dialog, decision trees, etc...)
-- TS files are updated realtime.
+- No middle layer format. TS files are the source of truth.
+
+Node editors are generally used when visual dipiction of a flow of events would be better understood. Examples include:
+
+- Describing dialog interaction with various branching.
+  - Since these may loop back the nodes can be easier followed.
+- Data processing flows where nodes process data.
 
 ## Install
 

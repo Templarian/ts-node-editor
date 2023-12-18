@@ -1,11 +1,15 @@
 import './element/button/button';
-import './element/menu/menu';
-import './element/icon/icon';
 import './element/comment/comment';
+import './element/header/header';
+import './element/icon/icon.js';
+import './element/menu/menu';
 import './element/node/node';
 import './element/nodeHandle/nodeHandle';
 import './element/nodeConnection/nodeConnection';
+import './element/seperator/seperator';
 import './element/tooltip/tooltip';
+
+import UiIcon from './element/icon/icon.js';
 
 const icons = {
     script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
@@ -63,17 +67,17 @@ drags.forEach(drag => {
         document.addEventListener('pointerup', handleUp);
     });
 });
+/*
 let showMenu = false;
 document.getElementById('select').addEventListener('mousedown', (e) => {
     document.getElementById('menu').classList.toggle('show', !showMenu);
     showMenu = !showMenu;
 });
+*/
 let debugMode = true;
 document.getElementById('debug').addEventListener('click', (e) => {
-    document.getElementById('check').setAttribute('d', debugMode
-        ? 'M7 8V9H9V8H10V7H11V6H12V5H13V4H14V3H16V5H15V6H14V7H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V7H6V8H7M1 1H2V0H14V1H15V2H3V3H2V13H3V14H13V13H14V8H15V7H16V14H15V15H14V16H2V15H1V14H0V2H1V1Z'
-        : 'M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z'
-    );
+    const icon = document.getElementById('debugCheck') as UiIcon;
+    icon.name = debugMode ? 'checkbox-blank' : 'checkbox-marked';
     debugMode = !debugMode;
 });
 document.getElementById('newScript').addEventListener('click', async () => {

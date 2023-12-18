@@ -22,7 +22,7 @@
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
   "description": "",
   "devDependencies": {
-    "@pictogrammers/element": "^0.0.24",
+    "@pictogrammers/element": "^0.0.26",
     "@pictogrammers/element-jest": "^0.1.4",
     "@types/node": "^20.9.0",
     "typescript": "^5.2.2"

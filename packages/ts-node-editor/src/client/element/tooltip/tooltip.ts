@@ -14,6 +14,8 @@ function getTooltipBelow(width, height, nubbinOffset) {
 })
 export default class UiTooltip extends HTMLElement {
   @Prop() text = '';
+  @Prop() sourceWidth = 0;
+  @Prop() sourceHeight = 0;
 
   @Part() $content: HTMLDivElement;
 
@@ -43,6 +45,7 @@ export default class UiTooltip extends HTMLElement {
       '--ui-tooltip-image',
       `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width} ${height}'%3E%3Cpath d='${path}' fill='%23181818' stroke='white' stroke-opacity='0.2' stroke-width='2' /%3E%3C/svg%3E")`
     );
+    this.style.setProperty('transform', `translate(${(this.sourceWidth - width) / 2}px, 0)`);
   }
 
   render(changes) {
@@ -54,7 +57,6 @@ export default class UiTooltip extends HTMLElement {
         const { inlineSize: width, blockSize: height } = entry.borderBoxSize[0];
         if (width === 0 || height === 0) { return; }
         this.updatePath(width, height);
-        console.log(width, height, '-');
       });
       resizeObserver.observe(this.$content);
     }

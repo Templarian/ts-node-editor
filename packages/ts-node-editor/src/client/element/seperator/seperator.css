@@ -1,0 +1,8 @@
+:host {
+    display: flex;
+    margin: 0.25rem;
+    border-color: #2B2B2B;
+    border-style: solid;
+    border-right-width: var(--ui-seperator-vertical, 0);
+    border-bottom-width: var(--ui-seperator-horizontal, 0);
+}

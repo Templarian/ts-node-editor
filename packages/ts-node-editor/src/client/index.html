@@ -18,26 +18,16 @@
         <button>Node Name 1</button>
         <button>Node Name 2</button>
     </div>
-    <div class="header">
-        <button class="menu" id="select">
-            <span>script.ts</span>
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor"
-                    d="M6 7V8H7V9H9V8H10V7H11V6H13V8H12V9H11V10H10V11H9V12H7V11H6V10H5V9H4V8H3V6H5V7H6Z" />
-            </svg>
-        </button>
-        <div class="dropdown" id="scriptMenu">
-            <button>script2.ts</button>
-            <button>script3.ts</button>
-        </div>
+    <ui-header>
+        <ui-button>
+            <ui-icon name="file" size="16"></ui-icon>
+        </ui-button>
+        <ui-seperator></ui-seperator>
         <span class="seperator"></span>
-        <button class="check" id="debug">
-            <svg viewBox="0 0 16 16">
-                <path fill="currentColor" id="check"
-                    d="M1 1H2V0H14V1H15V2H16V14H15V15H14V16H2V15H1V14H0V2H1V1M13 13H14V3H13V2H3V3H2V13H3V14H13V13Z" />
-            </svg>
-            <span>Debug Mode</span>
-        </button>
+        <ui-button id="debug">
+            <ui-icon id="debugCheck" name="checkbox-blank" size="16" slot="start"></ui-icon>
+            Debug Mode
+        </ui-button>
         <span class="seperator"></span>
         <ui-button id="debugPlay" tooltip="Play">
             <ui-icon name="play" size="16"></ui-icon>
@@ -52,10 +42,10 @@
             <ui-icon name="restart" size="16"></ui-icon>
         </ui-button>
         <span style="flex: 1"></span>
-        <button id="newScript">
+        <ui-button id="newScript">
             New Script
-        </button>
-    </div>
+        </ui-button>
+    </ui-header>
     <div>
         File Menu...
     </div>

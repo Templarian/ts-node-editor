@@ -20,17 +20,6 @@ body {
     font-family: var(--node-font);
 }
 
-div.header {
-    display: flex;
-    grid-row: 1;
-    grid-column: 1;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-    order: 1;
-    padding: 0.25rem;
-    border-bottom: 2px solid #2B2B2B;
-    background: #181818;
-}
-
 div.header button {
     display: flex;
     align-items: center;
