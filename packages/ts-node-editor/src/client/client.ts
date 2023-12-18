@@ -3,7 +3,7 @@ import './element/comment/comment';
 import './element/header/header';
 import './element/icon/icon.js';
 import './element/menu/menu';
-import './element/node/node';
+import './element/nodeContainer/nodeContainer';
 import './element/nodeHandle/nodeHandle';
 import './element/nodeConnection/nodeConnection';
 import './element/seperator/seperator';

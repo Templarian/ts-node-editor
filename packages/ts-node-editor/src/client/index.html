@@ -18,9 +18,9 @@
         <button>Node Name 1</button>
         <button>Node Name 2</button>
     </div>
-    <ui-header>
+    <ui-header style="grid-row: 1;grid-column: 1 / span 2;">
         <ui-button>
-            <ui-icon name="file" size="16"></ui-icon>
+            <ui-icon name="panel-expand-right" size="16"></ui-icon>
         </ui-button>
         <ui-seperator></ui-seperator>
         <span class="seperator"></span>
@@ -42,14 +42,16 @@
             <ui-icon name="restart" size="16"></ui-icon>
         </ui-button>
         <span style="flex: 1"></span>
+        <span>Right Side</span>
+    </ui-header>
+    <div style="grid-row: 2;grid-column: 1;">
         <ui-button id="newScript">
+            <ui-icon name="file" size="16" slot="start"></ui-icon>
             New Script
         </ui-button>
-    </ui-header>
-    <div>
         File Menu...
     </div>
-    <div class="scroll">
+    <div class="scroll" style="grid-row: 2;grid-column: 2;">
         <div class="grid" id="grid">
             <div class="grid-hover hide" id="gridHover"></div>
             <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">

@@ -11,7 +11,7 @@
 
 body {
     display: grid;
-    grid-template-columns: auto;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
     margin: 0;
     background: #262626;
@@ -77,8 +77,6 @@ div.header .dropdown {
 div.scroll {
     scrollbar-width: auto;
     scrollbar-color: #8f54a0 #ffffff;
-    grid-row: 2;
-    grid-column: 1;
     overflow: auto;
 }
 

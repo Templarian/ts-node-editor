@@ -1,7 +1,7 @@
 import { Component, Prop, Part } from '@pictogrammers/element';
 
-import template from "./header.html";
-import style from './header.css';
+import template from "./grid.html";
+import style from './grid.css';
 
 @Component({
   selector: 'ui-header',
