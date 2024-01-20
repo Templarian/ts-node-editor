@@ -1,4 +1,4 @@
-import UiTooltip from './../element/tooltip/tooltip.js';
+import UiTooltip from './../ui/tooltip/tooltip';
 
 let cacheTooltip: UiTooltip;
 let cacheHandlePointerEnter: EventListenerOrEventListenerObject;

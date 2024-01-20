@@ -4,8 +4,10 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "build": "tsc --build && node ./scripts/fixPaths.js",
-    "start": "tsc --build && node ./scripts/fixPaths.js && node dist/server/server.js"
+    "start": "element-start",
+    "build": "element-build",
+    "build2": "tsc --build && node ./scripts/fixPaths.js",
+    "start2": "tsc --build && node ./scripts/fixPaths.js && node dist/server/server.js"
   },
   "bin": {
     "ts-node-editor": "./dist/server/server.js"
@@ -22,8 +24,9 @@
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
   "description": "",
   "devDependencies": {
-    "@pictogrammers/element": "^0.0.27",
-    "@pictogrammers/element-jest": "^0.1.4",
+    "@pictogrammers/element": "^0.0.30",
+    "@pictogrammers/element-webpack": "^0.1.40",
+    "@pictogrammers/element-jest": "^0.1.7",
     "@types/node": "^20.9.0",
     "typescript": "^5.2.2"
   }

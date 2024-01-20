@@ -1,4 +1,4 @@
-import { Component, Prop, Part } from '@pictogrammers/element';
+import { Component, Prop, Part, normalizeInt } from '@pictogrammers/element';
 
 import template from "./nodeHandle.html";
 import style from './nodeHandle.css';
@@ -14,7 +14,12 @@ export default class UiNodeHandle extends HTMLElement {
 
   connectedCallback() {
     this.addEventListener('pointerdown', (event) => {
-      console.log(this.x, this.y);
+      this.dispatchEvent(new CustomEvent('handledown', {
+        detail: {
+          x: normalizeInt(this.x),
+          y: normalizeInt(this.y)
+        }
+      }));
     });
   }
 

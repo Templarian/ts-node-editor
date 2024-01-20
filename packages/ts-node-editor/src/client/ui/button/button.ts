@@ -1,5 +1,5 @@
 import { Component, Prop, Part } from '@pictogrammers/element';
-import { unwireTooltip, wireTooltip } from '../../utils/tooltip.js';
+import { unwireTooltip, wireTooltip } from '../../utils/tooltip';
 
 import template from "./button.html";
 import style from './button.css';

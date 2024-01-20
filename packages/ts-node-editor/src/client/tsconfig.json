@@ -1,24 +1,14 @@
 {
   "extends": "./../../tsconfig.json",
   "include": [
-    "client.ts",
-    "element/button/button.ts",
-    "element/comment/comment.ts",
-    "element/header/header.ts",
-    "element/icon/icon.ts",
-    "element/menu/menu.ts",
-    "element/nodeContainer/nodeContainer.ts",
-    "element/nodeHandle/nodeHandle.ts",
-    "element/nodeConnection/nodeConnection.ts",
-    "element/seperator/seperator.ts",
-    "element/tooltip/tooltip.ts",
-    "utils/tooltip.ts",
+    "src/client/**/*"
   ],
   "compilerOptions": {
     "outDir": "./../../dist/client",
     "baseUrl": ".",
     "composite": true,
-    "module": "NodeNext",
+    "module": "ES6",
+    "moduleResolution": "Node",
     "target": "ES6",
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,

@@ -1,0 +1,51 @@
+:host {
+    display: flex;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    order: 1;
+    padding: 0.25rem;
+    border-bottom: 2px solid #2B2B2B;
+    background: #181818;
+}
+
+/* Firefox */
+[part="scroll"] {
+    scrollbar-width: auto;
+    scrollbar-color: #8f54a0 #ffffff;
+    overflow: auto;
+}
+
+/* Chrome, Edge, and Safari */
+[part="scroll"]::-webkit-scrollbar {
+    width: 16px;
+}
+
+[part="scroll"]::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+[part="scroll"]::-webkit-scrollbar-thumb {
+    background-color: #8f54a0;
+    border-radius: 10px;
+    border: 3px solid #ffffff;
+}
+
+[part="grid"] {
+    display: grid;
+    --grid-total: calc(var(--grid-size) + var(--grid-gap));
+    background-position: -0.125rem -0.125rem;
+    background-size: calc(var(--grid-total) * 4) calc(var(--grid-total) * 4);
+    background-image:
+        linear-gradient(to right, transparent calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4)),
+        linear-gradient(to bottom, transparent calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4 - 2px), var(--grid-dark) calc(var(--grid-total) * 4)),
+        linear-gradient(to right, transparent calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total)), transparent var(--grid-total),
+            transparent calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2), transparent calc(var(--grid-total) * 2),
+            transparent calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3), transparent calc(var(--grid-total) * 3)),
+        linear-gradient(to bottom, transparent calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total)), transparent var(--grid-total),
+            transparent calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2), transparent calc(var(--grid-total) * 2),
+            transparent calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3), transparent calc(var(--grid-total) * 3));
+    width: 100%;
+    height: 100%;
+    grid-template-columns: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
+    grid-template-rows: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
+    gap: var(--grid-gap) var(--grid-gap);
+}

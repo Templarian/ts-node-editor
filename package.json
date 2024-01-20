@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-editor"
+    "start": "ts-node-editor",
+    "dev": "npm run start --workspace=ts-node-editor",
+    "build": "npm run build --workspace=ts-node-editor",
+    "test": "npm run test --workspace=ts-node-editor"
   },
   "repository": {
     "type": "git",
