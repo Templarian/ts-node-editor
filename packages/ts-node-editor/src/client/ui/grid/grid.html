@@ -1,3 +1,102 @@
 <ui-scroll>
-    <slot></slot>
+    <div part="grid">
+        <div class="grid-hover hide" id="gridHover"></div>
+        <div class="node node-entry" style="--node-x: 1;--node-y: 1;--node-width: 2;--node-height:2">
+            <ui-icon name="application" size="22"></ui-icon>
+        </div>
+        <ui-node-handle x="3" y="2"></ui-node-handle>
+        <ui-node-connection x1="3" y1="2" x2="4" y2="10"></ui-node-connection>
+        <div class="node" style="--node-x: 4;--node-y: 1;--node-width: 10;--node-height:7">
+            <div>Set Variable</div>
+            <div>
+                <div class="node-input node-input-text">
+                    <label>Key</label>
+                    <div>
+                        <input type="text" value="message" />
+                        <!--<span></span>
+                        <button>
+                            <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                                <path fill="currentColor"
+                                    d="M12 13H10V12H9V10H10V9H12V10H13V12H12M12 21H10V20H8V19H6V18H4V17H2V5H4V4H6V3H8V2H10V1H12V2H14V3H16V4H18V5H20V17H18V18H16V19H14V20H12M12 19V18H14V17H16V16H18V6H16V5H14V4H12V3H10V4H8V5H6V6H4V16H6V17H8V18H10V19Z" />
+                            </svg>
+                        </button>-->
+                    </div>
+                </div>
+                <div class="node-input node-input-text">
+                    <label>Value</label>
+                    <div>
+                        <input type="text" value="Hello ${name}!" />
+                        <!--<span></span>
+                        <button>
+                            <svg viewBox="0 0 22 22" style="width: 22px;height: 22px;">
+                                <path fill="currentColor"
+                                    d="M12 13H10V12H9V10H10V9H12V10H13V12H12M12 21H10V20H8V19H6V18H4V17H2V5H4V4H6V3H8V2H10V1H12V2H14V3H16V4H18V5H20V17H18V18H16V19H14V20H12M12 19V18H14V17H16V16H18V6H16V5H14V4H12V3H10V4H8V5H6V6H4V16H6V17H8V18H10V19Z" />
+                            </svg>
+                        </button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ui-node-handle x="4" y="2"></ui-node-handle>
+        <ui-node-handle x="14" y="2"></ui-node-handle>
+        <div class="node" style="--node-x: 15;--node-y: 1;--node-width: 10;--node-height:10">
+            <div>Dialog</div>
+            <div>Content</div>
+        </div>
+        <div class="node-handle end" style="--node-x: 15;--node-y: 2;">
+            <div class="items">
+                <div class="item">
+                    <button disabled>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M9 14H7V6H6V7H5V8H4V9H2V7H3V6H4V5H5V4H6V3H7V2H9V3H10V4H11V5H12V6H13V7H14V9H12V8H11V7H10V6H9V14Z" />
+                        </svg>
+                    </button>
+                    <button>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M7 2H9V10H10V9H11V8H12V7H14V9H13V10H12V11H11V12H10V13H9V14H7V13H6V12H5V11H4V10H3V9H2V7H4V8H5V9H6V10H7V2Z" />
+                        </svg>
+                    </button>
+                    <button>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M2 2H4V3H5V4H6V5H7V6H9V5H10V4H11V3H12V2H14V4H13V5H12V6H11V7H10V9H11V10H12V11H13V12H14V14H12V13H11V12H10V11H9V10H7V11H6V12H5V13H4V14H2V12H3V11H4V10H5V9H6V7H5V6H4V5H3V4H2V2Z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="item">
+                    <button>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M9 14H7V6H6V7H5V8H4V9H2V7H3V6H4V5H5V4H6V3H7V2H9V3H10V4H11V5H12V6H13V7H14V9H12V8H11V7H10V6H9V14Z" />
+                        </svg>
+                    </button>
+                    <button disabled>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M7 2H9V10H10V9H11V8H12V7H14V9H13V10H12V11H11V12H10V13H9V14H7V13H6V12H5V11H4V10H3V9H2V7H4V8H5V9H6V10H7V2Z" />
+                        </svg>
+                    </button>
+                    <button>
+                        <svg viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M2 2H4V3H5V4H6V5H7V6H9V5H10V4H11V3H12V2H14V4H13V5H12V6H11V7H10V9H11V10H12V11H13V12H14V14H12V13H11V12H10V11H9V10H7V11H6V12H5V13H4V14H2V12H3V11H4V10H5V9H6V7H5V6H4V5H3V4H2V2Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <ui-comment x="26" y="1" width="10" height="10"></ui-comment>
+        <ui-node-handle x="4" y="10"></ui-node-handle>
+        <div class="node node-import" style="--node-x: 4;--node-y: 9;--node-width: 10;--node-height:2">
+            <span class="icon" style="display:flex;align-items:center;justify-content:center;width:2.5rem;">
+                <ui-icon name="script" size="22"></ui-icon>
+            </span>
+            <span style="display: flex;align-items: center;margin-right:0.5rem;">
+                <ui-menu message="Hello"></ui-menu>
+            </span>
+        </div>
+    </div>
+    </div>
 </ui-scroll>

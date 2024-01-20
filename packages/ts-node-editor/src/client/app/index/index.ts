@@ -9,5 +9,5 @@ import style from './index.css';
     template
 })
 export default class AppIndex extends HTMLElement {
-
+    
 }

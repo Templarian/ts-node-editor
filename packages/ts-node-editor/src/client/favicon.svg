@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <style>
+    #main {
+        fill: #FFFFFF;
+    }
+    #square {
+        fill: #453C4F;
+    }
+    @media (prefers-color-scheme: dark) {
+        #main {
+            fill: #453C4F;
+        }
+        #square {
+            fill: #FFFFFF;
+        }
+    }
+    </style>
+    <path id="back" fill="#1A1A1A" fill-opacity="1" stroke-linejoin="round" d="M 8,1.14441e-005L 56,1.14441e-005C 60.4183,1.14441e-005 64,3.58172 64,7.99998L 64,56C 64,60.4183 60.4183,64 56,64L 8,64C 3.58172,64 -3.17891e-007,60.4183 -3.17891e-007,56L -3.17891e-007,7.99998C -3.17891e-007,3.58172 3.58172,1.14441e-005 8,1.14441e-005 Z "/>
+	<path id="outer" fill="#FFFFFF" fill-opacity="1" stroke-linejoin="round" d="M 32,14C 40.5663,14 47.7351,19.984 49.554,28L 64,28L 64,36L 49.554,36C 47.7351,44.016 40.5664,50 32,50C 22.0589,50 14,41.9411 14,32C 14,22.0589 22.0589,14 32,14 Z "/>
+	<ellipse id="inner" fill="#248AE4" fill-opacity="1" stroke-linejoin="round" cx="32" cy="32" rx="10" ry="10"/>
+</svg>

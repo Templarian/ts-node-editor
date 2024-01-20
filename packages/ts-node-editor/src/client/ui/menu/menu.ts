@@ -9,13 +9,13 @@ import style from './menu.css';
   template
 })
 export default class UiMenu extends HTMLElement {
-  @Prop() message = 'Hello World';
+  @Prop() options = [];
 
-  @Part() $message: HTMLDivElement;
+  @Part() $items: HTMLDivElement;
 
   render(changes) {
-    if (changes.message) {
-      this.$message.innerText = this.message;
+    if (changes.options) {
+      console.log(changes.options);
     }
   }
 }

@@ -1,5 +1,5 @@
 function handleContextMenu() {
-    
+    console.log('create menu')
 }
 
 /**
