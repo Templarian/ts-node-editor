@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "element-start",
-    "build": "element-build",
-    "build2": "tsc --build && node ./scripts/fixPaths.js",
-    "start2": "tsc --build && node ./scripts/fixPaths.js && node dist/server/server.js"
+    "build": "element-build"
   },
   "bin": {
     "ts-node-editor": "./dist/server/server.js"
