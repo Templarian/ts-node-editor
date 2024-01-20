@@ -1,19 +1,22 @@
 {
   "extends": "./../../tsconfig.json",
   "include": [
-    "src/client/**/*"
+    "**/*"
   ],
   "compilerOptions": {
     "outDir": "./../../dist/client",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "composite": true,
     "module": "ES6",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node10",
     "target": "ES6",
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "lib": [
-      "ESNext",
+      "ES5",
+      "ES6",
+      "ES2020",
       "DOM"
     ],
     "types": [
@@ -24,6 +27,9 @@
     "paths": {
       "@pictogrammers/element": [
         "./node_modules/@pictogrammers/element"
+      ],
+      "@pictogrammers/element-jest": [
+        "./node_modules/@pictogrammers/element-jest"
       ]
     }
   }

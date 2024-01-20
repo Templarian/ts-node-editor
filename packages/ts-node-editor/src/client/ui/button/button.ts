@@ -17,18 +17,18 @@ export default class UiButton extends HTMLElement {
     @Part() $button: HTMLButtonElement;
 
     connectedCallback() {
-        let slots = this.shadowRoot.querySelectorAll("slot");
-        slots.forEach((slot) => {
+        let slots = this.shadowRoot?.querySelectorAll("slot");
+        slots?.forEach((slot) => {
             slot.addEventListener('slotchange', () => {
-                const elements = slot.assignedElements();
+                const elements = slot.assignedElements() as HTMLElement[];
                 switch(slot.name) {
                     case 'start':
-                        elements.map((element: HTMLElement) => {
+                        elements.forEach((element: HTMLElement) => {
                             element.style.setProperty('margin-right', '0.25rem');
                         });
                         break;
                     case 'end':
-                        elements.map((element: HTMLElement) => {
+                        elements.forEach((element: HTMLElement) => {
                             element.style.setProperty('margin-left', '0.25rem');
                         });
                         break;

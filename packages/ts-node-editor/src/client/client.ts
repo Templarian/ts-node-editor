@@ -1,15 +1,4 @@
-import './element/button/button';
-import './element/comment/comment';
-import './element/header/header';
-import './element/icon/icon.js';
-import './element/menu/menu';
-import './element/nodeContainer/nodeContainer';
-import './element/nodeHandle/nodeHandle';
-import './element/nodeConnection/nodeConnection';
-import './element/seperator/seperator';
-import './element/tooltip/tooltip';
-
-import UiIcon from './element/icon/icon.js';
+import UiIcon from './ui/icon/icon.js';
 
 const icons = {
     script: 'M20 1H5V2H4V15H6V3H15V19H13V18H12V17H1V20H2V21H16V20H17V3H19V5H21V2H20'
