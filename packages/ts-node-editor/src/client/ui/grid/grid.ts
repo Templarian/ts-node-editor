@@ -8,6 +8,7 @@ import UiNodeComment from '../nodeComment/nodeComment';
 import UiNodeEntry from '../nodeEntry/nodeEntry';
 import UiNodeFunction from '../nodeFunction/nodeFunction';
 import UiNodeImport from '../nodeImport/nodeImport';
+import UiNodeHandle from '../nodeHandle/nodeHandle';
 
 @Component({
   selector: 'ui-grid',
@@ -32,6 +33,13 @@ export default class UiGrid extends HTMLElement {
 
   render(changes) {
 
+  }
+
+  #addNodeHandle(x: number, y: number) {
+    const $nodeHandle = document.createElement('ui-node-handle') as UiNodeHandle;
+    $nodeHandle.x = x;
+    $nodeHandle.y = y;
+    this.$grid.appendChild($nodeHandle);
   }
 
   #comments = [];
@@ -94,6 +102,7 @@ export default class UiGrid extends HTMLElement {
       $y: y,
       icon: icon
     });
+    this.#addNodeHandle(x + 2, y + 1);
   }
 
   #addNodeFunction(x: number, y: number, width: number, height: number, name: string, args: any) {
@@ -115,6 +124,8 @@ export default class UiGrid extends HTMLElement {
       $height: height,
       ...args
     });
+    this.#addNodeHandle(x, y + 1);
+    this.#addNodeHandle(x + width, y + 1);
   }
 
   #addNodeImport(x: number, y: number, path: string[], src: string) {
@@ -128,6 +139,7 @@ export default class UiGrid extends HTMLElement {
       path,
       src
     });
+    this.#addNodeHandle(x, y + 1);
   }
 
   @Prop()

@@ -2,6 +2,10 @@
     flex-direction: column;
 }
 
+:host(:hover) {
+    border-color: #248AE4;
+}
+
 div:nth-child(1) {
     display: flex;
     flex-direction: row;
@@ -30,9 +34,9 @@ div:nth-child(1)>svg {
     width: 0.5rem;
 }
 
-:host(:hover:not(.drag)) div:nth-child(1)>button {
+/*:host(:hover:not(.drag)) div:nth-child(1)>button {
     display: flex;
-}
+}*/
 
 div:nth-child(1)>button {
     display: none;
