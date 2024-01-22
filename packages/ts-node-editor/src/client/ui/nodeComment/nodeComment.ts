@@ -32,16 +32,16 @@ export default class UiNodeComment extends UiNodeBase {
           document.removeEventListener('pointermove', this.#handlePointerMove);
           this.#handlePointerMove = null;
           document.body.style.cursor = null;
-        } else if (x > 8 && x < width - 8 && y >= -8 && y <= 4) {
+        } else if (x >= 8 && x <= width - 8 && y >= -8 && y <= 8) {
           this.#showResize(left, top, width, height, 'n');
           document.body.style.cursor = 'n-resize';
-        } else if (x >= width - 4 && x < width + 8 && y > 8 && y < height - 8) {
+        } else if (x >= width - 8 && x <= width + 8 && y >= 8 && y <= height - 8) {
           this.#showResize(left, top, width, height, 'e');
           document.body.style.cursor = 'e-resize';
-        } else if (x > -8 && x < height - 8 && y > height - 4 && y > height - 8) {
+        } else if (x >= 8 && x <= width - 8 && y >= height - 8 && y >= height - 8) {
           this.#showResize(left, top, width, height, 's');
           document.body.style.cursor = 's-resize';
-        } else if (x >= -8 && x < 4 && y > 8 && y < height - 8) {
+        } else if (x >= -8 && x <= 8 && y >= 8 && y <= height - 8) {
           this.#showResize(left, top, width, height, 'w');
           document.body.style.cursor = 'w-resize';
         } else if (x <= 8 && x >= -8 && y <= 8 && y >= -8) {
@@ -65,12 +65,13 @@ export default class UiNodeComment extends UiNodeBase {
     });
   }
 
+  #nodeResizeEdge = '';
   #nodeResize = null;
   #showResize(x: number, y: number, width: number, height: number, edge: string) {
-    if (this.#nodeResize) {
-      this.#nodeResize.resize = edge;
+    if (this.#nodeResize && this.#nodeResizeEdge === '') {
+      this.#nodeResize.edge = edge;
       document.body.appendChild(this.#nodeResize);
-    } else {
+    } else if (!this.#nodeResize) {
       const $nodeResize = document.createElement('ui-node-resize') as UiNodeResize;
       $nodeResize.style.left = `${x - 10}px`;
       $nodeResize.style.top = `${y - 10}px`;
@@ -80,11 +81,21 @@ export default class UiNodeComment extends UiNodeBase {
       document.body.appendChild($nodeResize);
       this.#nodeResize = $nodeResize;
     }
+    if (this.#nodeResizeEdge !== edge) {
+      this.#nodeResize.resize = edge;
+      console.log('edge', edge);
+      document.addEventListener('pointerdown', () => {
+        // Add a mouse down and then remove on up and watch drag
+      });
+      this.#nodeResizeEdge = edge;
+      return;
+    }
   }
 
   #removeResize() {
     if (this.#nodeResize) {
       this.#nodeResize.remove();
+      this.#nodeResizeEdge = '';
     }
   }
 
