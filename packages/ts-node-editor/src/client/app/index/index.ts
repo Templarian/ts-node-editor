@@ -21,6 +21,28 @@ export default class AppIndex extends HTMLElement {
             $height: 10,
             text: 'Describe the script use here.'
         });
+        this.$grid.addNode({
+            $type: 'entry',
+            $x: 1,
+            $y: 1,
+            icon: 'application'
+        });
+        this.$grid.addNode({
+            $type: 'function',
+            $name: 'setState',
+            $x: 4,
+            $y: 1,
+            $width: 10,
+            $height: 6
+        });
+        this.$grid.addNode({
+            $type: 'function',
+            $name: 'coinFlip',
+            $x: 15,
+            $y: 1,
+            $width: 10,
+            $height: 6
+        });
     }
 
     render() {

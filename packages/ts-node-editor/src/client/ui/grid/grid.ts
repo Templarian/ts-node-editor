@@ -43,6 +43,7 @@ export default class UiGrid extends HTMLElement {
     $nodeComment.y = $y;
     $nodeComment.width = $width;
     $nodeComment.height = $height;
+    $nodeComment.text = text;
     this.$grid.appendChild($nodeComment);
     this.#comments.push({
       $x,
@@ -69,8 +70,8 @@ export default class UiGrid extends HTMLElement {
         break;
       }
       case 'function': {
-        const { $x, $y, $width, $height, ...options } = config;
-        this.#addNodeFunction($x, $y, $width, $height, options);
+        const { $x, $y, $width, $height, $name, ...options } = config;
+        this.#addNodeFunction($x, $y, $width, $height, $name, options);
         break;
       }
       case 'import': {
@@ -95,22 +96,24 @@ export default class UiGrid extends HTMLElement {
     });
   }
 
-  #addNodeFunction(x: number, y: number, width: number, height: number, options: any) {
+  #addNodeFunction(x: number, y: number, width: number, height: number, name: string, args: any) {
     if (this.#nodes.length === 0) {
       throw 'First node must be type "entry".'
     }
-    const $nodeComment = document.createElement('ui-node-function') as UiNodeFunction;
-    $nodeComment.x = x;
-    $nodeComment.y = y;
-    $nodeComment.width = width;
-    $nodeComment.height = height;
-    this.$grid.appendChild($nodeComment);
+    const $nodeFunction = document.createElement('ui-node-function') as UiNodeFunction;
+    $nodeFunction.x = x;
+    $nodeFunction.y = y;
+    $nodeFunction.width = width;
+    $nodeFunction.height = height;
+    $nodeFunction.name = name;
+    $nodeFunction.args = args;
+    this.$grid.appendChild($nodeFunction);
     this.#nodes.push({
       $x: x,
       $y: y,
       $width: width,
       $height: height,
-      ...options
+      ...args
     });
   }
 

@@ -3,8 +3,8 @@
     /* Grid Placement */
     grid-column-start: calc(var(--node-x) + 1);
     grid-row-start: calc(var(--node-y) + 1);
-    grid-column-end: calc(var(--node-x) + 3);
-    grid-row-end: calc(var(--node-x) + 3);
+    grid-column-end: calc(var(--node-x) + var(--node-width) + 1);
+    grid-row-end: calc(var(--node-y) + var(--node-height) + 1);
     /* Styles */
     border-radius: 0.25rem;
     background: #181818;

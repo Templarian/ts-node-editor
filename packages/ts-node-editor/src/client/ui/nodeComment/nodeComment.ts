@@ -11,7 +11,13 @@ import UiNodeBase from '../nodeBase/nodeBase';
   template
 })
 export default class UiNodeComment extends UiNodeBase {
-  render(changes) {
+  @Prop() text = '';
 
+  @Part() $textarea: HTMLTextAreaElement;
+
+  render(changes) {
+    if (changes.text) {
+      this.$textarea.value = this.text;
+    }
   }
 }

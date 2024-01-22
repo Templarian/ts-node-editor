@@ -1,0 +1,73 @@
+:host {
+    flex-direction: column;
+}
+
+div:nth-child(1) {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    cursor: default;
+    font-weight: bold;
+}
+
+div:nth-child(1)>span {
+    flex: 1;
+}
+
+div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+:host(.drag) div:nth-child(1)>svg {
+    display: flex;
+}
+
+div:nth-child(1)>svg {
+    display: none;
+    width: 0.5rem;
+}
+
+:host(:hover:not(.drag)) div:nth-child(1)>button {
+    display: flex;
+}
+
+div:nth-child(1)>button {
+    display: none;
+    background: transparent;
+    border: 0;
+    color: #FFF;
+    padding: 0.25rem;
+    margin: -0.25rem -0.5rem -0.25rem -0.25rem;
+    border-radius: 0 0.2rem 0 0.25rem;
+}
+
+div:nth-child(1)>button:hover {
+    background: #2B2B2B;
+    color: #FFF;
+}
+
+div:nth-child(1)>button>svg {
+    width: 18px;
+}
+
+textarea {
+    background: transparent;
+    border: 0;
+    flex: 1;
+    color: #FFF;
+    outline: 0;
+    padding: 0;
+    font-size: 0.875rem;
+    font-family: var(--ui-font);
+    min-width: 50px;
+    resize: none;
+    padding: 0.25rem 0.5rem;
+}
+
+textarea:focus {
+    background: #2B2B2B;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
