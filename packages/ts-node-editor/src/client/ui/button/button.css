@@ -9,7 +9,7 @@ button {
     background: transparent;
     color: #FFF;
     padding: 0.25rem 0.5rem;
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
     border-radius: 0.25rem;
 }
 

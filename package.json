@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "editor": "ts-node-editor",
     "start": "ts-node-editor",
     "dev": "npm run start --workspace=ts-node-editor",
     "build": "npm run build --workspace=ts-node-editor",

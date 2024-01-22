@@ -9,18 +9,32 @@ import style from './nodeHandle.css';
   template
 })
 export default class UiNodeHandle extends HTMLElement {
-  @Prop() x = 0;
-  @Prop() y = 0;
+  @Prop(normalizeInt) x = 0;
+  @Prop(normalizeInt) y = 0;
 
   connectedCallback() {
-    this.addEventListener('pointerdown', (event) => {
-      this.dispatchEvent(new CustomEvent('handledown', {
-        detail: {
-          x: normalizeInt(this.x),
-          y: normalizeInt(this.y)
-        }
-      }));
-    });
+    this.addEventListener('pointerdown', this.handlePointerEvent.bind(this));
+  }
+
+  handlePointerEvent(e) {
+    this.classList.add('active');
+    this.dispatchEvent(new CustomEvent('handledown', {
+      detail: {
+        x: normalizeInt(this.x),
+        y: normalizeInt(this.y)
+      },
+      composed: true
+    }));
+    document.addEventListener('pointerup', this.handlePointerUp.bind(this));
+    document.addEventListener('pointermove', this.handlePointerMove.bind(this));
+  }
+
+  handlePointerUp() {
+    document.removeEventListener('pointermove', this.handlePointerMove.bind(this));
+  }
+
+  handlePointerMove() {
+
   }
 
   render(changes) {

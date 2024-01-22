@@ -1,13 +1,12 @@
 [part=grid-menu].open {
     display: flex;
+    position: sticky;
+    top: calc(var(--menu-y, 0) * 1px);
+    left: calc(var(--menu-x, 0) * 1px);
 }
 
 [part=grid-menu] {
-    display: none;
     flex-direction: column;
-    position: fixed;
-    top: calc(var(--menu-y, 0) * 1px);
-    left: calc(var(--menu-x, 0) * 1px);
     background: #2D2D2D;
     border-radius: 0.5rem;
     padding: 0.25rem;
@@ -22,7 +21,7 @@
     color: #FFF;
     border-radius: calc(0.25rem + 0.125rem);
     padding: 0.25rem 0.5rem;
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
     border: 0;
 }
 

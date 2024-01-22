@@ -13,6 +13,7 @@
     margin: -0.125rem;
 }
 
+:host(.active),
 :host(:hover) {
     transform: translate(-0.5rem, -0.5rem);
     background-color: #248AE4;

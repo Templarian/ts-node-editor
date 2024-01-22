@@ -2,6 +2,8 @@ import type { Node, State } from './../nodes/node';
 import { setState } from "./../nodes/setState";
 import { run as runHelloWorld } from './helloWorld';
 
+// name: "John"
+
 // 0 5 - -
 // Import Hello World
 

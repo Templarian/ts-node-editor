@@ -93,19 +93,15 @@ All node functions must return an array of nodes. Always return `[0]` instead of
 get    api/
 {
     comments: [
-        { $x: 1, $y: 10, $width: 10, $height: 10, text: 'Describe the script use here.' }
+        { $x: 1, $y: 10, $width: 10, $height: 10, text: 'Describe the script use here.' },
     ],
     nodes: [
-        { $name: 'start', $x: 1, $y: 1, $width: 2, $height: 2, nodes: [1] },
-        { $name: 'coinFlip', $x: 3, $y: 2, $width: 6, $height: 6, t: [2], f: [3] },
-        { $name: 'log', $x: 10, $y: 2, $width: 6, $height: 6, text: 'Heads' },
-        { $name: 'log', $x: 10, $y: 7, $width: 6, $height: 6, text: 'Tails' },
+        { $type: 'entry', $x: 1, $y: 1, $width: 2, $height: 2, nodes: [1] },
+        { $type: 'function', $name: 'coinFlip', $x: 3, $y: 2, $width: 6, $height: 6, t: [2], f: [3] },
+        { $type: 'function', $name: 'log', $x: 10, $y: 2, $width: 6, $height: 6, text: 'Heads' },
+        { $type: 'function', $name: 'log', $x: 10, $y: 7, $width: 6, $height: 6, text: 'Tails' }
+        { $type: 'import', $x: 10, $y: 7, $width: 6, $height: 6, src: 'helloWorld.ts', path: ['src', 'scripts'] }
     ]
-}
-post   api/
-{
-    path: ['src', 'scripts']
-    file: 'filename.ts'
 }
 
 delete api/comment/0
@@ -135,8 +131,13 @@ post   api/script
 
 ## TS Wrapper
 
+Editing scripts outside of the UI can be done with the node utility.
+
 ```ts
+import { Script } from 'ts-node-editor';
+
 const script = new Script();
+// script.fromString();
 script.fromFile('filename.ts');
 const comments = script.getComments();
 const index = script.addComment({
@@ -165,5 +166,6 @@ script.updateNode(2, {
     $y: 2
 });
 script.removeNode(2);
+// script.toString();
 script.toFile('filename.ts');
 ```

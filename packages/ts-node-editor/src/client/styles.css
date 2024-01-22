@@ -4,7 +4,7 @@
     --grid-light: #353535;
     --grid-dark: #464646;
     --node-light: #666666;
-    --node-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --ui-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --line-normal: #FFF;
     --line-hover: #248AE4;
 }
@@ -14,7 +14,7 @@ body {
     background: #262626;
     width: 100vw;
     height: 100vh;
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
 }
 
 div.header button {
@@ -24,7 +24,7 @@ div.header button {
     background: transparent;
     color: #FFF;
     padding: 0.25rem 0.5rem;
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
     border-radius: 0.25rem;
 }
 

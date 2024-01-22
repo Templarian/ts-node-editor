@@ -64,7 +64,7 @@ textarea {
     outline: 0;
     padding: 0;
     font-size: 0.875rem;
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
     min-width: 50px;
     resize: none;
     padding: 0.25rem 0.5rem;

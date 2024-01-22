@@ -1,6 +1,8 @@
 import type { Node, State } from './../nodes/node';
 import { setState } from "./../nodes/setState";
 
+// name: "John"
+
 // 0 5 - -
 // The hello world script takes in a name.
 // This allows multiple line comment blocks also.

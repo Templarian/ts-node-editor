@@ -1,8 +1,8 @@
 :host {
     display: flex;
     position: absolute;
-    left: var(--ui-tooltip-x);
-    top: var(--ui-tooltip-y);
+    left: var(--ui-tooltip-x, 0);
+    top: var(--ui-tooltip-y, 0);
     z-index: 1;
 }
 
@@ -13,7 +13,7 @@
 [part="content"] {
     clip-path: var(--ui-tooltip-path);
     background-image: var(--ui-tooltip-image);
-    font-family: var(--node-font);
+    font-family: var(--ui-font);
     color: #FFF;
     padding: 0.5rem 0.5rem;
 }
