@@ -10,26 +10,44 @@ import style from './nodeResize.css';
 })
 export default class UiNodeResize extends HTMLElement {
   @Prop() resize = '';
+  @Prop() isResizing = false;
 
-  @Part() $nw: HTMLDivElement;
-  @Part() $n: HTMLDivElement;
-  @Part() $ne: HTMLDivElement;
-  @Part() $e: HTMLDivElement;
-  @Part() $sw: HTMLDivElement;
-  @Part() $s: HTMLDivElement;
-  @Part() $se: HTMLDivElement;
-  @Part() $w: HTMLDivElement;
+  @Part() $outerNW: HTMLDivElement;
+  @Part() $outerN: HTMLDivElement;
+  @Part() $outerNE: HTMLDivElement;
+  @Part() $outerE: HTMLDivElement;
+  @Part() $outerSW: HTMLDivElement;
+  @Part() $outerS: HTMLDivElement;
+  @Part() $outerSE: HTMLDivElement;
+  @Part() $outerW: HTMLDivElement;
+
+  @Part() $innerNW: HTMLDivElement;
+  @Part() $innerN: HTMLDivElement;
+  @Part() $innerNE: HTMLDivElement;
+  @Part() $innerE: HTMLDivElement;
+  @Part() $innerSW: HTMLDivElement;
+  @Part() $innerS: HTMLDivElement;
+  @Part() $innerSE: HTMLDivElement;
+  @Part() $innerW: HTMLDivElement;
 
   get edges() {
     return [
-      this.$nw,
-      this.$n,
-      this.$ne,
-      this.$e,
-      this.$sw,
-      this.$s,
-      this.$se,
-      this.$w
+      this.$outerNW,
+      this.$outerN,
+      this.$outerNE,
+      this.$outerE,
+      this.$outerSW,
+      this.$outerS,
+      this.$outerSE,
+      this.$outerW,
+      this.$innerNW,
+      this.$innerN,
+      this.$innerNE,
+      this.$innerE,
+      this.$innerSW,
+      this.$innerS,
+      this.$innerSE,
+      this.$innerW
     ];
   }
 
@@ -38,9 +56,14 @@ export default class UiNodeResize extends HTMLElement {
       this.edges.forEach((edge) => {
         edge.style.display = 'none';
       });
-      if (this.resize !== '') {
-        this[`$${this.resize}`].style.display = 'flex';
+      const edge = this.resize.toUpperCase();
+      if (edge !== '') {
+        this[`$outer${edge}`].style.display = 'flex';
+        this[`$inner${edge}`].style.display = 'flex';
       }
+    }
+    if (changes.isResizing) {
+      this.classList.toggle('active', this.isResizing);
     }
   }
 }
