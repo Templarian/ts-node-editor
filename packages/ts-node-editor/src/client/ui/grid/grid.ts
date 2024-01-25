@@ -35,10 +35,12 @@ export default class UiGrid extends HTMLElement {
 
   }
 
-  #addNodeHandle(x: number, y: number) {
+  #addNodeHandle(x: number, y: number, offsetX: number = 0, offsetY: number = 0) {
     const $nodeHandle = document.createElement('ui-node-handle') as UiNodeHandle;
     $nodeHandle.x = x;
     $nodeHandle.y = y;
+    $nodeHandle.offsetX = offsetX;
+    $nodeHandle.offsetY = offsetY;
     this.$grid.appendChild($nodeHandle);
   }
 
@@ -102,7 +104,7 @@ export default class UiGrid extends HTMLElement {
       $y: y,
       icon: icon
     });
-    this.#addNodeHandle(x + 2, y + 1);
+    this.#addNodeHandle(x + 2, y + 1, -2, 0);
   }
 
   #addNodeFunction(x: number, y: number, width: number, height: number, name: string, args: any) {
@@ -124,8 +126,8 @@ export default class UiGrid extends HTMLElement {
       $height: height,
       ...args
     });
-    this.#addNodeHandle(x, y + 1);
-    this.#addNodeHandle(x + width, y + 1);
+    this.#addNodeHandle(x, y + 1, 2, 0);
+    this.#addNodeHandle(x + width, y + 1, -2, 0);
   }
 
   #addNodeImport(x: number, y: number, path: string[], src: string) {

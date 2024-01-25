@@ -11,6 +11,8 @@ import style from './nodeHandle.css';
 export default class UiNodeHandle extends HTMLElement {
   @Prop(normalizeInt) x = 0;
   @Prop(normalizeInt) y = 0;
+  @Prop(normalizeInt) offsetX = 0;
+  @Prop(normalizeInt) offsetY = 0;
 
   connectedCallback() {
     this.addEventListener('pointerdown', this.handlePointerEvent.bind(this));
@@ -20,8 +22,8 @@ export default class UiNodeHandle extends HTMLElement {
     this.classList.add('active');
     this.dispatchEvent(new CustomEvent('handledown', {
       detail: {
-        x: normalizeInt(this.x),
-        y: normalizeInt(this.y)
+        x: this.x,
+        y: this.y
       },
       composed: true
     }));
@@ -43,6 +45,12 @@ export default class UiNodeHandle extends HTMLElement {
     }
     if (changes.y) {
       this.style.setProperty('--node-y', `${this.y}`);
+    }
+    if (changes.offsetX) {
+      this.style.setProperty('--node-offset-x', `${this.offsetX}`);
+    }
+    if (changes.offsetY) {
+      this.style.setProperty('--node-offset-y', `${this.offsetY}`);
     }
   }
 }

@@ -6,7 +6,10 @@
     height: 0.5rem;
     grid-column-start: calc(var(--node-x) + 1);
     grid-row-start: calc(var(--node-y) + 1);
-    transform: translate(-0.25rem, -0.25rem);
+    transform: translate(
+        calc(-0.25rem + calc(var(--node-offset-x, 0) * 1px)),
+        calc(-0.25rem + calc(var(--node-offset-y, 0) * 1px))
+    );
     border: 0;
     color: #222;
     padding: 0;
@@ -15,7 +18,10 @@
 
 :host(.active),
 :host(:hover) {
-    transform: translate(-0.5rem, -0.5rem);
+    transform: translate(
+        calc(-0.5rem + calc(var(--node-offset-x, 0) * 1px)),
+        calc(-0.5rem + calc(var(--node-offset-y, 0) * 1px))
+    );
     background-color: #248AE4;
     border: 0.25rem solid #FFF;
 }
