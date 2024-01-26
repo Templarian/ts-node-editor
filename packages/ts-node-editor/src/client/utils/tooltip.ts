@@ -4,7 +4,7 @@ let cacheTooltip: UiTooltip;
 let cacheHandlePointerEnter: EventListenerOrEventListenerObject;
 
 /**
- * Wire up a tooltip on the connectedCallback
+ * Wire up a tooltip in the connectedCallback
  * @param element Element
  * @param value Function returning tooltip value.
  */
@@ -31,6 +31,10 @@ export function wireTooltip(element: HTMLElement | SVGElement, value: () => stri
     element.addEventListener('mouseenter', cacheHandlePointerEnter);
 }
 
+/**
+ * Unwire a tooltip if it exists.
+ * @param element Element
+ */
 export function unwireTooltip(element: HTMLElement | SVGElement) {
     if (cacheHandlePointerEnter) {
         element.removeEventListener('mouseleave', cacheHandlePointerEnter);

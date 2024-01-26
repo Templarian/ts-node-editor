@@ -1,16 +1,17 @@
 import { Component, Prop, Part } from '@pictogrammers/element';
 
-import template from "./nodeResize.html";
-import style from './nodeResize.css';
+import template from "./nodeTransform.html";
+import style from './nodeTransform.css';
 
 @Component({
-  selector: 'ui-node-resize',
+  selector: 'ui-node-transform',
   style,
   template
 })
-export default class UiNodeResize extends HTMLElement {
-  @Prop() resize = '';
+export default class UiNodeTransform extends HTMLElement {
+  @Prop() edge = '';
   @Prop() isResizing = false;
+  @Prop() isMoving = false;
 
   @Part() $outerNW: HTMLDivElement;
   @Part() $outerN: HTMLDivElement;
@@ -52,11 +53,11 @@ export default class UiNodeResize extends HTMLElement {
   }
 
   render(changes) {
-    if (changes.resize) {
+    if (changes.edge) {
       this.edges.forEach((edge) => {
         edge.style.display = 'none';
       });
-      const edge = this.resize.toUpperCase();
+      const edge = this.edge.toUpperCase();
       if (edge !== '') {
         this[`$outer${edge}`].style.display = 'flex';
         this[`$inner${edge}`].style.display = 'flex';
@@ -64,6 +65,9 @@ export default class UiNodeResize extends HTMLElement {
     }
     if (changes.isResizing) {
       this.classList.toggle('active', this.isResizing);
+    }
+    if (changes.isMoving) {
+      this.classList.toggle('moving', this.isMoving);
     }
   }
 }

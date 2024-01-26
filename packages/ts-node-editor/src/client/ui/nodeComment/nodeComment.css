@@ -71,6 +71,7 @@ textarea {
     min-width: 50px;
     resize: none;
     padding: 0 0.25rem;
+    font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
 div:nth-child(2):has(textarea:focus) {
