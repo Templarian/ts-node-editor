@@ -2,6 +2,7 @@ import UiNodeTransform from '../ui/nodeTransform/nodeTransform';
 
 // There can only be one...
 let $nodeTransform: UiNodeTransform;
+const events = new Map();
 let startX = 0;
 let startY = 0;
 let startWidth = 0;
@@ -29,7 +30,7 @@ function handlePointerMove(e: any) {
     top,
     height,
     width
-  } = this.getBoundingClientRect();
+  } = e.target.getBoundingClientRect();
   const x = e.x - left;
   const y = e.y - top;
   const o = 16;
@@ -77,7 +78,11 @@ function handlePointerEnter(e) {
   $nodeTransform.style.top = `${rect.y - outer}px`;
   $nodeTransform.style.width = `${rect.width + (outer * 2)}px`;
   $nodeTransform.style.height = `${rect.height + (outer * 2)}px`;
-  document.addEventListener('pointermove', handlePointerMove);
+  $nodeTransform.visible = true;
+
+  const event = handlePointerMove.bind(e.target);
+  events.get(e.target).pointerMove = event;
+  document.addEventListener('pointermove', event);
 }
 
 function handlePointerDownHandler(e) {
@@ -106,7 +111,9 @@ export function wireTransformNode(element: HTMLElement | SVGElement, config: Con
     document.body.appendChild($nodeTransform);
   }
 
-  this.addEventListener('pointerenter', handlePointerEnter);
+  const event = handlePointerEnter.bind(element);
+  events.set(element, { pointerEvent: event });
+  element.addEventListener('pointerenter', event);
 }
 
 function showResize(x: number, y: number, width: number, height: number, edge: string) {
@@ -126,7 +133,7 @@ function showResize(x: number, y: number, width: number, height: number, edge: s
 let cacheWidth;
 let cacheHeight;
 function handlePointerDown(e) {
-  const { left, top, width, height } = this.getBoundingClientRect();
+  const { left, top, width, height } = e.target.getBoundingClientRect();
   const x = e.x - left;
   const y = e.y - top;;
   startX = x;
@@ -183,7 +190,7 @@ function updateSize(x: number, y: number) {
 }
 
 function removeResize() {
-  $nodeTransform.remove();
+  $nodeTransform.visible = false;
   nodeTransformEdge = '';
   document.removeEventListener('pointerdown', handlePointerDownHandler);
   document.removeEventListener('pointerup', handlePointerUpHandler);
@@ -194,5 +201,6 @@ function removeResize() {
  * @param element Element
  */
 export function unwireTransformNode(element: HTMLElement | SVGElement) {
-  element.removeEventListener('mouseleave', handlePointerEnter);
+  element.removeEventListener('mouseleave', events.get(element));
+  events.delete(element);
 }

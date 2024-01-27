@@ -1,4 +1,5 @@
 :host {
+    visibility: hidden;
     display: grid;
     grid-template-columns: 1.25rem auto 1.25rem;
     grid-template-rows: 1.25rem auto 1.25rem;
@@ -9,6 +10,9 @@
     width: 218px;
     height: 218px;
     --ui-node-resize: #EFAD03;
+}
+:host(.visible) {
+    visibility: visible;
 }
 [part=border] {
     display: flex;

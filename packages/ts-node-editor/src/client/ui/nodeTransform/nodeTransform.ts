@@ -12,6 +12,7 @@ export default class UiNodeTransform extends HTMLElement {
   @Prop() edge = '';
   @Prop() isResizing = false;
   @Prop() isMoving = false;
+  @Prop() visible = false;
 
   @Part() $outerNW: HTMLDivElement;
   @Part() $outerN: HTMLDivElement;
@@ -68,6 +69,9 @@ export default class UiNodeTransform extends HTMLElement {
     }
     if (changes.isMoving) {
       this.classList.toggle('moving', this.isMoving);
+    }
+    if (changes.visible) {
+      this.classList.toggle('visible', this.visible)
     }
   }
 }
