@@ -32,8 +32,8 @@ function handlePointerMove(e: any) {
     height,
     width
   } = this.getBoundingClientRect();
-  const x = e.x - left;
-  const y = e.y - top;
+  const x = e.x - startLeft;
+  const y = e.y - startTop;
   const o = 16;
   const c = 12;
   if ($nodeTransform.isResizing) {
@@ -42,6 +42,7 @@ function handlePointerMove(e: any) {
     removeResize(this);
     const { pointerMove } = events.get(this);
     document.removeEventListener('pointermove', pointerMove);
+    delete events.get(this).pointerMove;
     document.body.style.cursor = null;
   } else if (x >= c && x <= width - c && y >= -o && y <= 4) {
     showResize(this, left, top, width, height, 'n');
@@ -73,18 +74,27 @@ function handlePointerMove(e: any) {
   }
 }
 
-function handlePointerEnter(e) {
-  const rect = this.getBoundingClientRect();
+function moveTransformNode(rect: { left: number, top: number, width: number, height: number}) {
   const outer = 10;
-  $nodeTransform.style.left = `${rect.x - outer}px`;
-  $nodeTransform.style.top = `${rect.y - outer}px`;
+  $nodeTransform.style.left = `${rect.left - outer}px`;
+  $nodeTransform.style.top = `${rect.top - outer}px`;
   $nodeTransform.style.width = `${rect.width + (outer * 2)}px`;
   $nodeTransform.style.height = `${rect.height + (outer * 2)}px`;
-  $nodeTransform.visible = true;
+  
+}
 
-  const event = handlePointerMove.bind(this);
-  events.get(this).pointerMove = event;
-  document.addEventListener('pointermove', event);
+function handlePointerEnter(e) {
+  const { pointerMove } = events.get(this);
+  if (!pointerMove) {
+    const event = handlePointerMove.bind(this);
+    events.get(this).pointerMove = event;
+    document.addEventListener('pointermove', event);
+    const rect = this.getBoundingClientRect();
+    startLeft = rect.left;
+    startTop = rect.top;
+    moveTransformNode(rect);
+    $nodeTransform.visible = true;
+  }
 }
 
 /**
@@ -115,19 +125,21 @@ function showResize($node: HTMLElement, x: number, y: number, width: number, hei
     $nodeTransform.edge = edge;
   }
   if (nodeTransformEdge !== edge) {
+    $nodeTransform.visible = true;
     $nodeTransform.edge = edge;
     console.log('edge', edge);
     const pointerDown = handlePointerDown.bind($node);
     events.get($node).pointerDown = pointerDown;
-    const pointerUp = handlePointerUp.bind($node);
-    events.get($node).pointerUp = pointerUp;
     document.addEventListener('pointerdown', pointerDown);
-    document.addEventListener('pointerup', pointerUp);
     nodeTransformEdge = edge;
     return;
   }
 }
 
+let startLeft;
+let startTop;
+let cacheX;
+let cacheY;
 let cacheWidth;
 let cacheHeight;
 function handlePointerDown(e) {
@@ -136,17 +148,27 @@ function handlePointerDown(e) {
   const y = e.y - top;;
   startX = x;
   startY = y;
+  startLeft = left;
+  startTop = top;
   startWidth = width;
   startHeight = height;
+  cacheX = this.x;
+  cacheY = this.y;
   cacheWidth = this.width;
   cacheHeight = this.height;
   $nodeTransform.isResizing = true;
   updateSize(this, x, y);
+  const pointerUp = handlePointerUp.bind(this);
+  events.get(this).pointerUp = pointerUp;
+  document.addEventListener('pointerup', pointerUp);
 }
 
 function handlePointerUp(e) {
-  console.log('foo')
+  console.log('pointer up')
   $nodeTransform.isResizing = false;
+  const { pointerUp } = events.get(this);
+  document.removeEventListener('pointerup', pointerUp);
+  delete events.get(this).pointerUp;
 }
 
 function updateSize($node, x: number, y: number) {
@@ -154,13 +176,7 @@ function updateSize($node, x: number, y: number) {
     case 'nw':
 
       break;
-    case 'n':
-
-      break;
-    case 'ne':
-
-      break;
-    case 'e':
+    case 'n': {
       const offsetX = (startWidth - 1) - startX;
       const diff = (x - startX) - offsetX;
       const nWidth = startWidth + diff;
@@ -168,18 +184,47 @@ function updateSize($node, x: number, y: number) {
       console.log(x - startX);
       $node.width = cacheWidth + Math.floor((x - startX) / 20);
       break;
-    case 'se':
+    }
+    case 'ne': {
+      
+      break;
+    }
+    case 'e': {
+      const offsetX = (startWidth - 1) - startX;
+      const diff = (x - startX) - offsetX;
+      const nWidth = startWidth + diff;
+      $nodeTransform.style.width = `${nWidth + 20}px`;
+      console.log(x - startX);
+      $node.width = cacheWidth + Math.floor((x - startX) / 20);
+      break;
+    }
+    case 'se': {
 
       break;
-    case 's':
-
+    }
+    case 's': {
+      const offsetX = (startWidth - 1) - startX;
+      const diff = (x - startX) - offsetX;
+      const nWidth = startWidth + diff;
+      $nodeTransform.style.width = `${nWidth + 20}px`;
+      console.log(x - startX);
+      $node.width = cacheWidth + Math.floor((x - startX) / 20);
       break;
+    }
     case 'sw':
 
       break;
-    case 'w':
-
+    case 'w': {
+      console.log(startX);
+      const offsetX = (-1 * startX) + 1;
+      const diff = (x - startX) - offsetX;
+      const nLeft = startLeft + diff;
+      $nodeTransform.style.left = `${nLeft - 10}px`;
+      $nodeTransform.style.width = `${startWidth - diff + 20}px`;
+      $node.x = cacheX + Math.floor((x - startX - 2) / 20) + 1;
+      $node.width = cacheWidth - Math.floor((x - startX - 2) / 20) - 1;
       break;
+    }
   }
   //const nWidth = startWidth + (x - startX);
   //const nHeight = startHeight - startY - y;
@@ -194,6 +239,8 @@ function removeResize($node: HTMLElement) {
   const { pointerDown, pointerUp } = events.get($node);
   document.removeEventListener('pointerdown', pointerDown);
   document.removeEventListener('pointerup', pointerUp);
+  delete events.get($node).pointerDown;
+  delete events.get($node).pointerUp;
 }
 
 /**
