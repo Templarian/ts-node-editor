@@ -80,7 +80,8 @@ function moveTransformNode(rect: { left: number, top: number, width: number, hei
   $nodeTransform.style.top = `${rect.top - outer}px`;
   $nodeTransform.style.width = `${rect.width + (outer * 2)}px`;
   $nodeTransform.style.height = `${rect.height + (outer * 2)}px`;
-  
+  startLeft = rect.left;
+  startTop = rect.top;
 }
 
 function handlePointerEnter(e) {
@@ -163,9 +164,12 @@ function handlePointerDown(e) {
   document.addEventListener('pointerup', pointerUp);
 }
 
-function handlePointerUp(e) {
+function handlePointerUp() {
   console.log('pointer up')
   $nodeTransform.isResizing = false;
+  const rect = this.getBoundingClientRect();
+  moveTransformNode(rect);
+  // Cleanup
   const { pointerUp } = events.get(this);
   document.removeEventListener('pointerup', pointerUp);
   delete events.get(this).pointerUp;
@@ -194,8 +198,8 @@ function updateSize($node, x: number, y: number) {
       const diff = (x - startX) - offsetX;
       const nWidth = startWidth + diff;
       $nodeTransform.style.width = `${nWidth + 20}px`;
-      console.log(x - startX);
-      $node.width = cacheWidth + Math.floor((x - startX) / 20);
+      console.log(x - startX, offsetX);
+      $node.width = cacheWidth + Math.floor((x - startX - offsetX) / 20);
       break;
     }
     case 'se': {
@@ -207,8 +211,8 @@ function updateSize($node, x: number, y: number) {
       const diff = (x - startX) - offsetX;
       const nWidth = startWidth + diff;
       $nodeTransform.style.width = `${nWidth + 20}px`;
-      console.log(x - startX);
-      $node.width = cacheWidth + Math.floor((x - startX) / 20);
+      console.log(x - startX, offsetX);
+      $node.width = cacheWidth + Math.floor((x - startX - offsetX) / 20);
       break;
     }
     case 'sw':
@@ -221,8 +225,8 @@ function updateSize($node, x: number, y: number) {
       const nLeft = startLeft + diff;
       $nodeTransform.style.left = `${nLeft - 10}px`;
       $nodeTransform.style.width = `${startWidth - diff + 20}px`;
-      $node.x = cacheX + Math.floor((x - startX - 2) / 20) + 1;
-      $node.width = cacheWidth - Math.floor((x - startX - 2) / 20) - 1;
+      $node.x = cacheX + Math.floor((x - startX - offsetX) / 20) + 1;
+      $node.width = cacheWidth - Math.floor((x - startX - offsetX) / 20) - 1;
       break;
     }
   }
