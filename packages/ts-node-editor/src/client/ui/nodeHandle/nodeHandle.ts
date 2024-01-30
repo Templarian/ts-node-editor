@@ -18,25 +18,47 @@ export default class UiNodeHandle extends HTMLElement {
     this.addEventListener('pointerdown', this.handlePointerEvent.bind(this));
   }
 
+  #pointerUp;
+  #pointerMove;
+
   handlePointerEvent(e) {
     this.classList.add('active');
-    this.dispatchEvent(new CustomEvent('handledown', {
+    this.dispatchEvent(new CustomEvent('handlestart', {
       detail: {
         x: this.x,
         y: this.y
       },
       composed: true
     }));
-    document.addEventListener('pointerup', this.handlePointerUp.bind(this));
-    document.addEventListener('pointermove', this.handlePointerMove.bind(this));
+    this.#pointerUp = this.handlePointerUp.bind(this);
+    document.addEventListener('pointerup', this.#pointerUp);
+    this.#pointerMove = this.handlePointerMove.bind(this);
+    document.addEventListener('pointermove', this.#pointerMove);
   }
 
-  handlePointerUp() {
-    document.removeEventListener('pointermove', this.handlePointerMove.bind(this));
+  handlePointerUp(e: any) {
+    const rect = this.getBoundingClientRect();
+    this.dispatchEvent(new CustomEvent('handleend', {
+      detail: {
+        x: this.x + Math.floor((e.x - rect.left) / 20),
+        y: this.y + Math.floor((e.y - rect.top) / 20)
+      },
+      composed: true
+    }));
+    document.removeEventListener('pointermove', this.#pointerMove);
+    document.removeEventListener('pointerup', this.#pointerUp);
+    this.classList.remove('active');
   }
 
-  handlePointerMove() {
-
+  handlePointerMove(e: any) {
+    const rect = this.getBoundingClientRect();
+    this.dispatchEvent(new CustomEvent('handlemove', {
+      detail: {
+        x: this.x + Math.floor((e.x - rect.left) / 20),
+        y: this.y + Math.floor((e.y - rect.top) / 20)
+      },
+      composed: true
+    }));
   }
 
   render(changes) {

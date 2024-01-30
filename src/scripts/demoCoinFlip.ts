@@ -6,7 +6,6 @@ import { log } from "../nodes/log";
 // Flip a coin and log which is selected
 
 export async function run(state: State): Promise<State> {
-    // 1 1 - - script
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
@@ -14,6 +13,7 @@ export async function run(state: State): Promise<State> {
         callstack.push(node);
         switch (node) {
             case 0:
+                // 1 1 - - script
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');

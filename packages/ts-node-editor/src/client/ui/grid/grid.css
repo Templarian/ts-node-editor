@@ -1,12 +1,25 @@
 :host {
+    overflow: hidden;
+}
+
+[part=scroll] {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+}
+
+[part=fog] {
     display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto;
+    grid-template-columns: 400px auto 400px;
+    grid-template-rows: 400px auto 400px;
 }
 
 [part=grid] {
+    grid-column: 2;
+    grid-row: 2;
     display: grid;
     --grid-total: calc(var(--grid-size) + var(--grid-gap));
+    background-color: #262626;
     background-position: -0.125rem -0.125rem;
     background-size: calc(var(--grid-total) * 4) calc(var(--grid-total) * 4);
     background-image:
@@ -18,11 +31,13 @@
         linear-gradient(to bottom, transparent calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total) - 2px), var(--grid-light) calc(var(--grid-total)), transparent var(--grid-total),
             transparent calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2 - 2px), var(--grid-light) calc(var(--grid-total) * 2), transparent calc(var(--grid-total) * 2),
             transparent calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3 - 2px), var(--grid-light) calc(var(--grid-total) * 3), transparent calc(var(--grid-total) * 3));
-    width: 100%;
-    height: 100%;
     grid-template-columns: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
     grid-template-rows: calc(var(--grid-size) - 1px) repeat(auto-fill, var(--grid-size));
     gap: var(--grid-gap) var(--grid-gap);
+    width: calc(var(--grid-total) * var(--ui-grid-width, 100));
+    height: calc(var(--grid-total) * var(--ui-grid-height, 100));
+    outline: 1rem solid rgba(0, 0, 0, 0.25);
+    border-radius: 0.5rem;
 }
 
 

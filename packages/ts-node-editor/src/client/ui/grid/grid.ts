@@ -17,13 +17,33 @@ import UiNodeHandle from '../nodeHandle/nodeHandle';
 })
 export default class UiGrid extends HTMLElement {
   @Part() $grid: HTMLDivElement;
+  @Part() $scroll: HTMLDivElement;
 
   connectedCallback() {
     wireContextMenu(this.$grid, this.computeOptions);
-    this.addEventListener('handledown', this.handleDown.bind(this));
+    this.addEventListener('handlestart', this.handleStart.bind(this));
+    this.addEventListener('handlemove', this.handleMove.bind(this));
+    this.addEventListener('handleend', this.handleEnd.bind(this));
+    this.addEventListener('touchstart', (e) => {
+      console.log('touchstart');
+      if(e.touches.length > 1) {
+        e.preventDefault();
+        console.log('touchstart');
+      }
+    });
+    this.$scroll.scrollTop = 400 - 32;
+    this.$scroll.scrollLeft = 400 - 32;
   }
 
-  handleDown(e: any) {
+  handleStart(e: any) {
+    console.log(e.detail);
+  }
+
+  handleMove(e: any) {
+    console.log(e.detail);
+  }
+
+  handleEnd(e: any) {
     console.log(e.detail);
   }
 
