@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "editor": "ts-node-editor",
     "start": "ts-node-editor",
+    "test": "jest",
     "dev": "npm run start --workspace=ts-node-editor",
-    "build": "npm run build --workspace=ts-node-editor",
-    "test": "npm run test --workspace=ts-node-editor"
+    "dev:build": "npm run build --workspace=ts-node-editor",
+    "dev:test": "npm run test --workspace=ts-node-editor"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,10 @@
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
   "workspaces": [
     "packages/ts-node-editor"
-  ]
+  ],
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
+  }
 }
