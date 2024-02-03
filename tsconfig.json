@@ -8,6 +8,7 @@
     "lib": [
       "ESNext"
     ],
-    "target": "ESNext"
+    "target": "ESNext",
+    "esModuleInterop": true
   }
 }

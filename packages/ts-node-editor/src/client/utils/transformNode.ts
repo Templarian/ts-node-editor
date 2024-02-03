@@ -129,6 +129,7 @@ function showResize($node: HTMLElement, x: number, y: number, width: number, hei
     $nodeTransform.visible = true;
     $nodeTransform.edge = edge;
     console.log('edge', edge);
+    // Don't add another pointer down if it exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     const pointerDown = handlePointerDown.bind($node);
     events.get($node).pointerDown = pointerDown;
     document.addEventListener('pointerdown', pointerDown);
@@ -144,6 +145,7 @@ let cacheY;
 let cacheWidth;
 let cacheHeight;
 function handlePointerDown(e) {
+  console.log('pointer down')
   const { left, top, width, height } = this.getBoundingClientRect();
   const x = e.x - left;
   const y = e.y - top;;

@@ -22,7 +22,7 @@ export async function run(state: State): Promise<State> {
                     continue;
                 }
                 break loop;
-            case 2:
+            case 1:
                 // 4 1 - -
                 const r1 = setState({
                     state,
