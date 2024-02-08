@@ -26,10 +26,10 @@
     ],
     "paths": {
       "@pictogrammers/element": [
-        "./node_modules/@pictogrammers/element"
+        "./../../node_modules/@pictogrammers/element"
       ],
       "@pictogrammers/element-jest": [
-        "./node_modules/@pictogrammers/element-jest"
+        "./../../node_modules/@pictogrammers/element-jest"
       ]
     }
   }

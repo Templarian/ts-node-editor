@@ -9,7 +9,7 @@ export function coinFlip({ t, f }: {
      */
     t: Node[],
     /**
-     * True
+     * False
      */
     f: Node[],
 }): Node[] {
