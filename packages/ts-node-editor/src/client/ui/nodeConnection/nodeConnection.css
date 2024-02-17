@@ -33,3 +33,6 @@
     stroke: var(--line-hover);
     stroke-width: 4;
 }
+.temporary path {
+    pointer-events: none;
+}

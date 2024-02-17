@@ -9,6 +9,7 @@ import UiNodeEntry from '../nodeEntry/nodeEntry';
 import UiNodeFunction from '../nodeFunction/nodeFunction';
 import UiNodeImport from '../nodeImport/nodeImport';
 import UiNodeHandle from '../nodeHandle/nodeHandle';
+import UiNodeConnection from '../nodeConnection/nodeConnection';
 
 @Component({
   selector: 'ui-grid',
@@ -18,6 +19,8 @@ import UiNodeHandle from '../nodeHandle/nodeHandle';
 export default class UiGrid extends HTMLElement {
   @Part() $grid: HTMLDivElement;
   @Part() $scroll: HTMLDivElement;
+
+  #cache = new Map();
 
   connectedCallback() {
     wireContextMenu(this.$grid, this.computeOptions);
@@ -35,16 +38,33 @@ export default class UiGrid extends HTMLElement {
     this.$scroll.scrollLeft = 400 - 32;
   }
 
+  _startX;
+  _startY;
+  _tempConnection: UiNodeConnection;
   handleStart(e: any) {
-    console.log(e.detail);
+    const { x, y } = e.detail;
+    this._startX = x;
+    this._startY = y;
+    this._tempConnection = document.createElement('ui-node-connection') as UiNodeConnection;
+    this._tempConnection.x1 = x;
+    this._tempConnection.y1 = y;
+    this._tempConnection.temporary = true;
+    this.$grid.appendChild(this._tempConnection);
   }
 
   handleMove(e: any) {
-    console.log(e.detail);
+    const { x, y } = e.detail;
+    this._tempConnection.x2 = x;
+    this._tempConnection.y2 = y;
+    //console.log(e.detail);
   }
 
   handleEnd(e: any) {
-    console.log(e.detail);
+    const { x, y } = e.detail;
+    if (this._startX !== x || this._startY !== y) {
+      console.log(x, y);
+      this._tempConnection.temporary = false;
+    }
   }
 
   computeOptions() {
@@ -55,6 +75,16 @@ export default class UiGrid extends HTMLElement {
 
   }
 
+  cacheNodeHandle(x: number, y: number, offsetX: number, offsetY: number, element: UiNodeHandle) {
+    if (!this.#cache.has(y)) {
+      this.#cache.set(y, new Map());
+    }
+    if (!this.#cache.get(y).has(x)) {
+      this.#cache.get(y).set(x, new Map());
+    }
+    this.#cache.get(y).get(x).set(`${offsetX},${offsetY}`, element);
+  }
+
   #addNodeHandle(x: number, y: number, offsetX: number = 0, offsetY: number = 0) {
     const $nodeHandle = document.createElement('ui-node-handle') as UiNodeHandle;
     $nodeHandle.x = x;
@@ -62,6 +92,7 @@ export default class UiGrid extends HTMLElement {
     $nodeHandle.offsetX = offsetX;
     $nodeHandle.offsetY = offsetY;
     this.$grid.appendChild($nodeHandle);
+    this.cacheNodeHandle(x, y, offsetX, offsetY, $nodeHandle);
   }
 
   #comments = [];
