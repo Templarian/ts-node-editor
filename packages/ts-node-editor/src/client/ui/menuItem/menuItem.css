@@ -1,0 +1,19 @@
+button {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    background: transparent;
+    color: #FFF;
+    border-radius: calc(0.25rem + 0.125rem);
+    padding: 0.25rem 0.5rem;
+    font-family: var(--ui-font);
+    border: 0;
+}
+
+button ui-icon {
+    margin-right: 0.5rem;
+}
+
+button:hover {
+    background: #484848;
+}

@@ -1,39 +1,11 @@
-[part=grid-menu].open {
+:host {
     display: flex;
-    position: sticky;
-    top: calc(var(--menu-y, 0) * 1px);
-    left: calc(var(--menu-x, 0) * 1px);
-}
-
-[part=grid-menu] {
+    position: fixed;
+    top: calc(var(--ui-menu-y, 0) * 1px);
+    left: calc(var(--ui-menu-x, 0) * 1px);
     flex-direction: column;
     background: #2D2D2D;
     border-radius: 0.5rem;
     padding: 0.25rem;
     box-shadow: 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
-}
-
-[part=grid-menu]>button {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    background: transparent;
-    color: #FFF;
-    border-radius: calc(0.25rem + 0.125rem);
-    padding: 0.25rem 0.5rem;
-    font-family: var(--ui-font);
-    border: 0;
-}
-
-[part=grid-menu]>button ui-icon {
-    margin-right: 0.5rem;
-}
-
-[part=grid-menu]>button:hover {
-    background: #484848;
-}
-
-[part=grid-menu]>div.seperator {
-    border-top: 1px solid #484848;
-    margin: 0.25rem 0;
 }

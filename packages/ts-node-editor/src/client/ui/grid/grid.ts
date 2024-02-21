@@ -10,6 +10,8 @@ import UiNodeFunction from '../nodeFunction/nodeFunction';
 import UiNodeImport from '../nodeImport/nodeImport';
 import UiNodeHandle from '../nodeHandle/nodeHandle';
 import UiNodeConnection from '../nodeConnection/nodeConnection';
+import UiMenuItem from '../menuItem/menuItem';
+import UiMenuSeperator from '../menuSeperator/menuSeperator';
 
 @Component({
   selector: 'ui-grid',
@@ -29,13 +31,17 @@ export default class UiGrid extends HTMLElement {
     this.addEventListener('handleend', this.handleEnd.bind(this));
     this.addEventListener('touchstart', (e) => {
       console.log('touchstart');
-      if(e.touches.length > 1) {
+      if (e.touches.length > 1) {
         e.preventDefault();
         console.log('touchstart');
       }
     });
     this.$scroll.scrollTop = 400 - 32;
     this.$scroll.scrollLeft = 400 - 32;
+  }
+
+  disconnectedCallback() {
+    unwireContextMenu(this.$grid);
   }
 
   _startX;
@@ -68,7 +74,23 @@ export default class UiGrid extends HTMLElement {
   }
 
   computeOptions() {
-    return [];
+    return [{
+      type: UiMenuItem,
+      label: 'Comment',
+      icon: 'comment',
+      key: 0
+    }, {
+      type: UiMenuSeperator,
+      key: 1
+    }, {
+      type: UiMenuItem,
+      label: 'Node 1',
+      key: 2
+    }, {
+      type: UiMenuItem,
+      label: 'Node 2',
+      key: 3
+    }];
   }
 
   render(changes) {
@@ -124,7 +146,7 @@ export default class UiGrid extends HTMLElement {
 
   #addNode(config: any) {
     const { $type } = config;
-    switch($type) {
+    switch ($type) {
       case 'entry': {
         const { $x, $y, icon } = config;
         this.#addNodeEntry($x, $y, icon);
