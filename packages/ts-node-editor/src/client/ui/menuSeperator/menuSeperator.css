@@ -1,3 +1,8 @@
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
 div.seperator {
     border-top: 1px solid #484848;
     margin: 0.25rem 0;
