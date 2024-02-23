@@ -12,6 +12,7 @@ import style from './nodeEntry.css';
 import { wireContextMenu, unwireContextMenu } from './../../utils/contextMenu';
 import UiNodeBase from '../nodeBase/nodeBase';
 import UiIcon from '../icon/icon';
+import UiMenuItem from '../menuItem/menuItem';
 
 @Component({
   selector: 'ui-node-entry',
@@ -26,8 +27,9 @@ export default class UiNodeEntry extends UiNodeBase {
   connectedCallback() {
     wireContextMenu(this, () => {
       return [{
+        type: UiMenuItem,
         label: 'Script',
-        value: 'script'
+        key: 'script'
       }];
     })
   }
