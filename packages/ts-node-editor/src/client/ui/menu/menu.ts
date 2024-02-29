@@ -17,6 +17,14 @@ export default class UiMenu extends HTMLElement {
 
   @Part() $items: HTMLDivElement;
 
+  handleSelect(e: any) {
+    this.dispatchEvent(new CustomEvent('select', {
+      detail: {
+        item: this.options.find(x => `${x.key}` === e.target.dataset.key)
+      }
+    }));
+  }
+
   render(changes) {
     if (changes.options) {
       /*iterate({
@@ -41,7 +49,10 @@ export default class UiMenu extends HTMLElement {
           Object.assign(existing, options);
         } else {
           const $new = document.createElement(camelToDash(option.type.name), option.type);
+          $new.dataset.key = option.key;
           Object.assign($new, options);
+          // only add click handlers if not presentational
+          $new.addEventListener('click', this.handleSelect.bind(this));
           this.$items.appendChild($new);
         }
       });

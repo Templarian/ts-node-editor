@@ -28,10 +28,20 @@ export default class UiNodeEntry extends UiNodeBase {
     wireContextMenu(this, () => {
       return [{
         type: UiMenuItem,
+        label: 'Application',
+        icon: 'appliation',
+        key: 'application'
+      }, {
+        type: UiMenuItem,
         label: 'Script',
+        icon: 'script',
         key: 'script'
       }];
-    })
+    }, this.handleContextMenu);
+  }
+
+  handleContextMenu() {
+    
   }
 
   render(changes) {

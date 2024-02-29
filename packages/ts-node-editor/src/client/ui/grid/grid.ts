@@ -25,7 +25,7 @@ export default class UiGrid extends HTMLElement {
   #cache = new Map();
 
   connectedCallback() {
-    wireContextMenu(this.$grid, this.computeOptions);
+    wireContextMenu(this.$grid, this.computeOptions, (item: any) => {});
     this.addEventListener('handlestart', this.handleStart.bind(this));
     this.addEventListener('handlemove', this.handleMove.bind(this));
     this.addEventListener('handleend', this.handleEnd.bind(this));
