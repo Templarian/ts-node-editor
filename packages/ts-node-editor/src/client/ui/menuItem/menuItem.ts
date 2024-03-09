@@ -29,12 +29,14 @@ export default class UiMenuItem extends HTMLElement {
       this.$label.textContent = this.label;
     }
     if (changes.icon) {
-      if (this.icon) {
+      if (this.icon && !this.$icon) {
         const $icon = document.createElement('ui-icon') as UiIcon;
         $icon.setAttribute('part', 'icon');
         $icon.size = 16;
         $icon.name = this.icon;
         this.$button.prepend($icon);
+      } else if (this.$icon) {
+        this.$icon.remove();
       }
     }
   }
