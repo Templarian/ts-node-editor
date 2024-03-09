@@ -12,6 +12,7 @@ import style from './nodeEntry.css';
 import { wireContextMenu, unwireContextMenu } from './../../utils/contextMenu';
 import UiNodeBase from '../nodeBase/nodeBase';
 import UiIcon from '../icon/icon';
+import UiMenu from '../menu/menu';
 import UiMenuItem from '../menuItem/menuItem';
 
 @Component({
@@ -25,23 +26,31 @@ export default class UiNodeEntry extends UiNodeBase {
   @Part() $icon: UiIcon;
 
   connectedCallback() {
-    wireContextMenu(this, () => {
-      return [{
-        type: UiMenuItem,
-        label: 'Application',
-        icon: 'appliation',
-        key: 'application'
-      }, {
-        type: UiMenuItem,
-        label: 'Script',
-        icon: 'script',
-        key: 'script'
-      }];
-    }, this.handleContextMenu);
+    wireContextMenu(
+      this,
+      {
+        open($menu: UiMenu) {
+          $menu.options = [{
+            type: UiMenuItem,
+            label: 'Application',
+            icon: 'appliation',
+            key: 'application'
+          }, {
+            type: UiMenuItem,
+            label: 'Script',
+            icon: 'script',
+            key: 'script'
+          }];
+        },
+        select(item: any) {
+          console.log(item);
+        }
+      }
+    );
   }
 
-  handleContextMenu() {
-    
+  handleContextMenu(item: any) {
+
   }
 
   render(changes) {

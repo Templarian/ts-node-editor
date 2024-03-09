@@ -10,6 +10,7 @@ import UiNodeFunction from '../nodeFunction/nodeFunction';
 import UiNodeImport from '../nodeImport/nodeImport';
 import UiNodeHandle from '../nodeHandle/nodeHandle';
 import UiNodeConnection from '../nodeConnection/nodeConnection';
+import UiMenu from '../menu/menu';
 import UiMenuItem from '../menuItem/menuItem';
 import UiMenuSeperator from '../menuSeperator/menuSeperator';
 
@@ -25,7 +26,40 @@ export default class UiGrid extends HTMLElement {
   #cache = new Map();
 
   connectedCallback() {
-    wireContextMenu(this.$grid, this.computeOptions, (item: any) => {});
+    wireContextMenu(this.$grid, {
+      open($menu: UiMenu) {
+        $menu.options = [{
+          type: UiMenuItem,
+          label: 'Comment',
+          icon: 'comment',
+          key: '0'
+        }, {
+          type: UiMenuSeperator,
+          key: '1'
+        }, {
+          type: UiMenuItem,
+          label: 'Node 1',
+          key: '2'
+        }, {
+          type: UiMenuItem,
+          label: 'Node 2',
+          key: '3'
+        }];
+        setTimeout(() => {
+          $menu.options.push({
+            type: UiMenuItem,
+            label: 'Node 3',
+            key: '4'
+          });
+        }, 3000);
+      },
+      select(item: any) {
+        console.log(item);
+      },
+      close(wasItemSelected: boolean) {
+        console.log('closed', wasItemSelected);
+      }
+    });
     this.addEventListener('handlestart', this.handleStart.bind(this));
     this.addEventListener('handlemove', this.handleMove.bind(this));
     this.addEventListener('handleend', this.handleEnd.bind(this));
@@ -71,26 +105,6 @@ export default class UiGrid extends HTMLElement {
       console.log(x, y);
       this._tempConnection.temporary = false;
     }
-  }
-
-  computeOptions() {
-    return [{
-      type: UiMenuItem,
-      label: 'Comment',
-      icon: 'comment',
-      key: 0
-    }, {
-      type: UiMenuSeperator,
-      key: 1
-    }, {
-      type: UiMenuItem,
-      label: 'Node 1',
-      key: 2
-    }, {
-      type: UiMenuItem,
-      label: 'Node 2',
-      key: 3
-    }];
   }
 
   render(changes) {

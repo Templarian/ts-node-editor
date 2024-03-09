@@ -27,6 +27,7 @@ export default class UiMenu extends HTMLElement {
 
   render(changes) {
     if (changes.options) {
+      console.log(this.options);
       /*iterate({
         parent: this.$items,
         key: 'value',
@@ -51,9 +52,10 @@ export default class UiMenu extends HTMLElement {
           const $new = document.createElement(camelToDash(option.type.name), option.type);
           $new.dataset.key = option.key;
           Object.assign($new, options);
-          // only add click handlers if not presentational
-          $new.addEventListener('click', this.handleSelect.bind(this));
           this.$items.appendChild($new);
+          if ($new.role !== 'presentation') {
+            $new.addEventListener('click', this.handleSelect.bind(this));
+          }
         }
       });
       /*

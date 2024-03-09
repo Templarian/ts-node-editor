@@ -8,4 +8,8 @@ import style from './menuSeperator.css';
   style,
   template
 })
-export default class UiMenuSeperator extends HTMLElement {}
+export default class UiMenuSeperator extends HTMLElement {
+  connectedCallback() {
+    this.role = 'presentation';
+  }
+}

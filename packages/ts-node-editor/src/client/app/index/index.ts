@@ -40,14 +40,14 @@ export default class AppIndex extends HTMLElement {
       $width: 10,
       $height: 6
     });
-    this.$grid.addNode({
+    /*this.$grid.addNode({
       $type: 'function',
       $name: 'coinFlip',
       $x: 15,
       $y: 1,
       $width: 10,
       $height: 6
-    });
+    });*/
   }
 
   render() {
