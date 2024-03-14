@@ -35,7 +35,7 @@ export default class UiMenuItem extends HTMLElement {
         $icon.size = 16;
         $icon.name = this.icon;
         this.$button.prepend($icon);
-      } else if (this.$icon) {
+      } else if (this.$icon && this.$icon.name !== this.icon) {
         this.$icon.remove();
       }
     }

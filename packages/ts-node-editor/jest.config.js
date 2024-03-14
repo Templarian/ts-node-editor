@@ -1,3 +1,3 @@
 export default {
-    preset: '@pictogrammers/element-jest'
+    preset: '@pictogrammers/element-jest',
 };

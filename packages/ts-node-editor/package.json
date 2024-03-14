@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "element-start",
-    "build": "element-build"
+    "build": "element-build",
+    "test": "jest --config ./jest.config.js --no-cache"
   },
   "bin": {
     "ts-node-editor": "./dist/server/server.js"
@@ -20,7 +21,7 @@
     "url": "https://github.com/Templarian/ts-node-editor/issues"
   },
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
-  "description": "",
+  "description": "Node editor for scripts",
   "devDependencies": {
     "@pictogrammers/element": "^0.0.35",
     "@pictogrammers/element-webpack": "^0.1.40",

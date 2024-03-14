@@ -3,5 +3,35 @@
   "references": [
     {"path": "./src/client"},
     {"path": "./src/server"}
-  ]
+  ],
+  "// Below is due to ts-jest bug!!!": true,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "composite": true,
+    "module": "ES6",
+    "moduleResolution": "Node10",
+    "target": "ES6",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": [
+      "ES5",
+      "ES6",
+      "ES2020",
+      "DOM"
+    ],
+    "types": [
+      "node",
+      "jest",
+      "@pictogrammers/element-jest"
+    ],
+    "paths": {
+      "@pictogrammers/element": [
+        "./../../node_modules/@pictogrammers/element"
+      ],
+      "@pictogrammers/element-jest": [
+        "./../../node_modules/@pictogrammers/element-jest"
+      ]
+    }
+  }
 }
