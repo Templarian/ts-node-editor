@@ -17,13 +17,6 @@ export default class UiMenuItem extends HTMLElement {
   @Part() $label: HTMLSpanElement;
   @Part() $icon: UiIcon;
 
-  connectedCallback() {
-    this.$button.addEventListener('click', (e: any) => {
-      this.dispatchEvent(new CustomEvent('click'));
-      e.preventDefault();
-    });
-  }
-
   render(changes) {
     if (changes.label) {
       this.$label.textContent = this.label;

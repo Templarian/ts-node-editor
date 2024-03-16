@@ -6,7 +6,7 @@ interface Option {
 }
 
 type Events = {
-    open: ($menu: UiMenu) => void;
+    open: ($menu: UiMenu, x: number, y: number) => void;
     select: (item: any) => void;
     close?: (wasItemSelected: boolean) => void;
 };
@@ -20,7 +20,12 @@ function handleContextMenu(e: any, events: Events) {
     $menu.style.setProperty('--ui-menu-x', `${e.pageX}`);
     $menu.style.setProperty('--ui-menu-y', `${e.pageY}`);
     $menu.options = [];
-    events.open($menu);
+    const rect = e.target.getBoundingClientRect();
+    events.open(
+        $menu,
+        e.pageX - rect.x,
+        e.pageY - rect.y
+    );
     const handleMouseDown = (e2: any) => {
         if (e2.target.dataset.active === 'true') {
             return;

@@ -29,21 +29,26 @@ export default class UiNodeEntry extends UiNodeBase {
     wireContextMenu(
       this,
       {
-        open($menu: UiMenu) {
+        open($menu: UiMenu, x: number, y: number) {
           $menu.options = [{
             type: UiMenuItem,
             label: 'Application',
-            icon: 'appliation',
+            icon: 'application',
             key: 'application'
           }, {
             type: UiMenuItem,
             label: 'Script',
             icon: 'script',
             key: 'script'
+          }, {
+            type: UiMenuItem,
+            label: 'Potion',
+            icon: 'potion',
+            key: 'potion'
           }];
         },
-        select(item: any) {
-          console.log(item);
+        select: (item: any) => {
+          this.$icon.name = item.key;
         }
       }
     );

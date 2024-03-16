@@ -13,6 +13,7 @@ import UiNodeConnection from '../nodeConnection/nodeConnection';
 import UiMenu from '../menu/menu';
 import UiMenuItem from '../menuItem/menuItem';
 import UiMenuSeperator from '../menuSeperator/menuSeperator';
+import { getPath } from '../../utils/mouse';
 
 @Component({
   selector: 'ui-grid',
@@ -27,7 +28,10 @@ export default class UiGrid extends HTMLElement {
 
   connectedCallback() {
     wireContextMenu(this.$grid, {
-      open($menu: UiMenu) {
+      open($menu: UiMenu, x: number, y: number) {
+        const nX = Math.floor(x / 20);
+        const nY = Math.floor(y / 20);
+        console.log(nX, nY);
         $menu.options = [{
           type: UiMenuItem,
           label: 'Comment',
@@ -54,6 +58,20 @@ export default class UiGrid extends HTMLElement {
         }, 3000);
       },
       select(item: any) {
+        if (item.key === '0') {
+          const v = getPath(
+            [
+              [0, 1, 1, 1, 1],
+              [0, 1, 1, 1, 1],
+              [0, 1, 1, 1, 1],
+              [0, 0, 0, 0, 1],
+              [1, 1, 1, 0, 0]
+            ],
+            { x: 0, y: 0 },
+            { x: 4, y: 4 }
+          );
+          console.log(v);
+        }
         console.log(item);
       },
       close(wasItemSelected: boolean) {
