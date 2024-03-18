@@ -25,22 +25,11 @@ export default class UiNodeFunction extends UiNodeBase {
     if (changes.name) {
       this.$label.textContent = this.name;
     }
-    if (changes.testing) {
-      console.log('updated testing', this.testing, this.testing.length);
-    }
   }
-
-  @Part() $button: HTMLButtonElement;
 
   @Prop() testing = [];
 
   connectedCallback() {
-    this.$button.addEventListener('click', () => {
-      if (this.testing.length >= 1) {
-        this.testing.push('thr');
-      } else {
-        this.testing = ['one', 'two'];
-      }
-    });
+    
   }
 }

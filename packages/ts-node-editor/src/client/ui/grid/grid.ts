@@ -175,6 +175,7 @@ export default class UiGrid extends HTMLElement {
   }
 
   #nodes = [];
+  #matrix = [[true]];
 
   #addNode(config: any) {
     const { $type } = config;
@@ -199,6 +200,14 @@ export default class UiGrid extends HTMLElement {
     }
   }
 
+  #updateCollision() {
+    const columns = 10;
+    const rows = 10;
+    this.#matrix = Array.from({ length: rows }, () => (
+      Array.from({ length: columns }, () => false)
+    ));
+  }
+
   #addNodeEntry(x: number, y: number, icon: string) {
     const $nodeComment = document.createElement('ui-node-entry') as UiNodeEntry;
     $nodeComment.x = x;
@@ -210,6 +219,7 @@ export default class UiGrid extends HTMLElement {
       icon: icon
     });
     this.#addNodeHandle(x + 2, y + 1, -2, 0);
+    this.#updateCollision();
   }
 
   #addNodeFunction(x: number, y: number, width: number, height: number, name: string, args: any) {
@@ -233,6 +243,7 @@ export default class UiGrid extends HTMLElement {
     });
     this.#addNodeHandle(x, y + 1, 2, 0);
     this.#addNodeHandle(x + width, y + 1, -2, 0);
+    this.#updateCollision();
   }
 
   #addNodeImport(x: number, y: number, path: string[], src: string) {

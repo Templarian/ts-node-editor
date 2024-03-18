@@ -5,6 +5,7 @@
     --grid-dark: #464646;
     --node-light: #666666;
     --ui-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --ui-font-mono: 'Courier New', Courier, monospace;
     --line-normal: #FFF;
     --line-hover: #248AE4;
 }
