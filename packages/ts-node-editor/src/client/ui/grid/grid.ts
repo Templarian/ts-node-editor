@@ -201,11 +201,29 @@ export default class UiGrid extends HTMLElement {
   }
 
   #updateCollision() {
-    const columns = 10;
-    const rows = 10;
+    /*const columns = 20 * 2;
+    const rows = 0 * 2;
     this.#matrix = Array.from({ length: rows }, () => (
       Array.from({ length: columns }, () => false)
     ));
+    this.#nodes.forEach(node => {
+      this.#matrix[node.$y * 2][node.$x * 2] = true;
+    });
+    // Debug
+    this.#matrix.forEach((row, rowIndex) => {
+      row.forEach((column, columnIndex) => {
+        const x = Math.floor(columnIndex / 2);
+        const y = Math.floor(rowIndex / 2);
+        const dot = document.createElement('div');
+        dot.style.setProperty('grid-column', `${x + 1}`);
+        dot.style.setProperty('grid-row', `${y + 1}`);
+        dot.style.setProperty('background', column ? 'red' : '#000');
+        dot.style.width = '4px';
+        dot.style.height = '4px';
+        dot.style.transform = `translate(${columnIndex % 2 ? 6 : -4}px, ${rowIndex % 2 ? 6 : -4}px)`;
+        this.$grid.appendChild(dot);
+      });
+    });*/
   }
 
   #addNodeEntry(x: number, y: number, icon: string) {
@@ -216,6 +234,8 @@ export default class UiGrid extends HTMLElement {
     this.#nodes.push({
       $x: x,
       $y: y,
+      $width: 2,
+      $height: 2,
       icon: icon
     });
     this.#addNodeHandle(x + 2, y + 1, -2, 0);
