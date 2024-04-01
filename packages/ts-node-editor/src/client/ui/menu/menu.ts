@@ -3,11 +3,22 @@ import { Component, Prop, Part } from '@pictogrammers/element';
 import template from "./menu.html";
 import style from './menu.css';
 
+import UiMenuItem from '../menuItem/menuItem';
+import UiMenuSeperator from '../menuSeperator/menuSeperator';
+
 function camelToDash(str: string): string {
   return str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
 }
 
-function iterate({ container, items, create, update }: { container: HTMLElement, items: any[], create?: any, update?: any }) {
+type Iterate = {
+  container: HTMLElement;
+  items: any[];
+  type: (item: any) => any;
+  create?: ($item: HTMLElement, item: any) => void;
+  update?: ($item: HTMLElement, item: any) => void;
+}
+
+function iterate({ container, items, type, create, update }: Iterate) {
   const existing = new Map();
   Array.from(container.children).map(($item: HTMLElement) => {
     existing.set($item.dataset.key, $item);
@@ -24,6 +35,7 @@ function iterate({ container, items, create, update }: { container: HTMLElement,
         Object.assign(existing.get(key), options);
         update && update(existing.get(key), options);
     } else {
+      option.type = type(options);
       const $new = document.createElement(camelToDash(option.type.name), option.type);
       $new.dataset.key = option.key;
       Object.assign($new, options);
@@ -62,6 +74,9 @@ export default class UiMenu extends HTMLElement {
       iterate({
         container: this.$items,
         items: this.options,
+        type: (item) => {
+          return item.label ? UiMenuItem : UiMenuSeperator;
+        },
         create: ($item, item) => {
           if ($item.role !== 'presentation') {
             $item.addEventListener('click', this.handleSelect.bind(this));

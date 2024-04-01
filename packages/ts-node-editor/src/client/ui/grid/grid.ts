@@ -11,8 +11,6 @@ import UiNodeImport from '../nodeImport/nodeImport';
 import UiNodeHandle from '../nodeHandle/nodeHandle';
 import UiNodeConnection from '../nodeConnection/nodeConnection';
 import UiMenu from '../menu/menu';
-import UiMenuItem from '../menuItem/menuItem';
-import UiMenuSeperator from '../menuSeperator/menuSeperator';
 import { getPath } from '../../utils/mouse';
 
 @Component({
@@ -33,25 +31,20 @@ export default class UiGrid extends HTMLElement {
         const nY = Math.floor(y / 20);
         console.log(nX, nY);
         $menu.options = [{
-          type: UiMenuItem,
           label: 'Comment',
           icon: 'comment',
           key: '0'
         }, {
-          type: UiMenuSeperator,
           key: '1'
         }, {
-          type: UiMenuItem,
           label: 'Node 1',
           key: '2'
         }, {
-          type: UiMenuItem,
           label: 'Node 2',
           key: '3'
         }];
         setTimeout(() => {
           $menu.options.push({
-            type: UiMenuItem,
             label: 'Node 3',
             key: '4'
           });
