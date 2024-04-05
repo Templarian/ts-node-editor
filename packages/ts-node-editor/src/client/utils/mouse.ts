@@ -29,7 +29,7 @@ export function getPath(matrix: number[][], start: Point, end: Point): Point[] {
 
         for (var i = 0; i < direction.length; i++) {
             if (direction[i][0] == end.x && direction[i][1] == end.y) {
-                path.concat([[end.x, end.y]]);
+                path.push([end.x, end.y]);
                 return path.map(([y, x]) => ({ x, y }));
             }
 
