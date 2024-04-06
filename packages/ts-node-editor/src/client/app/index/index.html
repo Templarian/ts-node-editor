@@ -3,27 +3,27 @@
         <ui-icon name="panel-expand-right" size="16"></ui-icon>
     </ui-button>
     <ui-seperator></ui-seperator>
-    <ui-button id="debug">
-        <ui-icon id="debugCheck" name="checkbox-blank" size="16" slot="start"></ui-icon>
-        Debug Mode
+    <ui-button part="debug">
+        <ui-icon part="debugCheck" name="checkbox-blank" size="16" slot="start"></ui-icon>
+        <span style="margin-left:0.375rem;">Debug Mode</span>
     </ui-button>
     <ui-seperator></ui-seperator>
-    <ui-button id="debugPlay" tooltip="Play">
+    <ui-button part="debugPlay" tooltip="Play">
         <ui-icon name="play" size="16"></ui-icon>
     </ui-button>
-    <ui-button id="debugPrevious" tooltip="Previous" disabled>
+    <ui-button part="debugPrevious" tooltip="Previous" disabled>
         <ui-icon name="step-backward" size="16"></ui-icon>
     </ui-button>
-    <ui-button id="debugNext" tooltip="Next">
+    <ui-button part="debugNext" tooltip="Next">
         <ui-icon name="step-forward" size="16"></ui-icon>
     </ui-button>
-    <ui-button id="debugRestart" tooltip="Restart">
+    <ui-button part="debugRestart" tooltip="Restart">
         <ui-icon name="restart" size="16"></ui-icon>
     </ui-button>
     <span style="flex: 1"></span>
     <ui-button id="debugRestart" tooltip="View on GitHub">
         <ui-icon name="link-external" size="16" slot="end"></ui-icon>
-        Documentation
+        <span style="margin-right: 0.375rem">Documentation</span>
     </ui-button>
 </ui-header>
 <div style="grid-row: 2;grid-column: 1;">
@@ -34,4 +34,3 @@
     File Menu...
 </div>
 <ui-grid part="grid" style="grid-row: 2;grid-column: 2;"></ui-grid>
-</div>
