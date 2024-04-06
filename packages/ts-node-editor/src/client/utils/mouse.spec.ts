@@ -42,4 +42,16 @@ describe('mouse', () => {
     expect(JSON.stringify(result)).toBe(JSON.stringify(expects));
   });
 
+  it('should feel bad the mouse could not find cheeze', () => {
+    const matrix = [
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0]
+    ];
+    const result = getPath(matrix, { x: 0, y: 1 }, { x: 3, y: 2 });
+    const expects = [];
+    expect(JSON.stringify(result)).toBe(JSON.stringify(expects));
+  });
+
 });
