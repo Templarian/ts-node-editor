@@ -32,23 +32,22 @@ export default class UiButton extends HTMLElement {
         let slots = this.shadowRoot?.querySelectorAll("slot");
         slots?.forEach((slot) => {
             slot.addEventListener('slotchange', () => {
+                const defaultSlot = this.shadowRoot.querySelector(`slot:not([name])`) as HTMLSlotElement;
+                const empty = isNodesEmpty(defaultSlot.assignedNodes());
+                if (empty) {
+                    return;
+                }
                 const elements = slot.assignedElements() as HTMLElement[];
                 switch(slot.name) {
                     case 'start':
-                        console.log('start', isNodesEmpty(slot.assignedNodes()));
                         elements.forEach((element: HTMLElement) => {
                             element.style.setProperty('margin-right', '0.375rem');
                         });
                         break;
                     case 'end':
-                        console.log('end', isNodesEmpty(slot.assignedNodes()));
                         elements.forEach((element: HTMLElement) => {
                             element.style.setProperty('margin-left', '0.375rem');
                         });
-                        break;
-                    default:
-                        const empty = isNodesEmpty(slot.assignedNodes());
-                        console.log('default', empty);
                         break;
                 }
             });
