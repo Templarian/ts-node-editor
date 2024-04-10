@@ -83,10 +83,20 @@ export default class UiGrid extends HTMLElement {
     });
     this.$scroll.scrollTop = 400 - 32;
     this.$scroll.scrollLeft = 400 - 32;
+    // Drag
+    this.$grid.addEventListener('pointerdown', this.handleDragStart.bind(this));
   }
 
   disconnectedCallback() {
     unwireContextMenu(this.$grid);
+  }
+
+  handleDragStart() {
+
+  }
+
+  handleDragEnd() {
+    
   }
 
   _startX;

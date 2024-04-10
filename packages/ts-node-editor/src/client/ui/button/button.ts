@@ -4,6 +4,18 @@ import { unwireTooltip, wireTooltip } from '../../utils/tooltip';
 import template from "./button.html";
 import style from './button.css';
 
+function isNodesEmpty(nodes: Node[]) {
+    for(const node of nodes) {
+        if (node.nodeName !== '#text') {
+            return false;
+        }
+        if (node.nodeValue.trim() !== '') {
+            return false;
+        }
+    }
+    return true;
+}
+
 @Component({
     selector: 'ui-button',
     style,
@@ -23,18 +35,26 @@ export default class UiButton extends HTMLElement {
                 const elements = slot.assignedElements() as HTMLElement[];
                 switch(slot.name) {
                     case 'start':
+                        console.log('start', isNodesEmpty(slot.assignedNodes()));
                         elements.forEach((element: HTMLElement) => {
-                            element.style.setProperty('margin-right', '0.25rem');
+                            element.style.setProperty('margin-right', '0.375rem');
                         });
                         break;
                     case 'end':
+                        console.log('end', isNodesEmpty(slot.assignedNodes()));
                         elements.forEach((element: HTMLElement) => {
-                            element.style.setProperty('margin-left', '0.25rem');
+                            element.style.setProperty('margin-left', '0.375rem');
                         });
+                        break;
+                    default:
+                        const empty = isNodesEmpty(slot.assignedNodes());
+                        console.log('default', empty);
                         break;
                 }
             });
         });
+        // Stop context menu
+        this.addEventListener('contextmenu', (e) => { e.preventDefault(); });
     }
 
     render(changes) {
