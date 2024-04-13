@@ -51,20 +51,6 @@ export default class UiGrid extends HTMLElement {
         }, 3000);
       },
       select(item: any) {
-        if (item.key === '0') {
-          const v = getPath(
-            [
-              [0, 1, 1, 1, 1],
-              [0, 1, 1, 1, 1],
-              [0, 1, 1, 1, 1],
-              [0, 0, 0, 0, 1],
-              [1, 1, 1, 0, 0]
-            ],
-            { x: 0, y: 0 },
-            { x: 4, y: 4 }
-          );
-          console.log(v);
-        }
         console.log(item);
       },
       close(wasItemSelected: boolean) {
@@ -96,7 +82,7 @@ export default class UiGrid extends HTMLElement {
   }
 
   handleDragEnd() {
-    
+
   }
 
   _startX;
@@ -178,7 +164,7 @@ export default class UiGrid extends HTMLElement {
   }
 
   #nodes = [];
-  #matrix = [[true]];
+  #matrix = [[]];
 
   #addNode(config: any) {
     const { $type } = config;
@@ -203,30 +189,63 @@ export default class UiGrid extends HTMLElement {
     }
   }
 
+  #cacheDots = [];
   #updateCollision() {
-    /*const columns = 20 * 2;
-    const rows = 0 * 2;
+    const columns = 20 * 2;
+    const rows = 24 * 2;
     this.#matrix = Array.from({ length: rows }, () => (
-      Array.from({ length: columns }, () => false)
+      Array.from({ length: columns }, () => 0)
     ));
-    this.#nodes.forEach(node => {
-      this.#matrix[node.$y * 2][node.$x * 2] = true;
+    this.#cacheDots = Array.from({ length: rows * 2 }, () => (
+      Array.from({ length: columns * 2 }, () => null)
+    ));
+    // No lines on the boxes
+    [...this.#nodes, ...this.#comments].forEach(node => {
+      const x = node.$x * 2;
+      const y = node.$y * 2;
+      const width = node.$width * 2 + 1;
+      const height = node.$height * 2 + 1;
+      for (let iy = y; iy < y + height; iy++) {
+        for (let ix = x; ix < x + width; ix++) {
+          this.#matrix[iy][ix] = 1;
+        }
+      }
+      // Carve out the drag handles
+      if (node.$type === 'function') {
+        this.#matrix[y + 2][x + width - 1] = 0;
+      }
     });
+    let startX = null, startY = null;
     // Debug
     this.#matrix.forEach((row, rowIndex) => {
       row.forEach((column, columnIndex) => {
         const x = Math.floor(columnIndex / 2);
         const y = Math.floor(rowIndex / 2);
-        const dot = document.createElement('div');
+        const dot = document.createElement('span');
+        this.#cacheDots[rowIndex][columnIndex] = dot;
         dot.style.setProperty('grid-column', `${x + 1}`);
         dot.style.setProperty('grid-row', `${y + 1}`);
         dot.style.setProperty('background', column ? 'red' : '#000');
         dot.style.width = '4px';
         dot.style.height = '4px';
         dot.style.transform = `translate(${columnIndex % 2 ? 6 : -4}px, ${rowIndex % 2 ? 6 : -4}px)`;
+        let down = null;
+        dot.addEventListener('pointerdown', () => {
+          startY = rowIndex;
+          startX = columnIndex;
+          console.log(startX, startY);
+        });
+        dot.addEventListener('pointerup', () => {
+          console.log(startX, startY, rowIndex, columnIndex);
+          const path = getPath(this.#matrix, { x: startX, y: startY }, { x: columnIndex, y: rowIndex });
+          // turn the squares a different color
+          path.forEach(point => {
+            this.#cacheDots[point.y][point.x].style.setProperty('background', 'green');
+          });
+        });
         this.$grid.appendChild(dot);
       });
-    });*/
+    });
   }
 
   #addNodeEntry(x: number, y: number, icon: string) {
@@ -235,6 +254,7 @@ export default class UiGrid extends HTMLElement {
     $nodeComment.y = y;
     this.$grid.appendChild($nodeComment);
     this.#nodes.push({
+      $type: 'function',
       $x: x,
       $y: y,
       $width: 2,
