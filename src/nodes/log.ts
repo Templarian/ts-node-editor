@@ -10,7 +10,7 @@ export function log({ nodes, message }: {
     /**
      * Message
      * @description Use ${key} to reference state values.
-     * @editor string
+     * @editor Text
      */
     message: string
 }): Node[] {

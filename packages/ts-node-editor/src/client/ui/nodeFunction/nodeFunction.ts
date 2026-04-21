@@ -19,6 +19,7 @@ export default class UiNodeFunction extends UiNodeBase {
   @Prop(normalizeString) name;
   @Prop() args: any;
 
+  @Part() $header: HTMLDivElement;
   @Part() $label: HTMLSpanElement;
 
   render(changes) {
@@ -30,6 +31,10 @@ export default class UiNodeFunction extends UiNodeBase {
   @Prop() testing = [];
 
   connectedCallback() {
-    
+    this.$header.addEventListener('doubleclick', this.handleSelect.bind(this));
+  }
+
+  handleSelect() {
+    this.classList.add('selected');
   }
 }

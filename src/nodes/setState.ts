@@ -11,11 +11,13 @@ export function setState({ state, nodes, key, value }: {
     /**
      * Key
      * @description Unique value.
+     * @editor Text
      */
     key: string,
     /**
      * Value
      * @description Use ${key} to reference state values.
+     * @editor Text
      */
     value: string
 }): Node[] {

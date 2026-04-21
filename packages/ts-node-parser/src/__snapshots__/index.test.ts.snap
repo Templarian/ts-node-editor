@@ -1,0 +1,231 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseScripts > parses all scripts 1`] = `
+[
+  {
+    "description": "Flip a coin and log which is selected",
+    "entryPosition": {
+      "x": 0,
+      "y": 5,
+    },
+    "imports": [
+      "node",
+      "coinFlip",
+      "log",
+    ],
+    "initialState": {},
+    "name": "demoCoinFlip",
+    "nodes": [
+      {
+        "args": {
+          "f": [
+            3,
+          ],
+          "t": [
+            2,
+          ],
+        },
+        "id": 1,
+        "position": {
+          "x": 4,
+          "y": 1,
+        },
+        "type": "coinFlip",
+      },
+      {
+        "args": {
+          "message": "Heads",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 2,
+        "position": {
+          "x": 11,
+          "y": 1,
+        },
+        "type": "log",
+      },
+      {
+        "args": {
+          "message": "Tails",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 3,
+        "position": {
+          "x": 11,
+          "y": 8,
+        },
+        "type": "log",
+      },
+    ],
+  },
+  {
+    "description": "Ask the player which door to enter and log the result.",
+    "entryPosition": {
+      "x": 0,
+      "y": 5,
+    },
+    "imports": [
+      "node",
+      "dialog",
+      "choice",
+      "log",
+    ],
+    "initialState": {},
+    "name": "demoDialog",
+    "nodes": [
+      {
+        "args": {
+          "character": "Guide",
+          "nodes": [
+            2,
+            3,
+          ],
+          "text": "Which door will you choose?",
+        },
+        "id": 1,
+        "position": {
+          "x": 4,
+          "y": 1,
+        },
+        "type": "Dialog",
+      },
+      {
+        "args": {
+          "nodes": [
+            4,
+          ],
+          "text": "Red Door",
+        },
+        "id": 2,
+        "position": {
+          "x": 11,
+          "y": 1,
+        },
+        "type": "Choice",
+      },
+      {
+        "args": {
+          "nodes": [
+            5,
+          ],
+          "text": "Blue Door",
+        },
+        "id": 3,
+        "position": {
+          "x": 11,
+          "y": 4,
+        },
+        "type": "Choice",
+      },
+      {
+        "args": {
+          "message": "You entered the red room",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 4,
+        "position": {
+          "x": 18,
+          "y": 1,
+        },
+        "type": "log",
+      },
+      {
+        "args": {
+          "message": "You entered the blue room",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 5,
+        "position": {
+          "x": 18,
+          "y": 4,
+        },
+        "type": "log",
+      },
+    ],
+  },
+  {
+    "description": "The hello world script takes in a name.
+This allows multiple line comment blocks also.",
+    "entryPosition": {
+      "x": 0,
+      "y": 5,
+    },
+    "imports": [
+      "node",
+      "setState",
+    ],
+    "initialState": {
+      "name": "John",
+    },
+    "name": "helloWorld",
+    "nodes": [
+      {
+        "args": {
+          "key": "message",
+          "nodes": [
+            0,
+          ],
+          "value": "\`Hello \${state.get('name')}!\`",
+        },
+        "id": 1,
+        "position": {
+          "x": 4,
+          "y": 1,
+        },
+        "type": "setState",
+      },
+    ],
+  },
+  {
+    "description": "Import Hello World",
+    "entryPosition": {
+      "x": 0,
+      "y": 5,
+    },
+    "imports": [
+      "node",
+      "setState",
+    ],
+    "initialState": {
+      "name": "John",
+    },
+    "name": "helloWorldInclude",
+    "nodes": [
+      {
+        "args": {
+          "key": "name",
+          "nodes": [
+            2,
+          ],
+          "value": "John",
+        },
+        "id": 1,
+        "position": {
+          "x": 4,
+          "y": 1,
+        },
+        "type": "setState",
+      },
+      {
+        "args": {
+          "script": "HelloWorld",
+        },
+        "id": 2,
+        "position": {
+          "x": 10,
+          "y": 1,
+        },
+        "type": "include",
+      },
+    ],
+  },
+]
+`;

@@ -11,3 +11,9 @@
     border: 1px solid var(--node-light);
     color: #FFF;
 }
+
+:host(.selected) {
+    border-width: 2px;
+    border-color: #248AE4;
+    margin: -1px;
+}

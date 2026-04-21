@@ -11,10 +11,12 @@ export async function Dialog({ state, node, nodes, character, text }: {
     nodes: Node[],
     /**
      * Character
+     * @editor Character
      */
     character: string,
     /**
      * Text
+     * @editor Text
      */
     text: string
 }): Promise<Node[]> {
