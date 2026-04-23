@@ -6,6 +6,18 @@ export interface Position {
     y: number;
 }
 
+export interface CommentPosition {
+    x: number;
+    y: number;
+    width: number | null;
+    height: number | null;
+}
+
+export interface ScriptComment {
+    position: CommentPosition;
+    text: string;
+}
+
 export interface ScriptNode {
     id: number;
     position: Position | null;
@@ -15,10 +27,9 @@ export interface ScriptNode {
 
 export interface ParsedScript {
     name: string;
-    entryPosition: Position | null;
-    description: string;
     initialState: Record<string, string>;
     imports: string[];
+    comments: ScriptComment[];
     nodes: ScriptNode[];
 }
 
@@ -31,9 +42,20 @@ function commentText(range: ts.CommentRange, source: string): string {
     return source.substring(range.pos + 2, range.end - 2).trim();
 }
 
+function parseCommentPosition(text: string): CommentPosition | null {
+    const m = text.match(/^(\d+)\s+(\d+)\s+(-|\d+)\s+(-|\d+)/);
+    if (!m) return null;
+    return {
+        x: parseInt(m[1], 10),
+        y: parseInt(m[2], 10),
+        width: m[3] === '-' ? null : parseInt(m[3], 10),
+        height: m[4] === '-' ? null : parseInt(m[4], 10),
+    };
+}
+
 function parsePosition(text: string): Position | null {
-    const m = text.match(/^(\d+)\s+(\d+)\s+-\s+-/);
-    return m ? { x: parseInt(m[1], 10), y: parseInt(m[2], 10) } : null;
+    const p = parseCommentPosition(text);
+    return p ? { x: p.x, y: p.y } : null;
 }
 
 function extractValue(node: ts.Expression, source: string): unknown {
@@ -118,10 +140,9 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
 
     const parsed: ParsedScript = {
         name: path.basename(name, '.ts'),
-        entryPosition: null,
-        description: '',
         initialState: {},
         imports: [],
+        comments: [],
         nodes: [],
     };
 
@@ -133,22 +154,34 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
 
     if (runFn) {
         const ranges = ts.getLeadingCommentRanges(source, runFn.getFullStart()) ?? [];
-        const descLines: string[] = [];
+        let current: { position: CommentPosition; lines: string[] } | null = null;
+
+        const flushComment = () => {
+            if (current) {
+                parsed.comments.push({ position: current.position, text: current.lines.join('\n') });
+                current = null;
+            }
+        };
+
         for (const range of ranges) {
             const text = commentText(range, source);
-            const pos = parsePosition(text);
-            if (pos && !parsed.entryPosition) {
-                parsed.entryPosition = pos;
-                continue;
-            }
             const stateMatch = text.match(/^(\w+):\s+"(.*)"/);
             if (stateMatch) {
+                flushComment();
                 parsed.initialState[stateMatch[1]] = stateMatch[2];
                 continue;
             }
-            descLines.push(text);
+            const pos = parseCommentPosition(text);
+            if (pos) {
+                flushComment();
+                current = { position: pos, lines: [] };
+                continue;
+            }
+            if (current) {
+                current.lines.push(text);
+            }
         }
-        parsed.description = descLines.join('\n').trim();
+        flushComment();
     }
 
     for (const stmt of sf.statements) {

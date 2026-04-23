@@ -3,11 +3,17 @@
 exports[`parseScripts > parses all scripts 1`] = `
 [
   {
-    "description": "Flip a coin and log which is selected",
-    "entryPosition": {
-      "x": 0,
-      "y": 5,
-    },
+    "comments": [
+      {
+        "position": {
+          "height": null,
+          "width": null,
+          "x": 0,
+          "y": 5,
+        },
+        "text": "Flip a coin and log which is selected",
+      },
+    ],
     "imports": [
       "node",
       "coinFlip",
@@ -63,11 +69,17 @@ exports[`parseScripts > parses all scripts 1`] = `
     ],
   },
   {
-    "description": "Ask the player which door to enter and log the result.",
-    "entryPosition": {
-      "x": 0,
-      "y": 5,
-    },
+    "comments": [
+      {
+        "position": {
+          "height": null,
+          "width": null,
+          "x": 0,
+          "y": 5,
+        },
+        "text": "Ask the player which door to enter and log the result.",
+      },
+    ],
     "imports": [
       "node",
       "dialog",
@@ -152,12 +164,18 @@ exports[`parseScripts > parses all scripts 1`] = `
     ],
   },
   {
-    "description": "The hello world script takes in a name.
+    "comments": [
+      {
+        "position": {
+          "height": null,
+          "width": null,
+          "x": 0,
+          "y": 5,
+        },
+        "text": "The hello world script takes in a name.
 This allows multiple line comment blocks also.",
-    "entryPosition": {
-      "x": 0,
-      "y": 5,
-    },
+      },
+    ],
     "imports": [
       "node",
       "setState",
@@ -185,11 +203,17 @@ This allows multiple line comment blocks also.",
     ],
   },
   {
-    "description": "Import Hello World",
-    "entryPosition": {
-      "x": 0,
-      "y": 5,
-    },
+    "comments": [
+      {
+        "position": {
+          "height": null,
+          "width": null,
+          "x": 0,
+          "y": 5,
+        },
+        "text": "Import Hello World",
+      },
+    ],
     "imports": [
       "node",
       "setState",

@@ -294,18 +294,19 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
     let runFn = createRunFunction(script, nodesDir);
 
     // Attach file-level metadata as synthetic leading comments on the run function
-    const comments: Array<[text: string, newline: boolean]> = [];
+    const leadingComments: string[] = [];
     for (const [key, val] of Object.entries(script.initialState)) {
-        comments.push([` ${key}: "${val}"`, true]);
+        leadingComments.push(` ${key}: "${val}"`);
     }
-    if (script.entryPosition) {
-        comments.push([` ${script.entryPosition.x} ${script.entryPosition.y} - -`, true]);
+    for (const comment of script.comments) {
+        const { x, y, width, height } = comment.position;
+        leadingComments.push(` ${x} ${y} ${width ?? '-'} ${height ?? '-'}`);
+        for (const line of comment.text.split('\n').filter(Boolean)) {
+            leadingComments.push(` ${line}`);
+        }
     }
-    for (const line of script.description.split('\n').filter(Boolean)) {
-        comments.push([` ${line}`, true]);
-    }
-    for (const [text, newline] of comments) {
-        runFn = ts.addSyntheticLeadingComment(runFn, ts.SyntaxKind.SingleLineCommentTrivia, text, newline);
+    for (const text of leadingComments) {
+        runFn = ts.addSyntheticLeadingComment(runFn, ts.SyntaxKind.SingleLineCommentTrivia, text, true);
     }
 
     statements.push(runFn);
