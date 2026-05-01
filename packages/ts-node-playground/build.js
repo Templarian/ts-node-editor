@@ -55,7 +55,13 @@ const html = `<!DOCTYPE html>
   .badge-dialogChoice  { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
   .badge-random        { background: #dc262622; color: #fca5a5; border: 1px solid #dc262655; }
   .badge-randomChoice  { background: #ea580c22; color: #fdba74; border: 1px solid #ea580c55; }
-  .badge-setState      { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
+  .badge-get           { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
+  .badge-set           { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
+  .badge-add           { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-subtract      { background: #e11d4822; color: #fda4af; border: 1px solid #e11d4855; }
+  .badge-multiply      { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
+  .badge-divide        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
+  .badge-unset         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
   .badge-log           { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
   .badge-include       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
   .badge-end           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
@@ -125,7 +131,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', setstate: 'setState', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -185,20 +191,34 @@ function executeNode(nodeId) {
 
   const type = node.type;
 
-  if (type === 'setState') {
+  if (type === 'get') {
     const key = String(node.args.key || '');
-    const rawVal = String(node.args.value || '');
-    const evaluated = evalValue(rawVal);
-    state.set(key, evaluated);
+    const opNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
+    const ops = opNodeIds.map(id => nodeById(id)).filter(Boolean);
+    let nextId = 0;
+    const opSummary = [];
+    for (const op of ops) {
+      const cur = state.has(key) ? parseFloat(String(state.get(key))) || 0 : 0;
+      const val = op.args.value;
+      if (op.type === 'set') state.set(key, evalValue(String(val ?? '')));
+      else if (op.type === 'add') state.set(key, cur + Number(val));
+      else if (op.type === 'subtract') state.set(key, cur - Number(val));
+      else if (op.type === 'multiply') state.set(key, cur * Number(val));
+      else if (op.type === 'divide') state.set(key, cur / Number(val));
+      else if (op.type === 'unset') state.delete(key);
+      opSummary.push(val !== undefined ? \`\${op.type} \${val}\` : op.type);
+      if (nextId === 0) nextId = Array.isArray(op.args.nodes) ? (op.args.nodes[0] ?? 0) : 0;
+    }
     renderState();
+    const newVal = state.has(key) ? String(state.get(key)) : '(unset)';
     const body = \`<div class="card-body">
       <div class="row"><span class="label">key</span><span class="val mono">\${esc(key)}</span></div>
-      <div class="row"><span class="label">value</span><span class="val mono">\${esc(evaluated)}</span></div>
+      <div class="row"><span class="label">ops</span><span class="val mono">\${esc(opSummary.join(', '))}</span></div>
+      <div class="row"><span class="label">result</span><span class="val mono">\${esc(newVal)}</span></div>
       <div class="outcome">→ state updated</div>
     </div>\`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
-    const next = Array.isArray(node.args.nodes) ? node.args.nodes[0] : 0;
-    executeNode(next ?? 0);
+    executeNode(nextId);
 
   } else if (type === 'log') {
     const msg = evalValue(String(node.args.message || ''));
