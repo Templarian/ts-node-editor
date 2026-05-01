@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Choices
  */
-export function dialogChoice({ state, callstack, node: _node, nodes, text }: {
+export function dialogChoice({ state, callstack, nodes, text }: {
     state: State,
     callstack: Node[],
     nodes: Node[],
