@@ -5,7 +5,7 @@ import type { Node, State } from './node';
  * @width 6
  * @height 6
  */
-export async function Dialog({ state, node, nodes, character, text }: {
+export async function dialog({ state, node, nodes, character, text }: {
     state: State,
     node: Node,
     nodes: Node[],

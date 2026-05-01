@@ -4,7 +4,7 @@ import { EntryType } from "./entryType";
 /**
 * Entry
 */
-export function Entry({ state, nodes, entryType }: {
+export function entry({ state, nodes, entryType }: {
    state: State,
    nodes: Node[],
    /**

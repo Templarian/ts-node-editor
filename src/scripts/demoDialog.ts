@@ -1,6 +1,6 @@
 import type { Node, State } from '../nodes/node';
-import { Dialog } from "../nodes/dialog";
-import { Choice } from "../nodes/choice";
+import { dialog } from "../nodes/dialog";
+import { dialogChoice } from "../nodes/dialogChoice";
 import { log } from "../nodes/log";
 
 // 0 5 - -
@@ -23,7 +23,7 @@ export async function run(state: State): Promise<State> {
                 break loop;
             case 1:
                 // 4 1 - -
-                const r1 = await Dialog({
+                const r1 = await dialog({
                     state,
                     node: 1,
                     nodes: [2, 3],
@@ -34,10 +34,9 @@ export async function run(state: State): Promise<State> {
                 continue;
             case 2:
                 // 11 1 - -
-                const r2 = Choice({
+                const r2 = dialogChoice({
                     state,
                     callstack,
-                    node: 2,
                     nodes: [4],
                     text: `Red Door`
                 });
@@ -45,7 +44,7 @@ export async function run(state: State): Promise<State> {
                 break;
             case 3:
                 // 11 4 - -
-                const r3 = Choice({
+                const r3 = dialogChoice({
                     state,
                     callstack,
                     node: 3,
