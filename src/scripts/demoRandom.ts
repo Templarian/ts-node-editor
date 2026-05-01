@@ -2,9 +2,10 @@ import type { Node, State } from '../nodes/node';
 import { random } from "../nodes/random";
 import { randomChoice } from "../nodes/randomChoice";
 import { log } from "../nodes/log";
-import { setState } from "../nodes/setState";
+import { get } from "../nodes/stateGet";
+import { add } from "../nodes/stateAdd";
 
-// 0 6 - -
+// 0 7 - -
 // Randomly reward the player, weighted toward a greeting.
 
 export async function run(state: State): Promise<State> {
@@ -70,14 +71,24 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r5);
                 break;
             case 6:
-                // setState coins = 5
-                const r6 = setState({
+                // get coins -> [7]
+                const r6 = await get({
                     state,
-                    key: `coins`,
-                    value: `5`,
-                    nodes: [0]
+                    node: 6,
+                    nodes: [7],
+                    key: `coins`
                 });
                 stack.unshift(...r6);
+                continue;
+            case 7:
+                // add 5 -> [0]
+                const r7 = add({
+                    state,
+                    callstack,
+                    nodes: [0],
+                    value: 5
+                });
+                stack.unshift(r7);
                 break;
         }
         callstack.shift();

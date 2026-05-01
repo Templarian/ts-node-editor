@@ -1,5 +1,6 @@
 import type { Node, State } from './../nodes/node';
-import { setState } from "./../nodes/setState";
+import { get } from "./../nodes/stateGet";
+import { set } from "./../nodes/stateSet";
 
 // name: "John"
 
@@ -24,13 +25,23 @@ export async function run(state: State): Promise<State> {
                 break loop;
             case 1:
                 // 4 1 - -
-                const r1 = setState({
+                const r1 = await get({
                     state,
-                    nodes: [0],
-                    key: 'message',
-                    value: `Hello ${state.get('name')}!`
+                    node: 1,
+                    nodes: [2],
+                    key: 'message'
                 });
                 stack.unshift(...r1);
+                continue;
+            case 2:
+                // 11 1 - -
+                const r2 = set({
+                    state,
+                    callstack,
+                    nodes: [0],
+                    value: `Hello ${state.get('name')}!`
+                });
+                stack.unshift(r2);
                 break;
         }
         callstack.shift();
