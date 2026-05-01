@@ -47,7 +47,6 @@ export async function run(state: State): Promise<State> {
                 const r3 = dialogChoice({
                     state,
                     callstack,
-                    node: 3,
                     nodes: [5],
                     text: `Blue Door`
                 });

@@ -6,7 +6,6 @@ import type { Node, State } from './node';
 export function dialogChoice({ state, callstack, node: _node, nodes, text }: {
     state: State,
     callstack: Node[],
-    node: Node,
     nodes: Node[],
     // Text
     text: string
