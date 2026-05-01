@@ -50,14 +50,16 @@ const html = `<!DOCTYPE html>
 
   .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .badge-coinFlip   { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
-  .badge-dialog     { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
-  .badge-choice     { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
-  .badge-setState   { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
-  .badge-log        { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
-  .badge-include    { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
-  .badge-end        { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
-  .badge-default    { background: #33333322; color: #aaa; border: 1px solid #44444455; }
+  .badge-coinFlip      { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
+  .badge-dialog        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
+  .badge-dialogChoice  { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-random        { background: #dc262622; color: #fca5a5; border: 1px solid #dc262655; }
+  .badge-randomChoice  { background: #ea580c22; color: #fdba74; border: 1px solid #ea580c55; }
+  .badge-setState      { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
+  .badge-log           { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
+  .badge-include       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-end           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
+  .badge-default       { background: #33333322; color: #aaa; border: 1px solid #44444455; }
   .node-id { font-size: 11px; color: #64748b; }
 
   .card-body { font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
@@ -123,7 +125,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', choice: 'choice', setstate: 'setState', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', setstate: 'setState', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -240,6 +242,24 @@ function executeNode(nodeId) {
     renderHistory(cardHeaderHtml(type, node.id) + body);
     renderState();
     window._pendingDialogNode = node.id;
+
+  } else if (type === 'random') {
+    const choiceNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
+    const choices = choiceNodeIds.map(cid => nodeById(cid)).filter(Boolean);
+    const totalWeight = choices.reduce((sum, c) => sum + (Number(c.args.weight) || 1), 0);
+    let pick = Math.random() * totalWeight;
+    let chosen = choices[choices.length - 1];
+    for (const c of choices) {
+      pick -= Number(c.args.weight) || 1;
+      if (pick <= 0) { chosen = c; break; }
+    }
+    const nextId = chosen && Array.isArray(chosen.args.nodes) ? (chosen.args.nodes[0] ?? 0) : 0;
+    const body = \`<div class="card-body">
+      <div class="row"><span class="label">choices</span><span class="val">\${choices.length}</span></div>
+      <div class="row"><span class="label">selected</span><span class="val mono">#\${chosen ? chosen.id : '?'} (weight \${chosen ? (chosen.args.weight ?? 1) : 1})</span></div>
+    </div>\`;
+    addHistoryCard(cardHeaderHtml(type, node.id) + body);
+    executeNode(nextId);
 
   } else if (type === 'include') {
     const scriptName = String(node.args.script || '');
