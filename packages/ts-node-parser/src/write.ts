@@ -140,7 +140,7 @@ function createCase0(): ts.CaseClause {
 }
 
 function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseClause {
-    const posComment = ` ${node.position ? `${node.position.x} ${node.position.y}` : '- -'} - -`;
+    const posComment = ` ${node.x != null ? `${node.x} ${node.y}` : '- -'} - -`;
 
     if (node.type === 'include') {
         const scriptName = node.args.script as string;
@@ -299,7 +299,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
         leadingComments.push(` ${key}: "${val}"`);
     }
     for (const comment of script.comments) {
-        const { x, y, width, height } = comment.position;
+        const { x, y, width, height } = comment;
         leadingComments.push(` ${x} ${y} ${width ?? '-'} ${height ?? '-'}`);
         for (const line of comment.text.split('\n').filter(Boolean)) {
             leadingComments.push(` ${line}`);

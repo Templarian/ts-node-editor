@@ -1,26 +1,18 @@
 import * as ts from 'typescript';
 import * as path from 'path';
 
-export interface Position {
-    x: number;
-    y: number;
-}
-
-export interface CommentPosition {
-    x: number;
-    y: number;
-    width: number | null;
-    height: number | null;
-}
-
 export interface ScriptComment {
-    position: CommentPosition;
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
     text: string;
 }
 
 export interface ScriptNode {
     id: number;
-    position: Position | null;
+    x?: number;
+    y?: number;
     type: string;
     args: Record<string, unknown>;
 }
@@ -42,7 +34,14 @@ function commentText(range: ts.CommentRange, source: string): string {
     return source.substring(range.pos + 2, range.end - 2).trim();
 }
 
-function parseCommentPosition(text: string): CommentPosition | null {
+interface ParsedPosition {
+    x: number;
+    y: number;
+    width: number | null;
+    height: number | null;
+}
+
+function parseCommentPosition(text: string): ParsedPosition | null {
     const m = text.match(/^(\d+)\s+(\d+)\s+(-|\d+)\s+(-|\d+)/);
     if (!m) return null;
     return {
@@ -53,7 +52,7 @@ function parseCommentPosition(text: string): CommentPosition | null {
     };
 }
 
-function parsePosition(text: string): Position | null {
+function parsePosition(text: string): { x: number; y: number } | null {
     const p = parseCommentPosition(text);
     return p ? { x: p.x, y: p.y } : null;
 }
@@ -154,11 +153,13 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
 
     if (runFn) {
         const ranges = ts.getLeadingCommentRanges(source, runFn.getFullStart()) ?? [];
-        let current: { position: CommentPosition; lines: string[] } | null = null;
+        type CurrentComment = { x: number; y: number; width?: number; height?: number; lines: string[] };
+        let current: CurrentComment | null = null;
 
         const flushComment = () => {
             if (current) {
-                parsed.comments.push({ position: current.position, text: current.lines.join('\n') });
+                const { lines, ...pos } = current;
+                parsed.comments.push({ ...pos, text: lines.join('\n') });
                 current = null;
             }
         };
@@ -174,7 +175,10 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
             const pos = parseCommentPosition(text);
             if (pos) {
                 flushComment();
-                current = { position: pos, lines: [] };
+                const entry: CurrentComment = { x: pos.x, y: pos.y, lines: [] };
+                if (pos.width !== null) entry.width = pos.width;
+                if (pos.height !== null) entry.height = pos.height;
+                current = entry;
                 continue;
             }
             if (current) {
@@ -215,16 +219,16 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
 
         const firstStmt = stmts[0];
         const ranges = ts.getLeadingCommentRanges(source, firstStmt.getFullStart()) ?? [];
-        let position: Position | null = null;
+        let nodePos: { x: number; y: number } | null = null;
         for (const r of ranges) {
-            position = parsePosition(commentText(r, source));
-            if (position) break;
+            nodePos = parsePosition(commentText(r, source));
+            if (nodePos) break;
         }
 
         const callInfo = extractCallInfo(firstStmt, source);
         if (!callInfo) continue;
 
-        parsed.nodes.push({ id, position, type: callInfo.type, args: callInfo.args });
+        parsed.nodes.push({ id, ...(nodePos ?? {}), type: callInfo.type, args: callInfo.args });
     }
 
     return parsed;

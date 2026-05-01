@@ -5,13 +5,9 @@ exports[`parseScripts > parses all scripts 1`] = `
   {
     "comments": [
       {
-        "position": {
-          "height": null,
-          "width": null,
-          "x": 0,
-          "y": 5,
-        },
         "text": "Flip a coin and log which is selected",
+        "x": 0,
+        "y": 5,
       },
     ],
     "imports": [
@@ -32,11 +28,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
         },
         "id": 1,
-        "position": {
-          "x": 4,
-          "y": 1,
-        },
         "type": "coinFlip",
+        "x": 4,
+        "y": 1,
       },
       {
         "args": {
@@ -46,11 +40,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
         },
         "id": 2,
-        "position": {
-          "x": 11,
-          "y": 1,
-        },
         "type": "log",
+        "x": 11,
+        "y": 1,
       },
       {
         "args": {
@@ -60,24 +52,18 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
         },
         "id": 3,
-        "position": {
-          "x": 11,
-          "y": 8,
-        },
         "type": "log",
+        "x": 11,
+        "y": 8,
       },
     ],
   },
   {
     "comments": [
       {
-        "position": {
-          "height": null,
-          "width": null,
-          "x": 0,
-          "y": 5,
-        },
         "text": "Ask the player which door to enter and log the result.",
+        "x": 0,
+        "y": 5,
       },
     ],
     "imports": [
@@ -99,11 +85,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           "text": "Which door will you choose?",
         },
         "id": 1,
-        "position": {
-          "x": 4,
-          "y": 1,
-        },
         "type": "Dialog",
+        "x": 4,
+        "y": 1,
       },
       {
         "args": {
@@ -113,11 +97,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           "text": "Red Door",
         },
         "id": 2,
-        "position": {
-          "x": 11,
-          "y": 1,
-        },
         "type": "Choice",
+        "x": 11,
+        "y": 1,
       },
       {
         "args": {
@@ -127,11 +109,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           "text": "Blue Door",
         },
         "id": 3,
-        "position": {
-          "x": 11,
-          "y": 4,
-        },
         "type": "Choice",
+        "x": 11,
+        "y": 4,
       },
       {
         "args": {
@@ -141,11 +121,9 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
         },
         "id": 4,
-        "position": {
-          "x": 18,
-          "y": 1,
-        },
         "type": "log",
+        "x": 18,
+        "y": 1,
       },
       {
         "args": {
@@ -155,25 +133,19 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
         },
         "id": 5,
-        "position": {
-          "x": 18,
-          "y": 4,
-        },
         "type": "log",
+        "x": 18,
+        "y": 4,
       },
     ],
   },
   {
     "comments": [
       {
-        "position": {
-          "height": null,
-          "width": null,
-          "x": 0,
-          "y": 5,
-        },
         "text": "The hello world script takes in a name.
 This allows multiple line comment blocks also.",
+        "x": 0,
+        "y": 5,
       },
     ],
     "imports": [
@@ -194,24 +166,18 @@ This allows multiple line comment blocks also.",
           "value": "\`Hello \${state.get('name')}!\`",
         },
         "id": 1,
-        "position": {
-          "x": 4,
-          "y": 1,
-        },
         "type": "setState",
+        "x": 4,
+        "y": 1,
       },
     ],
   },
   {
     "comments": [
       {
-        "position": {
-          "height": null,
-          "width": null,
-          "x": 0,
-          "y": 5,
-        },
         "text": "Import Hello World",
+        "x": 0,
+        "y": 5,
       },
     ],
     "imports": [
@@ -232,22 +198,18 @@ This allows multiple line comment blocks also.",
           "value": "John",
         },
         "id": 1,
-        "position": {
-          "x": 4,
-          "y": 1,
-        },
         "type": "setState",
+        "x": 4,
+        "y": 1,
       },
       {
         "args": {
           "script": "HelloWorld",
         },
         "id": 2,
-        "position": {
-          "x": 10,
-          "y": 1,
-        },
         "type": "include",
+        "x": 10,
+        "y": 1,
       },
     ],
   },
