@@ -25,7 +25,7 @@ export async function run(state: State): Promise<State> {
                 break loop;
             case 1:
                 // 4 1 - -
-                const r1 = await get({
+                const r1 = get({
                     state,
                     node: 1,
                     nodes: [3],

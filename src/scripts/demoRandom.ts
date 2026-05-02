@@ -72,7 +72,7 @@ export async function run(state: State): Promise<State> {
                 break;
             case 6:
                 // get coins -> [7]
-                const r6 = await get({
+                const r6 = get({
                     state,
                     node: 6,
                     nodes: [7],

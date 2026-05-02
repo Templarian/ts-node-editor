@@ -118,7 +118,7 @@ export async function run(state: State): Promise<State> {
                 break;
             case 10:
                 // get key=coins -> [11]
-                const r10 = await get({
+                const r10 = get({
                     state,
                     node: 10,
                     nodes: [11],
@@ -146,7 +146,7 @@ export async function run(state: State): Promise<State> {
                 break;
             case 13:
                 // get key=coins -> [14]
-                const r13 = await get({
+                const r13 = get({
                     state,
                     node: 13,
                     nodes: [14],
@@ -174,7 +174,7 @@ export async function run(state: State): Promise<State> {
                 break;
             case 16:
                 // get key=coins -> [17]
-                const r16 = await get({
+                const r16 = get({
                     state,
                     node: 16,
                     nodes: [17],

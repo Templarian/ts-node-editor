@@ -5,7 +5,7 @@ import type { Node, State } from './node';
  * @width 6
  * @height 6
  */
-export async function get({ state, node, nodes, key }: {
+export function get({ state, node, nodes, key }: {
     state: State,
     node: Node,
     nodes: Node[],
@@ -15,7 +15,7 @@ export async function get({ state, node, nodes, key }: {
      * @editor Text
      */
     key: string
-}): Promise<Node[]> {
+}): Node[] {
     if (nodes.length === 0) {
         return [];
     }
