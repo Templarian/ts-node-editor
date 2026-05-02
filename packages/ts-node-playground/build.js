@@ -62,6 +62,28 @@ const html = `<!DOCTYPE html>
   .badge-multiply      { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
   .badge-divide        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
   .badge-unset         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-conditional      { background: #d9770622; color: #fb923c; border: 1px solid #d9770655; }
+  .badge-conditionalGet   { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
+  .badge-and              { background: #1d4ed822; color: #93c5fd; border: 1px solid #1d4ed855; }
+  .badge-or               { background: #7e22ce22; color: #d8b4fe; border: 1px solid #7e22ce55; }
+  .badge-greaterThan      { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-greaterThanOrEqual { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-lessThan         { background: #be123c22; color: #fda4af; border: 1px solid #be123c55; }
+  .badge-lessThanOrEqual  { background: #be123c22; color: #fda4af; border: 1px solid #be123c55; }
+  .badge-equalTo          { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
+  .badge-notEqualTo       { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
+  .badge-between          { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
+  .badge-contains         { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-startsWith       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-endsWith         { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-in               { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-match            { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-empty            { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-notEmpty         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isSet            { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isNotSet         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isTrue           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
+  .badge-isFalse          { background: #dc262622; color: #fca5a5; border: 1px solid #dc262655; }
   .badge-log           { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
   .badge-include       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
   .badge-end           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
@@ -131,7 +153,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', conditional: 'conditional', conditionalget: 'conditionalGet', and: 'and', or: 'or', greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -244,7 +266,7 @@ function executeNode(nodeId) {
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
 
-  } else if (type === 'Dialog') {
+  } else if (type === 'dialog') {
     const character = evalValue(String(node.args.character || ''));
     const text = evalValue(String(node.args.text || ''));
     const choiceNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
@@ -277,6 +299,80 @@ function executeNode(nodeId) {
     const body = \`<div class="card-body">
       <div class="row"><span class="label">choices</span><span class="val">\${choices.length}</span></div>
       <div class="row"><span class="label">selected</span><span class="val mono">#\${chosen ? chosen.id : '?'} (weight \${chosen ? (chosen.args.weight ?? 1) : 1})</span></div>
+    </div>\`;
+    addHistoryCard(cardHeaderHtml(type, node.id) + body);
+    executeNode(nextId);
+
+  } else if (type === 'conditional') {
+    const chain = [];
+    let nextChainId = Array.isArray(node.args.nodes) ? node.args.nodes[0] : null;
+    while (nextChainId !== null && nextChainId !== undefined && nextChainId !== 0) {
+      const cn = nodeById(nextChainId);
+      if (!cn) break;
+      chain.push(cn);
+      const cnNext = Array.isArray(cn.args.nodes) ? cn.args.nodes : [];
+      nextChainId = cnNext.length > 0 ? cnNext[0] : null;
+    }
+    // Evaluate the condition chain inline
+    let result = false;
+    let pendingOp = null; // 'and' | 'or' | null
+    let i = 0;
+    while (i < chain.length) {
+      const n = chain[i];
+      if (n.type === 'conditionalGet') {
+        const key = String(n.args.key || '');
+        state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
+        state.set('$conditional.key', key);
+        i++;
+      } else if (n.type === 'and') {
+        if (!result) { break; }
+        pendingOp = 'and';
+        result = false;
+        i++;
+      } else if (n.type === 'or') {
+        if (result) { break; }
+        pendingOp = 'or';
+        result = false;
+        i++;
+      } else {
+        // comparator node
+        const val = n.args.value;
+        const ignoreCase = n.args.ignoreCase ?? false;
+        const raw = String(state.get('$conditional.value') ?? '');
+        const a = ignoreCase ? raw.toLowerCase() : raw;
+        const num = parseFloat(raw) || 0;
+        let cmp = false;
+        if (n.type === 'greaterThan') cmp = num > Number(val);
+        else if (n.type === 'greaterThanOrEqual') cmp = num >= Number(val);
+        else if (n.type === 'lessThan') cmp = num < Number(val);
+        else if (n.type === 'lessThanOrEqual') cmp = num <= Number(val);
+        else if (n.type === 'between') cmp = n.args.inclusive ? num >= Number(n.args.min) && num <= Number(n.args.max) : num > Number(n.args.min) && num < Number(n.args.max);
+        else if (n.type === 'equalTo') cmp = a === (ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'notEqualTo') cmp = a !== (ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'contains') cmp = a.includes(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'startsWith') cmp = a.startsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'endsWith') cmp = a.endsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'in') { const list = (Array.isArray(val) ? val : []).map(v => ignoreCase ? String(v).toLowerCase() : String(v)); cmp = list.includes(a); }
+        else if (n.type === 'match') cmp = new RegExp(String(val), ignoreCase ? 'i' : '').test(raw);
+        else if (n.type === 'empty') cmp = raw === '' || raw === '0' || raw === 'undefined' || !state.has(state.get('$conditional.key'));
+        else if (n.type === 'notEmpty') cmp = raw !== '' && raw !== '0' && raw !== 'undefined' && state.has(state.get('$conditional.key'));
+        else if (n.type === 'isSet') cmp = state.has(state.get('$conditional.key'));
+        else if (n.type === 'isNotSet') cmp = !state.has(state.get('$conditional.key'));
+        else if (n.type === 'isTrue') cmp = raw === 'true' || raw === '1';
+        else if (n.type === 'isFalse') cmp = raw === 'false' || raw === '0';
+        result = cmp;
+        i++;
+      }
+    }
+    state.delete('$conditional.value');
+    state.delete('$conditional.key');
+    const tNodes = Array.isArray(node.args.t) ? node.args.t : [];
+    const fNodes = Array.isArray(node.args.f) ? node.args.f : [];
+    const nextId = result ? (tNodes[0] ?? 0) : (fNodes[0] ?? 0);
+    const chainSummary = chain.map(n => n.type === 'conditionalGet' ? \`get(\${n.args.key})\` : n.type === 'and' ? 'AND' : n.type === 'or' ? 'OR' : n.type).join(' → ');
+    const body = \`<div class="card-body">
+      <div class="row"><span class="label">chain</span><span class="val mono">\${esc(chainSummary)}</span></div>
+      <div class="row"><span class="label">result</span><span class="val" style="color:\${result ? '#34d399' : '#f87171'}">\${result ? 'true → t' : 'false → f'}</span></div>
     </div>\`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
@@ -321,7 +417,7 @@ function pickChoice(choiceId, text, nextId) {
       <div class="row"><span class="label">text</span><span class="val">\${esc(dialogText)}</span></div>
       <div class="row"><span class="label">selected</span><span class="val">\${esc(text)}</span></div>
     </div>\`;
-    addHistoryCard(cardHeaderHtml('Dialog', dialogNode.id) + body);
+    addHistoryCard(cardHeaderHtml(dialogNode.type, dialogNode.id) + body);
   }
   window._pendingDialogNode = null;
   executeNode(nextId);

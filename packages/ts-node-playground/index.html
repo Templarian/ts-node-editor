@@ -43,6 +43,28 @@
   .badge-multiply      { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
   .badge-divide        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
   .badge-unset         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-conditional      { background: #d9770622; color: #fb923c; border: 1px solid #d9770655; }
+  .badge-conditionalGet   { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
+  .badge-and              { background: #1d4ed822; color: #93c5fd; border: 1px solid #1d4ed855; }
+  .badge-or               { background: #7e22ce22; color: #d8b4fe; border: 1px solid #7e22ce55; }
+  .badge-greaterThan      { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-greaterThanOrEqual { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-lessThan         { background: #be123c22; color: #fda4af; border: 1px solid #be123c55; }
+  .badge-lessThanOrEqual  { background: #be123c22; color: #fda4af; border: 1px solid #be123c55; }
+  .badge-equalTo          { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
+  .badge-notEqualTo       { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
+  .badge-between          { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
+  .badge-contains         { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-startsWith       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-endsWith         { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-in               { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-match            { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
+  .badge-empty            { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-notEmpty         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isSet            { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isNotSet         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
+  .badge-isTrue           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
+  .badge-isFalse          { background: #dc262622; color: #fca5a5; border: 1px solid #dc262655; }
   .badge-log           { background: #71717122; color: #d4d4d8; border: 1px solid #71717155; }
   .badge-include       { background: #92400022; color: #fcd34d; border: 1px solid #92400055; }
   .badge-end           { background: #16a34a22; color: #86efac; border: 1px solid #16a34a55; }
@@ -100,7 +122,7 @@
 </div>
 
 <script>
-const SCRIPTS = [{"file":"demoCoinFlip.ts","name":"demoCoinFlip","entryPosition":{"x":0,"y":5},"description":"Flip a coin and log which is selected","initialState":{},"imports":["node","coinFlip","log"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"coinFlip","args":{"t":[2],"f":[3]}},{"id":2,"position":{"x":11,"y":1},"type":"log","args":{"message":"Heads","nodes":[0]}},{"id":3,"position":{"x":11,"y":8},"type":"log","args":{"message":"Tails","nodes":[0]}}]},{"file":"demoDialog.ts","name":"demoDialog","entryPosition":{"x":0,"y":5},"description":"Ask the player which door to enter and log the result.","initialState":{},"imports":["node","dialog","dialogChoice","log"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"dialog","args":{"nodes":[2,3],"character":"Guide","text":"Which door will you choose?"}},{"id":2,"position":{"x":11,"y":1},"type":"dialogChoice","args":{"nodes":[4],"text":"Red Door"}},{"id":3,"position":{"x":11,"y":4},"type":"dialogChoice","args":{"nodes":[5],"text":"Blue Door"}},{"id":4,"position":{"x":18,"y":1},"type":"log","args":{"message":"You entered the red room","nodes":[0]}},{"id":5,"position":{"x":18,"y":4},"type":"log","args":{"message":"You entered the blue room","nodes":[0]}}]},{"file":"demoRandom.ts","name":"demoRandom","entryPosition":{"x":0,"y":7},"description":"Randomly reward the player, weighted toward a greeting.","initialState":{},"imports":["node","random","randomChoice","log","stateGet","stateAdd"],"nodes":[{"id":1,"position":null,"type":"random","args":{"nodes":[2,3]}},{"id":2,"position":null,"type":"randomChoice","args":{"nodes":[4],"weight":5}},{"id":3,"position":null,"type":"randomChoice","args":{"nodes":[5],"weight":1}},{"id":4,"position":null,"type":"log","args":{"message":"Hello!","nodes":[0]}},{"id":5,"position":null,"type":"log","args":{"message":"Here is gold","nodes":[6]}},{"id":6,"position":null,"type":"get","args":{"nodes":[7],"key":"coins"}},{"id":7,"position":null,"type":"add","args":{"nodes":[0],"value":5}}]},{"file":"helloWorld.ts","name":"helloWorld","entryPosition":{"x":0,"y":5},"description":"The hello world script takes in a name.\nThis allows multiple line comment blocks also.","initialState":{"name":"John"},"imports":["node","stateGet","stateSet"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"get","args":{"nodes":[2],"key":"message"}},{"id":2,"position":{"x":11,"y":1},"type":"set","args":{"nodes":[0],"value":"`Hello ${state.get('name')}!`"}}]},{"file":"helloWorldInclude.ts","name":"helloWorldInclude","entryPosition":{"x":0,"y":5},"description":"Import Hello World","initialState":{"name":"John"},"imports":["node","stateGet","stateSet"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"get","args":{"nodes":[3],"key":"name"}},{"id":3,"position":{"x":11,"y":1},"type":"set","args":{"nodes":[2],"value":"John"}},{"id":2,"position":{"x":10,"y":1},"type":"include","args":{"script":"HelloWorld"}}]}];
+const SCRIPTS = [{"file":"demoCoinFlip.ts","name":"demoCoinFlip","entryPosition":{"x":0,"y":5},"description":"Flip a coin and log which is selected","initialState":{},"imports":["node","coinFlip","log"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"coinFlip","args":{"t":[2],"f":[3]}},{"id":2,"position":{"x":11,"y":1},"type":"log","args":{"message":"Heads","nodes":[0]}},{"id":3,"position":{"x":11,"y":8},"type":"log","args":{"message":"Tails","nodes":[0]}}]},{"file":"demoConditional.ts","name":"demoConditional","entryPosition":{"x":0,"y":15},"description":"coins: 0\nAsk for gold, then check if coins are between 5 and 10.","initialState":{},"imports":["node","dialog","dialogChoice","conditional","conditionalGet","greaterThan","and","lessThan","stateGet","stateAdd","log"],"nodes":[{"id":1,"position":null,"type":"dialog","args":{"nodes":[2,3],"character":"Merchant","text":"What would you like?"}},{"id":2,"position":null,"type":"dialogChoice","args":{"nodes":[4],"text":"Can I have 5 gold?"}},{"id":3,"position":null,"type":"dialogChoice","args":{"nodes":[4],"text":"Can I have 12 gold?"}},{"id":4,"position":null,"type":"conditional","args":{"nodes":[5],"t":[10],"f":[13]}},{"id":5,"position":null,"type":"conditionalGet","args":{"nodes":[6],"key":"coins"}},{"id":6,"position":null,"type":"greaterThan","args":{"nodes":[7],"value":5}},{"id":7,"position":null,"type":"and","args":{"nodes":[8]}},{"id":8,"position":null,"type":"conditionalGet","args":{"nodes":[9],"key":"coins"}},{"id":9,"position":null,"type":"lessThan","args":{"nodes":[],"value":10}},{"id":10,"position":null,"type":"get","args":{"nodes":[11],"key":"coins"}},{"id":11,"position":null,"type":"add","args":{"nodes":[12],"value":20}},{"id":12,"position":null,"type":"log","args":{"message":"I'm rich!","nodes":[0]}},{"id":13,"position":null,"type":"get","args":{"nodes":[14],"key":"coins"}},{"id":14,"position":null,"type":"add","args":{"nodes":[15],"value":5}},{"id":15,"position":null,"type":"log","args":{"message":"Expected more","nodes":[0]}}]},{"file":"demoDialog.ts","name":"demoDialog","entryPosition":{"x":0,"y":5},"description":"Ask the player which door to enter and log the result.","initialState":{},"imports":["node","dialog","dialogChoice","log"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"dialog","args":{"nodes":[2,3],"character":"Guide","text":"Which door will you choose?"}},{"id":2,"position":{"x":11,"y":1},"type":"dialogChoice","args":{"nodes":[4],"text":"Red Door"}},{"id":3,"position":{"x":11,"y":4},"type":"dialogChoice","args":{"nodes":[5],"text":"Blue Door"}},{"id":4,"position":{"x":18,"y":1},"type":"log","args":{"message":"You entered the red room","nodes":[0]}},{"id":5,"position":{"x":18,"y":4},"type":"log","args":{"message":"You entered the blue room","nodes":[0]}}]},{"file":"demoRandom.ts","name":"demoRandom","entryPosition":{"x":0,"y":7},"description":"Randomly reward the player, weighted toward a greeting.","initialState":{},"imports":["node","random","randomChoice","log","stateGet","stateAdd"],"nodes":[{"id":1,"position":null,"type":"random","args":{"nodes":[2,3]}},{"id":2,"position":null,"type":"randomChoice","args":{"nodes":[4],"weight":5}},{"id":3,"position":null,"type":"randomChoice","args":{"nodes":[5],"weight":1}},{"id":4,"position":null,"type":"log","args":{"message":"Hello!","nodes":[0]}},{"id":5,"position":null,"type":"log","args":{"message":"Here is gold","nodes":[6]}},{"id":6,"position":null,"type":"get","args":{"nodes":[7],"key":"coins"}},{"id":7,"position":null,"type":"add","args":{"nodes":[0],"value":5}}]},{"file":"helloWorld.ts","name":"helloWorld","entryPosition":{"x":0,"y":5},"description":"The hello world script takes in a name.\nThis allows multiple line comment blocks also.","initialState":{"name":"John"},"imports":["node","stateGet","stateSet"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"get","args":{"nodes":[2],"key":"message"}},{"id":2,"position":{"x":11,"y":1},"type":"set","args":{"nodes":[0],"value":"`Hello ${state.get('name')}!`"}}]},{"file":"helloWorldInclude.ts","name":"helloWorldInclude","entryPosition":{"x":0,"y":5},"description":"Import Hello World","initialState":{"name":"John"},"imports":["node","stateGet","stateSet"],"nodes":[{"id":1,"position":{"x":4,"y":1},"type":"get","args":{"nodes":[3],"key":"name"}},{"id":3,"position":{"x":11,"y":1},"type":"set","args":{"nodes":[2],"value":"John"}},{"id":2,"position":{"x":10,"y":1},"type":"include","args":{"script":"HelloWorld"}}]}];
 
 let currentScript = null;
 let state = new Map();
@@ -112,7 +134,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', conditional: 'conditional', conditionalget: 'conditionalGet', and: 'and', or: 'or', greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -225,7 +247,7 @@ function executeNode(nodeId) {
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
 
-  } else if (type === 'Dialog') {
+  } else if (type === 'dialog') {
     const character = evalValue(String(node.args.character || ''));
     const text = evalValue(String(node.args.text || ''));
     const choiceNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
@@ -258,6 +280,80 @@ function executeNode(nodeId) {
     const body = `<div class="card-body">
       <div class="row"><span class="label">choices</span><span class="val">${choices.length}</span></div>
       <div class="row"><span class="label">selected</span><span class="val mono">#${chosen ? chosen.id : '?'} (weight ${chosen ? (chosen.args.weight ?? 1) : 1})</span></div>
+    </div>`;
+    addHistoryCard(cardHeaderHtml(type, node.id) + body);
+    executeNode(nextId);
+
+  } else if (type === 'conditional') {
+    const chain = [];
+    let nextChainId = Array.isArray(node.args.nodes) ? node.args.nodes[0] : null;
+    while (nextChainId !== null && nextChainId !== undefined && nextChainId !== 0) {
+      const cn = nodeById(nextChainId);
+      if (!cn) break;
+      chain.push(cn);
+      const cnNext = Array.isArray(cn.args.nodes) ? cn.args.nodes : [];
+      nextChainId = cnNext.length > 0 ? cnNext[0] : null;
+    }
+    // Evaluate the condition chain inline
+    let result = false;
+    let pendingOp = null; // 'and' | 'or' | null
+    let i = 0;
+    while (i < chain.length) {
+      const n = chain[i];
+      if (n.type === 'conditionalGet') {
+        const key = String(n.args.key || '');
+        state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
+        state.set('$conditional.key', key);
+        i++;
+      } else if (n.type === 'and') {
+        if (!result) { break; }
+        pendingOp = 'and';
+        result = false;
+        i++;
+      } else if (n.type === 'or') {
+        if (result) { break; }
+        pendingOp = 'or';
+        result = false;
+        i++;
+      } else {
+        // comparator node
+        const val = n.args.value;
+        const ignoreCase = n.args.ignoreCase ?? false;
+        const raw = String(state.get('$conditional.value') ?? '');
+        const a = ignoreCase ? raw.toLowerCase() : raw;
+        const num = parseFloat(raw) || 0;
+        let cmp = false;
+        if (n.type === 'greaterThan') cmp = num > Number(val);
+        else if (n.type === 'greaterThanOrEqual') cmp = num >= Number(val);
+        else if (n.type === 'lessThan') cmp = num < Number(val);
+        else if (n.type === 'lessThanOrEqual') cmp = num <= Number(val);
+        else if (n.type === 'between') cmp = n.args.inclusive ? num >= Number(n.args.min) && num <= Number(n.args.max) : num > Number(n.args.min) && num < Number(n.args.max);
+        else if (n.type === 'equalTo') cmp = a === (ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'notEqualTo') cmp = a !== (ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'contains') cmp = a.includes(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'startsWith') cmp = a.startsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'endsWith') cmp = a.endsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+        else if (n.type === 'in') { const list = (Array.isArray(val) ? val : []).map(v => ignoreCase ? String(v).toLowerCase() : String(v)); cmp = list.includes(a); }
+        else if (n.type === 'match') cmp = new RegExp(String(val), ignoreCase ? 'i' : '').test(raw);
+        else if (n.type === 'empty') cmp = raw === '' || raw === '0' || raw === 'undefined' || !state.has(state.get('$conditional.key'));
+        else if (n.type === 'notEmpty') cmp = raw !== '' && raw !== '0' && raw !== 'undefined' && state.has(state.get('$conditional.key'));
+        else if (n.type === 'isSet') cmp = state.has(state.get('$conditional.key'));
+        else if (n.type === 'isNotSet') cmp = !state.has(state.get('$conditional.key'));
+        else if (n.type === 'isTrue') cmp = raw === 'true' || raw === '1';
+        else if (n.type === 'isFalse') cmp = raw === 'false' || raw === '0';
+        result = cmp;
+        i++;
+      }
+    }
+    state.delete('$conditional.value');
+    state.delete('$conditional.key');
+    const tNodes = Array.isArray(node.args.t) ? node.args.t : [];
+    const fNodes = Array.isArray(node.args.f) ? node.args.f : [];
+    const nextId = result ? (tNodes[0] ?? 0) : (fNodes[0] ?? 0);
+    const chainSummary = chain.map(n => n.type === 'conditionalGet' ? `get(${n.args.key})` : n.type === 'and' ? 'AND' : n.type === 'or' ? 'OR' : n.type).join(' → ');
+    const body = `<div class="card-body">
+      <div class="row"><span class="label">chain</span><span class="val mono">${esc(chainSummary)}</span></div>
+      <div class="row"><span class="label">result</span><span class="val" style="color:${result ? '#34d399' : '#f87171'}">${result ? 'true → t' : 'false → f'}</span></div>
     </div>`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
@@ -302,7 +398,7 @@ function pickChoice(choiceId, text, nextId) {
       <div class="row"><span class="label">text</span><span class="val">${esc(dialogText)}</span></div>
       <div class="row"><span class="label">selected</span><span class="val">${esc(text)}</span></div>
     </div>`;
-    addHistoryCard(cardHeaderHtml('Dialog', dialogNode.id) + body);
+    addHistoryCard(cardHeaderHtml(dialogNode.type, dialogNode.id) + body);
   }
   window._pendingDialogNode = null;
   executeNode(nextId);
