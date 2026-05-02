@@ -10,9 +10,9 @@ import { get } from "./../nodes/stateGet";
 import { add } from "./../nodes/stateAdd";
 import { log } from "./../nodes/log";
 
-// coins: "0"
+// coins: "6"
 
-// 0 15 - -
+// 0 17 - -
 // Ask for gold, then check if coins are between 5 and 10.
 
 export async function run(state: State): Promise<State> {
@@ -52,11 +52,11 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r2);
                 break;
             case 3:
-                // dialogChoice "Can I have 12 gold?" -> [4]
+                // dialogChoice "Can I have 12 gold?" -> [16]
                 const r3 = dialogChoice({
                     state,
                     callstack,
-                    nodes: [4],
+                    nodes: [16],
                     text: `Can I have 12 gold?`
                 });
                 stack.unshift(r3);
@@ -112,7 +112,7 @@ export async function run(state: State): Promise<State> {
                 const r9 = lessThan({
                     state,
                     nodes: [],
-                    value: 12
+                    value: 10
                 });
                 stack.unshift(r9);
                 break;
@@ -171,6 +171,26 @@ export async function run(state: State): Promise<State> {
                     nodes: [0]
                 });
                 stack.unshift(...r15);
+                break;
+            case 16:
+                // get key=coins -> [17]
+                const r16 = await get({
+                    state,
+                    node: 16,
+                    nodes: [17],
+                    key: `coins`
+                });
+                stack.unshift(...r16);
+                continue;
+            case 17:
+                // add value=12 -> [0]
+                const r17 = add({
+                    state,
+                    callstack,
+                    nodes: [0],
+                    value: 12
+                });
+                stack.unshift(r17);
                 break;
         }
         callstack.shift();
