@@ -63,7 +63,6 @@ const html = `<!DOCTYPE html>
   .badge-divide        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
   .badge-unset         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
   .badge-conditional      { background: #d9770622; color: #fb923c; border: 1px solid #d9770655; }
-  .badge-conditionalGet   { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
   .badge-and              { background: #1d4ed822; color: #93c5fd; border: 1px solid #1d4ed855; }
   .badge-or               { background: #7e22ce22; color: #d8b4fe; border: 1px solid #7e22ce55; }
   .badge-greaterThan      { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
@@ -153,7 +152,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', conditional: 'conditional', conditionalget: 'conditionalGet', and: 'and', or: 'or', greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', conditional: 'conditional', and: 'and', or: 'or', greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -319,7 +318,7 @@ function executeNode(nodeId) {
     let i = 0;
     while (i < chain.length) {
       const n = chain[i];
-      if (n.type === 'conditionalGet') {
+      if (n.type === 'get') {
         const key = String(n.args.key || '');
         state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
         state.set('$conditional.key', key);

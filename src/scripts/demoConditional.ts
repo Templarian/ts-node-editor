@@ -2,7 +2,6 @@ import type { Node, State } from './../nodes/node';
 import { dialog } from "./../nodes/dialog";
 import { dialogChoice } from "./../nodes/dialogChoice";
 import { conditional } from "./../nodes/conditional";
-import { conditionalGet } from "./../nodes/conditionalGet";
 import { greaterThan } from "./../nodes/greaterThan";
 import { and } from "./../nodes/and";
 import { lessThan } from "./../nodes/lessThan";
@@ -73,14 +72,15 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r4);
                 continue;
             case 5:
-                // conditionalGet key=coins -> [6]
-                const r5 = conditionalGet({
+                // get key=coins -> [6]
+                const r5 = get({
                     state,
+                    node: 5,
                     nodes: [6],
                     key: `coins`
                 });
-                stack.unshift(r5);
-                break;
+                stack.unshift(...r5);
+                continue;
             case 6:
                 // greaterThan value=5 -> [7]
                 const r6 = greaterThan({
@@ -99,14 +99,15 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r7);
                 break;
             case 8:
-                // conditionalGet key=coins -> [9]
-                const r8 = conditionalGet({
+                // get key=coins -> [9]
+                const r8 = get({
                     state,
+                    node: 8,
                     nodes: [9],
                     key: `coins`
                 });
-                stack.unshift(r8);
-                break;
+                stack.unshift(...r8);
+                continue;
             case 9:
                 // lessThan value=10 -> []
                 const r9 = lessThan({
