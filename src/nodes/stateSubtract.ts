@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Subtract
  */
-export function subtract({ state, callstack, nodes, value }: {
+export function stateSubtract({ state, callstack, nodes, value }: {
     state: State,
     callstack: Node[],
     nodes: Node[],

@@ -1,6 +1,6 @@
 import type { Node, State } from './../nodes/node';
-import { get } from "./../nodes/stateGet";
-import { set } from "./../nodes/stateSet";
+import { stateGet } from "./../nodes/stateGet";
+import { stateSet } from "./../nodes/stateSet";
 import { run as runHelloWorld } from './helloWorld';
 
 // name: "John"
@@ -16,7 +16,7 @@ export async function run(state: State): Promise<State> {
         callstack.push(node);
         switch (node) {
             case 0:
-                // 1 1 - - script
+                // 1 1 - -
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');
@@ -25,7 +25,7 @@ export async function run(state: State): Promise<State> {
                 break loop;
             case 1:
                 // 4 1 - -
-                const r1 = get({
+                const r1 = stateGet({
                     state,
                     node: 1,
                     nodes: [3],
@@ -35,7 +35,7 @@ export async function run(state: State): Promise<State> {
                 continue;
             case 3:
                 // 11 1 - -
-                const r3 = set({
+                const r3 = stateSet({
                     state,
                     callstack,
                     nodes: [2],

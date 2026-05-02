@@ -13,7 +13,8 @@ export async function run(state: State): Promise<State> {
         callstack.push(node);
         switch (node) {
             case 0:
-                // 1 1 - - script
+                // 1 1 - -
+                // Simple coin flip demo.
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');

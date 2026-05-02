@@ -2,8 +2,8 @@ import type { Node, State } from '../nodes/node';
 import { random } from "../nodes/random";
 import { randomChoice } from "../nodes/randomChoice";
 import { log } from "../nodes/log";
-import { get } from "../nodes/stateGet";
-import { add } from "../nodes/stateAdd";
+import { stateGet } from "../nodes/stateGet";
+import { stateAdd } from "../nodes/stateAdd";
 
 // 0 7 - -
 // Randomly reward the player, weighted toward a greeting.
@@ -16,7 +16,7 @@ export async function run(state: State): Promise<State> {
         callstack.push(node);
         switch (node) {
             case 0:
-                // 1 1 - - script
+                // 1 1 - -
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');
@@ -24,7 +24,7 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
-                // random - -
+                // 10 1 - -
                 const r1 = await random({
                     state,
                     node: 1,
@@ -33,7 +33,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r1);
                 continue;
             case 2:
-                // randomChoice weight 5 -> [4]
+                // 20 1 - -
                 const r2 = randomChoice({
                     state,
                     callstack,
@@ -44,7 +44,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r2);
                 break;
             case 3:
-                // randomChoice weight 1 -> [5]
+                // 30 1 - -
                 const r3 = randomChoice({
                     state,
                     callstack,
@@ -55,7 +55,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r3);
                 break;
             case 4:
-                // log "Hello!"
+                // 40 1 - -
                 const r4 = log({
                     message: `Hello!`,
                     nodes: [0]
@@ -63,7 +63,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r4);
                 break;
             case 5:
-                // log "Here is gold"
+                // 50 10 - -
                 const r5 = log({
                     message: `Here is gold`,
                     nodes: [6]
@@ -71,8 +71,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r5);
                 break;
             case 6:
-                // get coins -> [7]
-                const r6 = get({
+                // 60 1 - -
+                const r6 = stateGet({
                     state,
                     node: 6,
                     nodes: [7],
@@ -81,8 +81,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r6);
                 continue;
             case 7:
-                // add 5 -> [0]
-                const r7 = add({
+                // 70 1 - -
+                const r7 = stateAdd({
                     state,
                     callstack,
                     nodes: [0],

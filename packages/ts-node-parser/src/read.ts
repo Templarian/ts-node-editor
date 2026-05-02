@@ -13,6 +13,7 @@ export interface ScriptNode {
     id: number;
     x?: number;
     y?: number;
+    description?: string;
     type: string;
     args: Record<string, unknown>;
 }
@@ -220,15 +221,23 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
         const firstStmt = stmts[0];
         const ranges = ts.getLeadingCommentRanges(source, firstStmt.getFullStart()) ?? [];
         let nodePos: { x: number; y: number } | null = null;
-        for (const r of ranges) {
-            nodePos = parsePosition(commentText(r, source));
-            if (nodePos) break;
+        let posIndex = -1;
+        for (let i = 0; i < ranges.length; i++) {
+            const p = parsePosition(commentText(ranges[i], source));
+            if (p) { nodePos = p; posIndex = i; break; }
         }
+
+        if (!nodePos) {
+            throw new Error(`Node ${id} is missing required position comment (// x y width height)`);
+        }
+
+        const descLines = ranges.slice(posIndex + 1).map(r => commentText(r, source));
+        const description = descLines.length > 0 ? descLines.join('\n') : undefined;
 
         const callInfo = extractCallInfo(firstStmt, source);
         if (!callInfo) continue;
 
-        parsed.nodes.push({ id, ...(nodePos ?? {}), type: callInfo.type, args: callInfo.args });
+        parsed.nodes.push({ id, ...nodePos, type: callInfo.type, args: callInfo.args, ...(description !== undefined ? { description } : {}) });
     }
 
     return parsed;

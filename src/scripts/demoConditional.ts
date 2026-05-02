@@ -2,11 +2,11 @@ import type { Node, State } from './../nodes/node';
 import { dialog } from "./../nodes/dialog";
 import { dialogChoice } from "./../nodes/dialogChoice";
 import { conditional } from "./../nodes/conditional";
+import { stateGet } from "./../nodes/stateGet";
 import { greaterThan } from "./../nodes/greaterThan";
 import { and } from "./../nodes/and";
 import { lessThan } from "./../nodes/lessThan";
-import { get } from "./../nodes/stateGet";
-import { add } from "./../nodes/stateAdd";
+import { stateAdd } from "./../nodes/stateAdd";
 import { log } from "./../nodes/log";
 
 // coins: "6"
@@ -22,7 +22,8 @@ export async function run(state: State): Promise<State> {
         callstack.push(node);
         switch (node) {
             case 0:
-                // 1 1 - - script
+                // 1 1 - -
+                // Simple coin flip demo.
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');
@@ -30,6 +31,7 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
+                // 10 12 - -
                 // dialog
                 const r1 = await dialog({
                     state,
@@ -41,7 +43,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r1);
                 continue;
             case 2:
-                // dialogChoice "Can I have 5 gold?" -> [4]
+                // 20 10 - -
                 const r2 = dialogChoice({
                     state,
                     callstack,
@@ -51,7 +53,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r2);
                 break;
             case 3:
-                // dialogChoice "Can I have 12 gold?" -> [16]
+                // 20 20 - -
                 const r3 = dialogChoice({
                     state,
                     callstack,
@@ -61,7 +63,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r3);
                 break;
             case 4:
-                // conditional [get coins][greaterThan 5][and][get coins][lessThan 10] t=[10] f=[13]
+                // 30 10 - -
                 const r4 = await conditional({
                     state,
                     node: 4,
@@ -72,8 +74,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r4);
                 continue;
             case 5:
-                // get key=coins -> [6]
-                const r5 = get({
+                // 40 10 - -
+                const r5 = stateGet({
                     state,
                     node: 5,
                     nodes: [6],
@@ -82,7 +84,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r5);
                 continue;
             case 6:
-                // greaterThan value=5 -> [7]
+                // 50 10 - -
                 const r6 = greaterThan({
                     state,
                     nodes: [7],
@@ -91,7 +93,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r6);
                 break;
             case 7:
-                // and -> [8]
+                // 60 10 - -
                 const r7 = and({
                     state,
                     nodes: [8]
@@ -99,8 +101,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r7);
                 break;
             case 8:
-                // get key=coins -> [9]
-                const r8 = get({
+                // 70 10 - -
+                const r8 = stateGet({
                     state,
                     node: 8,
                     nodes: [9],
@@ -109,7 +111,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r8);
                 continue;
             case 9:
-                // lessThan value=10 -> []
+                // 80 10 - -
                 const r9 = lessThan({
                     state,
                     nodes: [],
@@ -118,8 +120,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r9);
                 break;
             case 10:
-                // get key=coins -> [11]
-                const r10 = get({
+                // 90 10 - -
+                const r10 = stateGet({
                     state,
                     node: 10,
                     nodes: [11],
@@ -128,8 +130,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r10);
                 continue;
             case 11:
-                // add value=20 -> [12]
-                const r11 = add({
+                // 100 10 - -
+                const r11 = stateAdd({
                     state,
                     callstack,
                     nodes: [12],
@@ -138,7 +140,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r11);
                 break;
             case 12:
-                // log "I'm rich!"
+                // 110 10 - -
                 const r12 = log({
                     message: `I'm rich!`,
                     nodes: [0]
@@ -146,8 +148,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r12);
                 break;
             case 13:
-                // get key=coins -> [14]
-                const r13 = get({
+                // 120 10 - -
+                const r13 = stateGet({
                     state,
                     node: 13,
                     nodes: [14],
@@ -156,8 +158,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r13);
                 continue;
             case 14:
-                // add value=5 -> [15]
-                const r14 = add({
+                // 130 10 - -
+                const r14 = stateAdd({
                     state,
                     callstack,
                     nodes: [15],
@@ -166,7 +168,7 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(r14);
                 break;
             case 15:
-                // log "Expected more"
+                // 140 10 - -
                 const r15 = log({
                     message: `Expected more`,
                     nodes: [0]
@@ -174,8 +176,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r15);
                 break;
             case 16:
-                // get key=coins -> [17]
-                const r16 = get({
+                // 150 10 - -
+                const r16 = stateGet({
                     state,
                     node: 16,
                     nodes: [17],
@@ -184,8 +186,8 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r16);
                 continue;
             case 17:
-                // add value=12 -> [0]
-                const r17 = add({
+                // 160 10 - -
+                const r17 = stateAdd({
                     state,
                     callstack,
                     nodes: [0],

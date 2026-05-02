@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Set
  */
-export function set({ state, callstack, nodes, value }: {
+export function stateSet({ state, callstack, nodes, value }: {
     state: State,
     callstack: Node[],
     nodes: Node[],

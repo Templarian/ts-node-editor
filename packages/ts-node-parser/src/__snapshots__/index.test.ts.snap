@@ -61,6 +61,242 @@ exports[`parseScripts > parses all scripts 1`] = `
   {
     "comments": [
       {
+        "text": "Ask for gold, then check if coins are between 5 and 10.",
+        "x": 0,
+        "y": 17,
+      },
+    ],
+    "imports": [
+      "node",
+      "dialog",
+      "dialogChoice",
+      "conditional",
+      "stateGet",
+      "greaterThan",
+      "and",
+      "lessThan",
+      "stateAdd",
+      "log",
+    ],
+    "initialState": {
+      "coins": "6",
+    },
+    "name": "demoConditional",
+    "nodes": [
+      {
+        "args": {
+          "character": "Merchant",
+          "nodes": [
+            2,
+            3,
+          ],
+          "text": "What would you like?",
+        },
+        "description": "dialog",
+        "id": 1,
+        "type": "dialog",
+        "x": 10,
+        "y": 12,
+      },
+      {
+        "args": {
+          "nodes": [
+            4,
+          ],
+          "text": "Can I have 5 gold?",
+        },
+        "id": 2,
+        "type": "dialogChoice",
+        "x": 20,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            16,
+          ],
+          "text": "Can I have 12 gold?",
+        },
+        "id": 3,
+        "type": "dialogChoice",
+        "x": 20,
+        "y": 20,
+      },
+      {
+        "args": {
+          "f": [
+            13,
+          ],
+          "nodes": [
+            5,
+          ],
+          "t": [
+            10,
+          ],
+        },
+        "id": 4,
+        "type": "conditional",
+        "x": 30,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            6,
+          ],
+        },
+        "id": 5,
+        "type": "stateGet",
+        "x": 40,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            7,
+          ],
+          "value": 5,
+        },
+        "id": 6,
+        "type": "greaterThan",
+        "x": 50,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            8,
+          ],
+        },
+        "id": 7,
+        "type": "and",
+        "x": 60,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            9,
+          ],
+        },
+        "id": 8,
+        "type": "stateGet",
+        "x": 70,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [],
+          "value": 10,
+        },
+        "id": 9,
+        "type": "lessThan",
+        "x": 80,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            11,
+          ],
+        },
+        "id": 10,
+        "type": "stateGet",
+        "x": 90,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            12,
+          ],
+          "value": 20,
+        },
+        "id": 11,
+        "type": "stateAdd",
+        "x": 100,
+        "y": 10,
+      },
+      {
+        "args": {
+          "message": "I'm rich!",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 12,
+        "type": "log",
+        "x": 110,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            14,
+          ],
+        },
+        "id": 13,
+        "type": "stateGet",
+        "x": 120,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            15,
+          ],
+          "value": 5,
+        },
+        "id": 14,
+        "type": "stateAdd",
+        "x": 130,
+        "y": 10,
+      },
+      {
+        "args": {
+          "message": "Expected more",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 15,
+        "type": "log",
+        "x": 140,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            17,
+          ],
+        },
+        "id": 16,
+        "type": "stateGet",
+        "x": 150,
+        "y": 10,
+      },
+      {
+        "args": {
+          "nodes": [
+            0,
+          ],
+          "value": 12,
+        },
+        "id": 17,
+        "type": "stateAdd",
+        "x": 160,
+        "y": 10,
+      },
+    ],
+  },
+  {
+    "comments": [
+      {
         "text": "Ask the player which door to enter and log the result.",
         "x": 0,
         "y": 5,
@@ -142,6 +378,111 @@ exports[`parseScripts > parses all scripts 1`] = `
   {
     "comments": [
       {
+        "text": "Randomly reward the player, weighted toward a greeting.",
+        "x": 0,
+        "y": 7,
+      },
+    ],
+    "imports": [
+      "node",
+      "random",
+      "randomChoice",
+      "log",
+      "stateGet",
+      "stateAdd",
+    ],
+    "initialState": {},
+    "name": "demoRandom",
+    "nodes": [
+      {
+        "args": {
+          "nodes": [
+            2,
+            3,
+          ],
+        },
+        "id": 1,
+        "type": "random",
+        "x": 10,
+        "y": 1,
+      },
+      {
+        "args": {
+          "nodes": [
+            4,
+          ],
+          "weight": 5,
+        },
+        "id": 2,
+        "type": "randomChoice",
+        "x": 20,
+        "y": 1,
+      },
+      {
+        "args": {
+          "nodes": [
+            5,
+          ],
+          "weight": 1,
+        },
+        "id": 3,
+        "type": "randomChoice",
+        "x": 30,
+        "y": 1,
+      },
+      {
+        "args": {
+          "message": "Hello!",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 4,
+        "type": "log",
+        "x": 40,
+        "y": 1,
+      },
+      {
+        "args": {
+          "message": "Here is gold",
+          "nodes": [
+            6,
+          ],
+        },
+        "id": 5,
+        "type": "log",
+        "x": 50,
+        "y": 10,
+      },
+      {
+        "args": {
+          "key": "coins",
+          "nodes": [
+            7,
+          ],
+        },
+        "id": 6,
+        "type": "stateGet",
+        "x": 60,
+        "y": 1,
+      },
+      {
+        "args": {
+          "nodes": [
+            0,
+          ],
+          "value": 5,
+        },
+        "id": 7,
+        "type": "stateAdd",
+        "x": 70,
+        "y": 1,
+      },
+    ],
+  },
+  {
+    "comments": [
+      {
         "text": "The hello world script takes in a name.
 This allows multiple line comment blocks also.",
         "x": 0,
@@ -150,7 +491,8 @@ This allows multiple line comment blocks also.",
     ],
     "imports": [
       "node",
-      "setState",
+      "stateGet",
+      "stateSet",
     ],
     "initialState": {
       "name": "John",
@@ -161,13 +503,24 @@ This allows multiple line comment blocks also.",
         "args": {
           "key": "message",
           "nodes": [
+            2,
+          ],
+        },
+        "id": 1,
+        "type": "stateGet",
+        "x": 4,
+        "y": 1,
+      },
+      {
+        "args": {
+          "nodes": [
             0,
           ],
           "value": "\`Hello \${state.get('name')}!\`",
         },
-        "id": 1,
-        "type": "setState",
-        "x": 4,
+        "id": 2,
+        "type": "stateSet",
+        "x": 11,
         "y": 1,
       },
     ],
@@ -182,7 +535,8 @@ This allows multiple line comment blocks also.",
     ],
     "imports": [
       "node",
-      "setState",
+      "stateGet",
+      "stateSet",
     ],
     "initialState": {
       "name": "John",
@@ -193,13 +547,24 @@ This allows multiple line comment blocks also.",
         "args": {
           "key": "name",
           "nodes": [
+            3,
+          ],
+        },
+        "id": 1,
+        "type": "stateGet",
+        "x": 4,
+        "y": 1,
+      },
+      {
+        "args": {
+          "nodes": [
             2,
           ],
           "value": "John",
         },
-        "id": 1,
-        "type": "setState",
-        "x": 4,
+        "id": 3,
+        "type": "stateSet",
+        "x": 11,
         "y": 1,
       },
       {

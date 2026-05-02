@@ -139,6 +139,13 @@ function createCase0(): ts.CaseClause {
     ]);
 }
 
+function addDescriptionComments(node: ts.Node, description: string | undefined): void {
+    if (!description) return;
+    for (const line of description.split('\n')) {
+        ts.addSyntheticLeadingComment(node, ts.SyntaxKind.SingleLineCommentTrivia, ` ${line}`, true);
+    }
+}
+
 function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseClause {
     const posComment = ` ${node.x != null ? `${node.x} ${node.y}` : '- -'} - -`;
 
@@ -148,6 +155,7 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
             ts.factory.createAwaitExpression(call(`run${scriptName}`, [ts.factory.createIdentifier('state')]))
         );
         ts.addSyntheticLeadingComment(awaitStmt, ts.SyntaxKind.SingleLineCommentTrivia, posComment, true);
+        addDescriptionComments(awaitStmt, node.description);
         return ts.factory.createCaseClause(ts.factory.createNumericLiteral(node.id), [
             awaitStmt,
             ts.factory.createExpressionStatement(
@@ -183,6 +191,7 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
         )
     );
     ts.addSyntheticLeadingComment(varStmt, ts.SyntaxKind.SingleLineCommentTrivia, posComment, true);
+    addDescriptionComments(varStmt, node.description);
 
     const spreadArg = sig?.returnsSingle
         ? ts.factory.createIdentifier(rVar)
