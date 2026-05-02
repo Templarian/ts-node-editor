@@ -10,7 +10,7 @@ import { get } from "./../nodes/stateGet";
 import { add } from "./../nodes/stateAdd";
 import { log } from "./../nodes/log";
 
-// coins: 0
+// coins: "0"
 
 // 0 15 - -
 // Ask for gold, then check if coins are between 5 and 10.
@@ -112,7 +112,7 @@ export async function run(state: State): Promise<State> {
                 const r9 = lessThan({
                     state,
                     nodes: [],
-                    value: 10
+                    value: 12
                 });
                 stack.unshift(r9);
                 break;
