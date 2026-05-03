@@ -9,7 +9,7 @@ export function dialogChoice({ state, callstack, nodes, text }: {
     nodes: Node[],
     // Text
     text: string
-}): Node {
+}): Node[] {
     if (state.has('noop')) {
         const noop = state.get('noop');
         let ln = 0 as Node;
@@ -25,7 +25,7 @@ export function dialogChoice({ state, callstack, nodes, text }: {
         } else {
             state.set(`$dialog.${ln}.text`, [text]);
         }
-        return state.get('noop');
+        return [state.get('noop')];
     } else {
         throw new Error('Choice node must be on dialog branch');
     }

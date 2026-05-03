@@ -24,10 +24,10 @@
   "description": "Node editor for scripts",
   "devDependencies": {
     "@pictogrammers/components": "^0.5.15",
-    "@pictogrammers/element": "^0.0.39",
-    "@pictogrammers/element-jest": "^0.1.7",
-    "@pictogrammers/element-webpack": "^0.1.40",
-    "@types/node": "^20.9.0",
-    "typescript": "^5.2.2"
+    "@pictogrammers/element": "^0.0.76",
+    "@pictogrammers/element-jest": "^0.1.10",
+    "@pictogrammers/element-esbuild": "^0.0.30",
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
   }
 }

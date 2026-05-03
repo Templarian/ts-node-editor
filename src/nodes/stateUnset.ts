@@ -7,7 +7,7 @@ export function stateUnset({ state, callstack, nodes }: {
     state: State,
     callstack: Node[],
     nodes: Node[]
-}): Node {
+}): Node[] {
     if (state.has('$state.noop')) {
         const noop = state.get('$state.noop');
         let ln = 0 as Node;
@@ -19,7 +19,7 @@ export function stateUnset({ state, callstack, nodes }: {
         }
         state.set(`$state.${ln}`, nodes);
         state.set(`$state.${ln}.op`, 'unset');
-        return state.get('$state.noop');
+        return [state.get('$state.noop')];
     } else {
         throw new Error('unset node must be on state branch');
     }

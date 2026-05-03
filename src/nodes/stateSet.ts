@@ -13,7 +13,7 @@ export function stateSet({ state, callstack, nodes, value }: {
      * @editor Text
      */
     value: string
-}): Node {
+}): Node[] {
     if (state.has('$state.noop')) {
         const noop = state.get('$state.noop');
         let ln = 0 as Node;
@@ -26,7 +26,7 @@ export function stateSet({ state, callstack, nodes, value }: {
         state.set(`$state.${ln}`, nodes);
         state.set(`$state.${ln}.op`, 'set');
         state.set(`$state.${ln}.value`, value);
-        return state.get('$state.noop');
+        return [state.get('$state.noop')];
     } else {
         throw new Error('set node must be on state branch');
     }

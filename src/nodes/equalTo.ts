@@ -16,11 +16,11 @@ export function equalTo({ state, t = [], f = [], value, ignoreCase = false }: {
      * Ignore Case
      */
     ignoreCase?: boolean
-}): Node {
+}): Node[] {
     const raw = String(state.get('$conditional.value') ?? '');
     const a = ignoreCase ? raw.toLowerCase() : raw;
     const b = ignoreCase ? value.toLowerCase() : value;
     state.delete('$state.noop'); state.delete('$state.noop.key');
     state.delete('$conditional.value'); state.delete('$conditional.key');
-    return (a === b ? t : f)[0] ?? 0;
+    return a === b ? t : f;
 }

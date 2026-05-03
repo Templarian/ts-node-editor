@@ -15,13 +15,13 @@ function conditionalIn({ state, t = [], f = [], value, ignoreCase = false }: {
      * Ignore Case
      */
     ignoreCase?: boolean
-}): Node {
+}): Node[] {
     const raw = String(state.get('$conditional.value') ?? '');
     const a = ignoreCase ? raw.toLowerCase() : raw;
     const list = ignoreCase ? value.map(v => v.toLowerCase()) : value;
     state.delete('$state.noop'); state.delete('$state.noop.key');
     state.delete('$conditional.value'); state.delete('$conditional.key');
-    return (list.includes(a) ? t : f)[0] ?? 0;
+    return list.includes(a) ? t : f;
 }
 
 export { conditionalIn as in };

@@ -12,7 +12,7 @@ export function randomChoice({ state, callstack, node: _node, nodes, weight = 1 
      * Weight
      */
     weight?: number
-}): Node {
+}): Node[] {
     if (state.has('noop')) {
         const noop = state.get('noop');
         let ln = 0 as Node;
@@ -24,7 +24,7 @@ export function randomChoice({ state, callstack, node: _node, nodes, weight = 1 
         }
         state.set(`$random.${ln}`, nodes);
         state.set(`$random.${ln}.weight`, weight > 0 ? weight : 1);
-        return state.get('noop');
+        return [state.get('noop')];
     } else {
         throw new Error('RandomChoice node must be on a random branch');
     }

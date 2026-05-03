@@ -19,7 +19,7 @@ export function stateRandom({ state, callstack, nodes, min, max }: {
      * @editor Number
      */
     max: number
-}): Node {
+}): Node[] {
     if (state.has('$state.noop')) {
         const noop = state.get('$state.noop');
         let ln = 0 as Node;
@@ -33,7 +33,7 @@ export function stateRandom({ state, callstack, nodes, min, max }: {
         state.set(`$state.${ln}`, nodes);
         state.set(`$state.${ln}.op`, 'set');
         state.set(`$state.${ln}.value`, value);
-        return state.get('$state.noop');
+        return [state.get('$state.noop')];
     } else {
         throw new Error('stateRandom node must be on state branch');
     }

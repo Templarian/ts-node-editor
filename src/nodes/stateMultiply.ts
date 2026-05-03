@@ -12,7 +12,7 @@ export function stateMultiply({ state, callstack, nodes, value }: {
      * @editor Number
      */
     value: number
-}): Node {
+}): Node[] {
     if (state.has('$state.noop')) {
         const noop = state.get('$state.noop');
         let ln = 0 as Node;
@@ -25,7 +25,7 @@ export function stateMultiply({ state, callstack, nodes, value }: {
         state.set(`$state.${ln}`, nodes);
         state.set(`$state.${ln}.op`, 'multiply');
         state.set(`$state.${ln}.value`, value);
-        return state.get('$state.noop');
+        return [state.get('$state.noop')];
     } else {
         throw new Error('multiply node must be on state branch');
     }

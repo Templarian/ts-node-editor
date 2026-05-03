@@ -2,7 +2,7 @@
 import { createServer } from 'http';
 import {
   getApi
-} from './endpoint/api';
+} from './endpoint/api.ts';
 import {
   getIndex,
   getStyles,

@@ -1,5 +1,5 @@
 export default {
-  namespace: 'easel',
+  namespace: 'client',
   external: [
     '@pictogrammers/components'
   ],
