@@ -41,7 +41,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [2],
                     value: `John`
                 });
-                stack.unshift(r3);
+                stack.unshift(...r3);
                 break;
             case 2:
                 // 10 1 - -

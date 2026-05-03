@@ -41,7 +41,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [4],
                     weight: 5
                 });
-                stack.unshift(r2);
+                stack.unshift(...r2);
                 break;
             case 3:
                 // 30 1 - -
@@ -52,7 +52,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [5],
                     weight: 1
                 });
-                stack.unshift(r3);
+                stack.unshift(...r3);
                 break;
             case 4:
                 // 40 1 - -
@@ -88,7 +88,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [0],
                     value: 5
                 });
-                stack.unshift(r7);
+                stack.unshift(...r7);
                 break;
         }
         callstack.shift();

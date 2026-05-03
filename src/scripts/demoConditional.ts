@@ -47,7 +47,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [4],
                     text: `Can I have 5 gold?`
                 });
-                stack.unshift(r2);
+                stack.unshift(...r2);
                 break;
             case 3:
                 // 20 20 - -
@@ -57,7 +57,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [13],
                     text: `Can I have 12 gold?`
                 });
-                stack.unshift(r3);
+                stack.unshift(...r3);
                 break;
             case 4:
                 // 30 10 - -
@@ -77,7 +77,7 @@ export async function run(state: State): Promise<State> {
                     f: [10],
                     value: 5
                 });
-                stack.unshift(r5);
+                stack.unshift(...r5);
                 break;
             case 6:
                 // 50 10 - -
@@ -97,7 +97,7 @@ export async function run(state: State): Promise<State> {
                     f: [10],
                     value: 10
                 });
-                stack.unshift(r7);
+                stack.unshift(...r7);
                 break;
             case 8:
                 // 80 10 - -
@@ -117,7 +117,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [12],
                     value: 20
                 });
-                stack.unshift(r9);
+                stack.unshift(...r9);
                 break;
             case 10:
                 // 100 10 - -
@@ -137,7 +137,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [12],
                     value: 5
                 });
-                stack.unshift(r11);
+                stack.unshift(...r11);
                 break;
             case 12:
                 // 120 10 - -
@@ -165,7 +165,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [0],
                     value: 12
                 });
-                stack.unshift(r14);
+                stack.unshift(...r14);
                 break;
             case 15:
                 // 150 10 - -

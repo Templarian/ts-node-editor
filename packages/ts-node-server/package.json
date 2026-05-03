@@ -4,12 +4,13 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx src/server/server.ts"
   },
   "dependencies": {
+    "tsx": "^4.19.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"
   }

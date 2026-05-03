@@ -1,30 +1,30 @@
 #!/usr/bin/env node
 import { createServer } from 'http';
 import {
-  getApi
-} from './endpoint/api.ts';
+  getApi,
+} from './endpoint/api.js';
 import {
   getIndex,
   getStyles,
-  getClient
-} from './endpoint/app';
+  getClient,
+} from './endpoint/app.js';
 import {
   getApiComment,
   postApiComment,
   patchApiComment,
-  deleteApiComment
-} from './endpoint/apiComment';
+  deleteApiComment,
+} from './endpoint/apiComment.js';
 import {
   getApiNodes,
   getApiNode,
   postApiNode,
   patchApiNode,
-  deleteApiNode
-} from './endpoint/apiNode';
+  deleteApiNode,
+} from './endpoint/apiNode.js';
 import {
   getGit,
-  getScript
-} from './endpoint/apiScript';
+  getScript,
+} from './endpoint/apiScript.js';
 
 console.log('Server Started: localhost:3002');
 

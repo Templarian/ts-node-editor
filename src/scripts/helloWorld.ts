@@ -41,7 +41,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [0],
                     value: `Hello ${state.get('name')}!`
                 });
-                stack.unshift(r2);
+                stack.unshift(...r2);
                 break;
         }
         callstack.shift();

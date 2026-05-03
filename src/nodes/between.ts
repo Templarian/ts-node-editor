@@ -6,7 +6,13 @@ import type { Node, State } from './node';
  */
 export function between({ state, t = [], f = [], min, max }: {
     state: State,
+    /**
+     * True
+     */
     t?: Node[],
+    /**
+     * False
+     */
     f?: Node[],
     /**
      * Min

@@ -40,7 +40,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [4],
                     text: `Red Door`
                 });
-                stack.unshift(r2);
+                stack.unshift(...r2);
                 break;
             case 3:
                 // 11 4 - -
@@ -50,7 +50,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [5],
                     text: `Blue Door`
                 });
-                stack.unshift(r3);
+                stack.unshift(...r3);
                 break;
             case 4:
                 // 18 1 - -
