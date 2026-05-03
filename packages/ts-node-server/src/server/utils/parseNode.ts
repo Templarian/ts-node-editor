@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import { readFileSync } from 'fs';
 
 interface NodeArg {
     key: string;
@@ -52,9 +51,8 @@ function isNodeArray(typeNode: ts.TypeNode | undefined): boolean {
     return false;
 }
 
-export function parseNode(filePath: string): ParsedNode | null {
-    const source = readFileSync(filePath, 'utf-8');
-    const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
+export function parseNode(source: string): ParsedNode | null {
+    const sourceFile = ts.createSourceFile('node.ts', source, ts.ScriptTarget.Latest, true);
 
     let result: ParsedNode | null = null;
 
