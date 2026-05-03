@@ -3,11 +3,14 @@ import type { Node, State } from './node';
 /**
  * Is True
  */
-export function isTrue({ state, nodes }: {
+export function isTrue({ state, t = [], f = [] }: {
     state: State,
-    nodes: Node[]
+    t?: Node[],
+    f?: Node[]
 }): Node {
     const v = state.get('$conditional.value');
-    state.set('$conditional.result', v === true || v === 'true' || v === 1);
-    return nodes[0] ?? state.get('$conditional.noop');
+    const result = v === true || v === 'true' || v === 1;
+    state.delete('$state.noop'); state.delete('$state.noop.key');
+    state.delete('$conditional.value'); state.delete('$conditional.key');
+    return (result ? t : f)[0] ?? 0;
 }

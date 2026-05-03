@@ -3,9 +3,10 @@ import type { Node, State } from './node';
 /**
  * Between
  */
-export function between({ state, nodes, min, max, inclusive = false }: {
+export function between({ state, t = [], f = [], min, max, inclusive = false }: {
     state: State,
-    nodes: Node[],
+    t?: Node[],
+    f?: Node[],
     /**
      * Min
      * @editor Number
@@ -22,6 +23,8 @@ export function between({ state, nodes, min, max, inclusive = false }: {
     inclusive?: boolean
 }): Node {
     const v = parseFloat(String(state.get('$conditional.value') ?? '')) || 0;
-    state.set('$conditional.result', inclusive ? v >= min && v <= max : v > min && v < max);
-    return nodes[0] ?? state.get('$conditional.noop');
+    const result = inclusive ? v >= min && v <= max : v > min && v < max;
+    state.delete('$state.noop'); state.delete('$state.noop.key');
+    state.delete('$conditional.value'); state.delete('$conditional.key');
+    return (result ? t : f)[0] ?? 0;
 }

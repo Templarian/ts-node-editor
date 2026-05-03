@@ -3,10 +3,13 @@ import type { Node, State } from './node';
 /**
  * Is Set
  */
-export function isSet({ state, nodes }: {
+export function isSet({ state, t = [], f = [] }: {
     state: State,
-    nodes: Node[]
+    t?: Node[],
+    f?: Node[]
 }): Node {
-    state.set('$conditional.result', state.has(state.get('$conditional.key')));
-    return nodes[0] ?? state.get('$conditional.noop');
+    const result = state.has(state.get('$conditional.key'));
+    state.delete('$state.noop'); state.delete('$state.noop.key');
+    state.delete('$conditional.value'); state.delete('$conditional.key');
+    return (result ? t : f)[0] ?? 0;
 }

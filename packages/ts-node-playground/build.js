@@ -55,16 +55,13 @@ const html = `<!DOCTYPE html>
   .badge-dialogChoice  { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
   .badge-random        { background: #dc262622; color: #fca5a5; border: 1px solid #dc262655; }
   .badge-randomChoice  { background: #ea580c22; color: #fdba74; border: 1px solid #ea580c55; }
-  .badge-get           { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
-  .badge-set           { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
-  .badge-add           { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
-  .badge-subtract      { background: #e11d4822; color: #fda4af; border: 1px solid #e11d4855; }
-  .badge-multiply      { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
-  .badge-divide        { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
-  .badge-unset         { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
-  .badge-conditional      { background: #d9770622; color: #fb923c; border: 1px solid #d9770655; }
-  .badge-and              { background: #1d4ed822; color: #93c5fd; border: 1px solid #1d4ed855; }
-  .badge-or               { background: #7e22ce22; color: #d8b4fe; border: 1px solid #7e22ce55; }
+  .badge-stateGet      { background: #0891b222; color: #67e8f9; border: 1px solid #0891b255; }
+  .badge-stateSet      { background: #b4530022; color: #fdba74; border: 1px solid #b4530055; }
+  .badge-stateAdd      { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
+  .badge-stateSubtract { background: #e11d4822; color: #fda4af; border: 1px solid #e11d4855; }
+  .badge-stateMultiply { background: #7c3aed22; color: #c4b5fd; border: 1px solid #7c3aed55; }
+  .badge-stateDivide   { background: #0369a122; color: #7dd3fc; border: 1px solid #0369a155; }
+  .badge-stateUnset    { background: #47556922; color: #94a3b8; border: 1px solid #47556955; }
   .badge-greaterThan      { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
   .badge-greaterThanOrEqual { background: #05966922; color: #6ee7b7; border: 1px solid #05966955; }
   .badge-lessThan         { background: #be123c22; color: #fda4af; border: 1px solid #be123c55; }
@@ -152,7 +149,7 @@ function nodeById(id) {
 
 function badgeClass(type) {
   const t = (type || '').toLowerCase();
-  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', get: 'get', set: 'set', add: 'add', subtract: 'subtract', multiply: 'multiply', divide: 'divide', unset: 'unset', conditional: 'conditional', and: 'and', or: 'or', greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
+  const map = { coinflip: 'coinFlip', dialog: 'dialog', dialogchoice: 'dialogChoice', random: 'random', randomchoice: 'randomChoice', stateget: 'stateGet', stateset: 'stateSet', stateadd: 'stateAdd', statesubtract: 'stateSubtract', statemultiply: 'stateMultiply', statedivide: 'stateDivide', stateunset: 'stateUnset',greaterthan: 'greaterThan', greaterthanorequal: 'greaterThanOrEqual', lessthan: 'lessThan', lessthanorequal: 'lessThanOrEqual', equalto: 'equalTo', notequalto: 'notEqualTo', between: 'between', contains: 'contains', startswith: 'startsWith', endswith: 'endsWith', in: 'in', match: 'match', empty: 'empty', notempty: 'notEmpty', isset: 'isSet', isnotset: 'isNotSet', istrue: 'isTrue', isfalse: 'isFalse', log: 'log', include: 'include', end: 'end' };
   return 'badge-' + (map[t] || 'default');
 }
 
@@ -212,34 +209,48 @@ function executeNode(nodeId) {
 
   const type = node.type;
 
-  if (type === 'get') {
+  const COMPARATOR_TYPES = new Set(['greaterThan','greaterThanOrEqual','lessThan','lessThanOrEqual','equalTo','notEqualTo','between','contains','startsWith','endsWith','in','match','empty','notEmpty','isSet','isNotSet','isTrue','isFalse']);
+
+  if (type === 'stateGet') {
     const key = String(node.args.key || '');
     const opNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
-    const ops = opNodeIds.map(id => nodeById(id)).filter(Boolean);
-    let nextId = 0;
-    const opSummary = [];
-    for (const op of ops) {
-      const cur = state.has(key) ? parseFloat(String(state.get(key))) || 0 : 0;
-      const val = op.args.value;
-      if (op.type === 'set') state.set(key, evalValue(String(val ?? '')));
-      else if (op.type === 'add') state.set(key, cur + Number(val));
-      else if (op.type === 'subtract') state.set(key, cur - Number(val));
-      else if (op.type === 'multiply') state.set(key, cur * Number(val));
-      else if (op.type === 'divide') state.set(key, cur / Number(val));
-      else if (op.type === 'unset') state.delete(key);
-      opSummary.push(val !== undefined ? \`\${op.type} \${val}\` : op.type);
-      if (nextId === 0) nextId = Array.isArray(op.args.nodes) ? (op.args.nodes[0] ?? 0) : 0;
+    const firstOp = opNodeIds.length > 0 ? nodeById(opNodeIds[0]) : null;
+    if (firstOp && COMPARATOR_TYPES.has(firstOp.type)) {
+      state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
+      state.set('$conditional.key', key);
+      const body = \`<div class="card-body">
+        <div class="row"><span class="label">key</span><span class="val mono">\${esc(key)}</span></div>
+        <div class="row"><span class="label">value</span><span class="val mono">\${esc(String(state.get('$conditional.value') ?? '(unset)'))}</span></div>
+      </div>\`;
+      addHistoryCard(cardHeaderHtml(type, node.id) + body);
+      executeNode(opNodeIds[0]);
+    } else {
+      const ops = opNodeIds.map(id => nodeById(id)).filter(Boolean);
+      let nextId = 0;
+      const opSummary = [];
+      for (const op of ops) {
+        const cur = state.has(key) ? parseFloat(String(state.get(key))) || 0 : 0;
+        const val = op.args.value;
+        if (op.type === 'stateSet') state.set(key, evalValue(String(val ?? '')));
+        else if (op.type === 'stateAdd') state.set(key, cur + Number(val));
+        else if (op.type === 'stateSubtract') state.set(key, cur - Number(val));
+        else if (op.type === 'stateMultiply') state.set(key, cur * Number(val));
+        else if (op.type === 'stateDivide') state.set(key, cur / Number(val));
+        else if (op.type === 'stateUnset') state.delete(key);
+        opSummary.push(val !== undefined ? \`\${op.type} \${val}\` : op.type);
+        if (nextId === 0) nextId = Array.isArray(op.args.nodes) ? (op.args.nodes[0] ?? 0) : 0;
+      }
+      renderState();
+      const newVal = state.has(key) ? String(state.get(key)) : '(unset)';
+      const body = \`<div class="card-body">
+        <div class="row"><span class="label">key</span><span class="val mono">\${esc(key)}</span></div>
+        <div class="row"><span class="label">ops</span><span class="val mono">\${esc(opSummary.join(', '))}</span></div>
+        <div class="row"><span class="label">result</span><span class="val mono">\${esc(newVal)}</span></div>
+        <div class="outcome">→ state updated</div>
+      </div>\`;
+      addHistoryCard(cardHeaderHtml(type, node.id) + body);
+      executeNode(nextId);
     }
-    renderState();
-    const newVal = state.has(key) ? String(state.get(key)) : '(unset)';
-    const body = \`<div class="card-body">
-      <div class="row"><span class="label">key</span><span class="val mono">\${esc(key)}</span></div>
-      <div class="row"><span class="label">ops</span><span class="val mono">\${esc(opSummary.join(', '))}</span></div>
-      <div class="row"><span class="label">result</span><span class="val mono">\${esc(newVal)}</span></div>
-      <div class="outcome">→ state updated</div>
-    </div>\`;
-    addHistoryCard(cardHeaderHtml(type, node.id) + body);
-    executeNode(nextId);
 
   } else if (type === 'log') {
     const msg = evalValue(String(node.args.message || ''));
@@ -302,75 +313,40 @@ function executeNode(nodeId) {
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
 
-  } else if (type === 'conditional') {
-    const chain = [];
-    let nextChainId = Array.isArray(node.args.nodes) ? node.args.nodes[0] : null;
-    while (nextChainId !== null && nextChainId !== undefined && nextChainId !== 0) {
-      const cn = nodeById(nextChainId);
-      if (!cn) break;
-      chain.push(cn);
-      const cnNext = Array.isArray(cn.args.nodes) ? cn.args.nodes : [];
-      nextChainId = cnNext.length > 0 ? cnNext[0] : null;
-    }
-    // Evaluate the condition chain inline
+  } else if (COMPARATOR_TYPES.has(type)) {
+    const val = node.args.value;
+    const ignoreCase = node.args.ignoreCase ?? false;
+    const raw = String(state.get('$conditional.value') ?? '');
+    const a = ignoreCase ? raw.toLowerCase() : raw;
+    const num = parseFloat(raw) || 0;
     let result = false;
-    let pendingOp = null; // 'and' | 'or' | null
-    let i = 0;
-    while (i < chain.length) {
-      const n = chain[i];
-      if (n.type === 'get') {
-        const key = String(n.args.key || '');
-        state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
-        state.set('$conditional.key', key);
-        i++;
-      } else if (n.type === 'and') {
-        if (!result) { break; }
-        pendingOp = 'and';
-        result = false;
-        i++;
-      } else if (n.type === 'or') {
-        if (result) { break; }
-        pendingOp = 'or';
-        result = false;
-        i++;
-      } else {
-        // comparator node
-        const val = n.args.value;
-        const ignoreCase = n.args.ignoreCase ?? false;
-        const raw = String(state.get('$conditional.value') ?? '');
-        const a = ignoreCase ? raw.toLowerCase() : raw;
-        const num = parseFloat(raw) || 0;
-        let cmp = false;
-        if (n.type === 'greaterThan') cmp = num > Number(val);
-        else if (n.type === 'greaterThanOrEqual') cmp = num >= Number(val);
-        else if (n.type === 'lessThan') cmp = num < Number(val);
-        else if (n.type === 'lessThanOrEqual') cmp = num <= Number(val);
-        else if (n.type === 'between') cmp = n.args.inclusive ? num >= Number(n.args.min) && num <= Number(n.args.max) : num > Number(n.args.min) && num < Number(n.args.max);
-        else if (n.type === 'equalTo') cmp = a === (ignoreCase ? String(val).toLowerCase() : String(val));
-        else if (n.type === 'notEqualTo') cmp = a !== (ignoreCase ? String(val).toLowerCase() : String(val));
-        else if (n.type === 'contains') cmp = a.includes(ignoreCase ? String(val).toLowerCase() : String(val));
-        else if (n.type === 'startsWith') cmp = a.startsWith(ignoreCase ? String(val).toLowerCase() : String(val));
-        else if (n.type === 'endsWith') cmp = a.endsWith(ignoreCase ? String(val).toLowerCase() : String(val));
-        else if (n.type === 'in') { const list = (Array.isArray(val) ? val : []).map(v => ignoreCase ? String(v).toLowerCase() : String(v)); cmp = list.includes(a); }
-        else if (n.type === 'match') cmp = new RegExp(String(val), ignoreCase ? 'i' : '').test(raw);
-        else if (n.type === 'empty') cmp = raw === '' || raw === '0' || raw === 'undefined' || !state.has(state.get('$conditional.key'));
-        else if (n.type === 'notEmpty') cmp = raw !== '' && raw !== '0' && raw !== 'undefined' && state.has(state.get('$conditional.key'));
-        else if (n.type === 'isSet') cmp = state.has(state.get('$conditional.key'));
-        else if (n.type === 'isNotSet') cmp = !state.has(state.get('$conditional.key'));
-        else if (n.type === 'isTrue') cmp = raw === 'true' || raw === '1';
-        else if (n.type === 'isFalse') cmp = raw === 'false' || raw === '0';
-        result = cmp;
-        i++;
-      }
-    }
+    if (type === 'greaterThan') result = num > Number(val);
+    else if (type === 'greaterThanOrEqual') result = num >= Number(val);
+    else if (type === 'lessThan') result = num < Number(val);
+    else if (type === 'lessThanOrEqual') result = num <= Number(val);
+    else if (type === 'between') result = node.args.inclusive ? num >= Number(node.args.min) && num <= Number(node.args.max) : num > Number(node.args.min) && num < Number(node.args.max);
+    else if (type === 'equalTo') result = a === (ignoreCase ? String(val).toLowerCase() : String(val));
+    else if (type === 'notEqualTo') result = a !== (ignoreCase ? String(val).toLowerCase() : String(val));
+    else if (type === 'contains') result = a.includes(ignoreCase ? String(val).toLowerCase() : String(val));
+    else if (type === 'startsWith') result = a.startsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+    else if (type === 'endsWith') result = a.endsWith(ignoreCase ? String(val).toLowerCase() : String(val));
+    else if (type === 'in') { const list = (Array.isArray(val) ? val : []).map(v => ignoreCase ? String(v).toLowerCase() : String(v)); result = list.includes(a); }
+    else if (type === 'match') result = new RegExp(String(val), ignoreCase ? 'i' : '').test(raw);
+    else if (type === 'empty') result = raw === '' || raw === '0' || raw === 'undefined' || !state.has(state.get('$conditional.key'));
+    else if (type === 'notEmpty') result = raw !== '' && raw !== '0' && raw !== 'undefined' && state.has(state.get('$conditional.key'));
+    else if (type === 'isSet') result = state.has(state.get('$conditional.key'));
+    else if (type === 'isNotSet') result = !state.has(state.get('$conditional.key'));
+    else if (type === 'isTrue') result = raw === 'true' || raw === '1';
+    else if (type === 'isFalse') result = raw === 'false' || raw === '0';
     state.delete('$conditional.value');
     state.delete('$conditional.key');
+    state.delete('$state.noop');
+    state.delete('$state.noop.key');
     const tNodes = Array.isArray(node.args.t) ? node.args.t : [];
     const fNodes = Array.isArray(node.args.f) ? node.args.f : [];
     const nextId = result ? (tNodes[0] ?? 0) : (fNodes[0] ?? 0);
-    const chainSummary = chain.map(n => n.type === 'conditionalGet' ? \`get(\${n.args.key})\` : n.type === 'and' ? 'AND' : n.type === 'or' ? 'OR' : n.type).join(' → ');
     const body = \`<div class="card-body">
-      <div class="row"><span class="label">chain</span><span class="val mono">\${esc(chainSummary)}</span></div>
+      <div class="row"><span class="label">value</span><span class="val mono">\${esc(raw)}</span></div>
       <div class="row"><span class="label">result</span><span class="val" style="color:\${result ? '#34d399' : '#f87171'}">\${result ? 'true → t' : 'false → f'}</span></div>
     </div>\`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);

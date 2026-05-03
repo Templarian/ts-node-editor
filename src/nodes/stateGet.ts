@@ -16,11 +16,8 @@ export function stateGet({ state, node, nodes, key }: {
      */
     key: string
 }): Node[] {
-    if (state.has('$conditional.noop')) {
-        state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
-        state.set('$conditional.key', key);
-        return [nodes[0] ?? state.get('$conditional.noop')];
-    }
+    state.set('$conditional.value', state.has(key) ? state.get(key) : undefined);
+    state.set('$conditional.key', key);
     if (nodes.length === 0) {
         return [];
     }

@@ -1,17 +1,15 @@
 import type { Node, State } from './../nodes/node';
 import { dialog } from "./../nodes/dialog";
 import { dialogChoice } from "./../nodes/dialogChoice";
-import { conditional } from "./../nodes/conditional";
 import { stateGet } from "./../nodes/stateGet";
 import { greaterThan } from "./../nodes/greaterThan";
-import { and } from "./../nodes/and";
 import { lessThan } from "./../nodes/lessThan";
 import { stateAdd } from "./../nodes/stateAdd";
 import { log } from "./../nodes/log";
 
 // coins: "6"
 
-// 0 17 - -
+// 0 15 - -
 // Ask for gold, then check if coins are between 5 and 10.
 
 export async function run(state: State): Promise<State> {
@@ -32,7 +30,6 @@ export async function run(state: State): Promise<State> {
                 break loop;
             case 1:
                 // 10 12 - -
-                // dialog
                 const r1 = await dialog({
                     state,
                     node: 1,
@@ -57,51 +54,53 @@ export async function run(state: State): Promise<State> {
                 const r3 = dialogChoice({
                     state,
                     callstack,
-                    nodes: [16],
+                    nodes: [13],
                     text: `Can I have 12 gold?`
                 });
                 stack.unshift(r3);
                 break;
             case 4:
                 // 30 10 - -
-                const r4 = await conditional({
+                const r4 = stateGet({
                     state,
                     node: 4,
                     nodes: [5],
-                    t: [10],
-                    f: [13]
+                    key: `coins`
                 });
                 stack.unshift(...r4);
                 continue;
             case 5:
                 // 40 10 - -
-                const r5 = stateGet({
+                const r5 = greaterThan({
                     state,
-                    node: 5,
-                    nodes: [6],
-                    key: `coins`
-                });
-                stack.unshift(...r5);
-                continue;
-            case 6:
-                // 50 10 - -
-                const r6 = greaterThan({
-                    state,
-                    nodes: [7],
+                    t: [6],
+                    f: [10],
                     value: 5
                 });
-                stack.unshift(r6);
+                stack.unshift(r5);
                 break;
+            case 6:
+                // 50 10 - -
+                const r6 = stateGet({
+                    state,
+                    node: 6,
+                    nodes: [7],
+                    key: `coins`
+                });
+                stack.unshift(...r6);
+                continue;
             case 7:
                 // 60 10 - -
-                const r7 = and({
+                const r7 = lessThan({
                     state,
-                    nodes: [8]
+                    t: [8],
+                    f: [10],
+                    value: 10
                 });
                 stack.unshift(r7);
                 break;
             case 8:
-                // 70 10 - -
+                // 80 10 - -
                 const r8 = stateGet({
                     state,
                     node: 8,
@@ -111,16 +110,17 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r8);
                 continue;
             case 9:
-                // 80 10 - -
-                const r9 = lessThan({
+                // 90 10 - -
+                const r9 = stateAdd({
                     state,
-                    nodes: [],
-                    value: 10
+                    callstack,
+                    nodes: [12],
+                    value: 20
                 });
                 stack.unshift(r9);
                 break;
             case 10:
-                // 90 10 - -
+                // 100 10 - -
                 const r10 = stateGet({
                     state,
                     node: 10,
@@ -130,25 +130,25 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r10);
                 continue;
             case 11:
-                // 100 10 - -
+                // 110 10 - -
                 const r11 = stateAdd({
                     state,
                     callstack,
                     nodes: [12],
-                    value: 20
+                    value: 5
                 });
                 stack.unshift(r11);
                 break;
             case 12:
-                // 110 10 - -
+                // 120 10 - -
                 const r12 = log({
-                    message: `I'm rich!`,
+                    message: `Done`,
                     nodes: [0]
                 });
                 stack.unshift(...r12);
                 break;
             case 13:
-                // 120 10 - -
+                // 130 10 - -
                 const r13 = stateGet({
                     state,
                     node: 13,
@@ -158,42 +158,22 @@ export async function run(state: State): Promise<State> {
                 stack.unshift(...r13);
                 continue;
             case 14:
-                // 130 10 - -
-                const r14 = stateAdd({
-                    state,
-                    callstack,
-                    nodes: [15],
-                    value: 5
-                });
-                stack.unshift(r14);
-                break;
-            case 15:
                 // 140 10 - -
-                const r15 = log({
-                    message: `Expected more`,
-                    nodes: [0]
-                });
-                stack.unshift(...r15);
-                break;
-            case 16:
-                // 150 10 - -
-                const r16 = stateGet({
-                    state,
-                    node: 16,
-                    nodes: [17],
-                    key: `coins`
-                });
-                stack.unshift(...r16);
-                continue;
-            case 17:
-                // 160 10 - -
-                const r17 = stateAdd({
+                const r14 = stateAdd({
                     state,
                     callstack,
                     nodes: [0],
                     value: 12
                 });
-                stack.unshift(r17);
+                stack.unshift(r14);
+                break;
+            case 15:
+                // 150 10 - -
+                const r15 = log({
+                    message: `I'm rich!`,
+                    nodes: [0]
+                });
+                stack.unshift(...r15);
                 break;
         }
         callstack.shift();

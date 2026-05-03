@@ -63,17 +63,15 @@ exports[`parseScripts > parses all scripts 1`] = `
       {
         "text": "Ask for gold, then check if coins are between 5 and 10.",
         "x": 0,
-        "y": 17,
+        "y": 15,
       },
     ],
     "imports": [
       "node",
       "dialog",
       "dialogChoice",
-      "conditional",
       "stateGet",
       "greaterThan",
-      "and",
       "lessThan",
       "stateAdd",
       "log",
@@ -92,7 +90,6 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
           "text": "What would you like?",
         },
-        "description": "dialog",
         "id": 1,
         "type": "dialog",
         "x": 10,
@@ -113,7 +110,7 @@ exports[`parseScripts > parses all scripts 1`] = `
       {
         "args": {
           "nodes": [
-            16,
+            13,
           ],
           "text": "Can I have 12 gold?",
         },
@@ -124,53 +121,55 @@ exports[`parseScripts > parses all scripts 1`] = `
       },
       {
         "args": {
-          "f": [
-            13,
-          ],
+          "key": "coins",
           "nodes": [
             5,
           ],
-          "t": [
-            10,
-          ],
         },
         "id": 4,
-        "type": "conditional",
+        "type": "stateGet",
         "x": 30,
+        "y": 10,
+      },
+      {
+        "args": {
+          "f": [
+            10,
+          ],
+          "t": [
+            6,
+          ],
+          "value": 5,
+        },
+        "id": 5,
+        "type": "greaterThan",
+        "x": 40,
         "y": 10,
       },
       {
         "args": {
           "key": "coins",
           "nodes": [
-            6,
-          ],
-        },
-        "id": 5,
-        "type": "stateGet",
-        "x": 40,
-        "y": 10,
-      },
-      {
-        "args": {
-          "nodes": [
             7,
           ],
-          "value": 5,
         },
         "id": 6,
-        "type": "greaterThan",
+        "type": "stateGet",
         "x": 50,
         "y": 10,
       },
       {
         "args": {
-          "nodes": [
+          "f": [
+            10,
+          ],
+          "t": [
             8,
           ],
+          "value": 10,
         },
         "id": 7,
-        "type": "and",
+        "type": "lessThan",
         "x": 60,
         "y": 10,
       },
@@ -183,17 +182,19 @@ exports[`parseScripts > parses all scripts 1`] = `
         },
         "id": 8,
         "type": "stateGet",
-        "x": 70,
+        "x": 80,
         "y": 10,
       },
       {
         "args": {
-          "nodes": [],
-          "value": 10,
+          "nodes": [
+            12,
+          ],
+          "value": 20,
         },
         "id": 9,
-        "type": "lessThan",
-        "x": 80,
+        "type": "stateAdd",
+        "x": 90,
         "y": 10,
       },
       {
@@ -205,7 +206,7 @@ exports[`parseScripts > parses all scripts 1`] = `
         },
         "id": 10,
         "type": "stateGet",
-        "x": 90,
+        "x": 100,
         "y": 10,
       },
       {
@@ -213,23 +214,23 @@ exports[`parseScripts > parses all scripts 1`] = `
           "nodes": [
             12,
           ],
-          "value": 20,
+          "value": 5,
         },
         "id": 11,
         "type": "stateAdd",
-        "x": 100,
+        "x": 110,
         "y": 10,
       },
       {
         "args": {
-          "message": "I'm rich!",
+          "message": "Done",
           "nodes": [
             0,
           ],
         },
         "id": 12,
         "type": "log",
-        "x": 110,
+        "x": 120,
         "y": 10,
       },
       {
@@ -241,43 +242,7 @@ exports[`parseScripts > parses all scripts 1`] = `
         },
         "id": 13,
         "type": "stateGet",
-        "x": 120,
-        "y": 10,
-      },
-      {
-        "args": {
-          "nodes": [
-            15,
-          ],
-          "value": 5,
-        },
-        "id": 14,
-        "type": "stateAdd",
         "x": 130,
-        "y": 10,
-      },
-      {
-        "args": {
-          "message": "Expected more",
-          "nodes": [
-            0,
-          ],
-        },
-        "id": 15,
-        "type": "log",
-        "x": 140,
-        "y": 10,
-      },
-      {
-        "args": {
-          "key": "coins",
-          "nodes": [
-            17,
-          ],
-        },
-        "id": 16,
-        "type": "stateGet",
-        "x": 150,
         "y": 10,
       },
       {
@@ -287,9 +252,21 @@ exports[`parseScripts > parses all scripts 1`] = `
           ],
           "value": 12,
         },
-        "id": 17,
+        "id": 14,
         "type": "stateAdd",
-        "x": 160,
+        "x": 140,
+        "y": 10,
+      },
+      {
+        "args": {
+          "message": "I'm rich!",
+          "nodes": [
+            0,
+          ],
+        },
+        "id": 15,
+        "type": "log",
+        "x": 150,
         "y": 10,
       },
     ],

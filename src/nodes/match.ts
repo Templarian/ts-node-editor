@@ -3,9 +3,10 @@ import type { Node, State } from './node';
 /**
  * Match
  */
-export function match({ state, nodes, value, ignoreCase = false }: {
+export function match({ state, t = [], f = [], value, ignoreCase = false }: {
     state: State,
-    nodes: Node[],
+    t?: Node[],
+    f?: Node[],
     /**
      * Value (regex)
      * @editor Text
@@ -17,7 +18,8 @@ export function match({ state, nodes, value, ignoreCase = false }: {
     ignoreCase?: boolean
 }): Node {
     const raw = String(state.get('$conditional.value') ?? '');
-    const flags = ignoreCase ? 'i' : '';
-    state.set('$conditional.result', new RegExp(value, flags).test(raw));
-    return nodes[0] ?? state.get('$conditional.noop');
+    const result = new RegExp(value, ignoreCase ? 'i' : '').test(raw);
+    state.delete('$state.noop'); state.delete('$state.noop.key');
+    state.delete('$conditional.value'); state.delete('$conditional.key');
+    return (result ? t : f)[0] ?? 0;
 }
