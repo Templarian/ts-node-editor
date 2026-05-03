@@ -419,9 +419,11 @@ function loadScript(script, inheritedState) {
   state = inheritedState || new Map(Object.entries(script.initialState || {}));
   window._pendingDialogNode = null;
   document.getElementById('scriptName').textContent = script.name;
-  document.getElementById('scriptDesc').textContent = script.description || '';
+  document.getElementById('scriptDesc').textContent = script.comments?.[0]?.text || '';
   renderState();
-  executeNode(1);
+  const node0 = script.nodes.find(n => n.id === 0);
+  const startId = Array.isArray(node0?.args?.nodes) ? (node0.args.nodes[0] ?? 1) : 1;
+  executeNode(startId);
 }
 
 function resetScript() {
