@@ -19,7 +19,11 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoCoinFlip",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "description": "Simple coin flip demo.",
         "id": 0,
         "x": 1,
@@ -89,7 +93,11 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoConditional",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "description": "Demo showing how conditionals work.",
         "id": 0,
         "x": 1,
@@ -303,7 +311,11 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoDialog",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "id": 0,
         "x": 1,
         "y": 1,
@@ -392,7 +404,11 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoRandom",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "id": 0,
         "x": 1,
         "y": 1,
@@ -503,7 +519,11 @@ This allows multiple line comment blocks also.",
     "name": "helloWorld",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "id": 0,
         "x": 1,
         "y": 1,
@@ -553,7 +573,11 @@ This allows multiple line comment blocks also.",
     "name": "helloWorldInclude",
     "nodes": [
       {
-        "args": {},
+        "args": {
+          "nodes": [
+            1,
+          ],
+        },
         "id": 0,
         "x": 1,
         "y": 1,

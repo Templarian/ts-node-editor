@@ -242,7 +242,9 @@ function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionD
         ts.factory.createVariableStatement(undefined,
             ts.factory.createVariableDeclarationList(
                 [ts.factory.createVariableDeclaration('stack', undefined, nodeArrayType,
-                    ts.factory.createArrayLiteralExpression([ts.factory.createNumericLiteral(1)])
+                    ts.factory.createArrayLiteralExpression(
+                        ((node0?.args?.nodes ?? [1]) as number[]).map(n => ts.factory.createNumericLiteral(n))
+                    )
                 )],
                 ts.NodeFlags.Const
             )

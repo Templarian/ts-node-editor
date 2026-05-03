@@ -202,6 +202,22 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
     const switchStmt = findSwitchStatement(sf);
     if (!switchStmt) return parsed;
 
+    let stackNodes: number[] = [1];
+    const runFnDecl = sf.statements.find(ts.isFunctionDeclaration) as ts.FunctionDeclaration | undefined;
+    if (runFnDecl?.body) {
+        for (const stmt of runFnDecl.body.statements) {
+            if (!ts.isVariableStatement(stmt)) continue;
+            const decl = stmt.declarationList.declarations[0];
+            if (decl && ts.isIdentifier(decl.name) && decl.name.text === 'stack'
+                    && decl.initializer && ts.isArrayLiteralExpression(decl.initializer)) {
+                stackNodes = decl.initializer.elements
+                    .filter(ts.isNumericLiteral)
+                    .map(e => parseInt(e.text, 10));
+                break;
+            }
+        }
+    }
+
     for (const clause of switchStmt.caseBlock.clauses) {
         if (!ts.isCaseClause(clause)) continue;
         const caseExpr = clause.expression;
@@ -236,7 +252,7 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
         const description = descLines.length > 0 ? descLines.join('\n') : undefined;
 
         if (id === 0) {
-            parsed.nodes.push({ id: 0, ...nodePos, args: {}, ...(description !== undefined ? { description } : {}) });
+            parsed.nodes.push({ id: 0, ...nodePos, args: { nodes: stackNodes }, ...(description !== undefined ? { description } : {}) });
             continue;
         }
 
