@@ -9,11 +9,11 @@ export function between({ state, t = [], f = [], min, max }: {
     /**
      * True
      */
-    t?: Node[],
+    t: Node[],
     /**
      * False
      */
-    f?: Node[],
+    f: Node[],
     /**
      * Min
      * @editor Number

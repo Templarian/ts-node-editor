@@ -5,8 +5,8 @@ import type { Node, State } from './node';
  */
 export function isFalse({ state, t = [], f = [] }: {
     state: State,
-    t?: Node[],
-    f?: Node[]
+    t: Node[],
+    f: Node[]
 }): Node[] {
     const v = state.get('$conditional.value');
     const result = v === false || v === 'false' || v === 0;

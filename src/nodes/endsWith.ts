@@ -5,8 +5,8 @@ import type { Node, State } from './node';
  */
 export function endsWith({ state, t = [], f = [], value, ignoreCase = false }: {
     state: State,
-    t?: Node[],
-    f?: Node[],
+    t: Node[],
+    f: Node[],
     /**
      * Value
      * @editor Text

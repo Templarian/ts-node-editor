@@ -5,8 +5,8 @@ import type { Node, State } from './node';
  */
 export function lessThanOrEqual({ state, t = [], f = [], value }: {
     state: State,
-    t?: Node[],
-    f?: Node[],
+    t: Node[],
+    f: Node[],
     /**
      * Value
      * @editor Number

@@ -5,8 +5,8 @@ import type { Node, State } from './node';
  */
 export function empty({ state, t = [], f = [] }: {
     state: State,
-    t?: Node[],
-    f?: Node[]
+    t: Node[],
+    f: Node[]
 }): Node[] {
     const v = state.get('$conditional.value');
     const result = v === undefined || v === null || v === '' || v === 0;

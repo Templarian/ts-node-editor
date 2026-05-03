@@ -5,8 +5,8 @@ import type { Node, State } from './node';
  */
 export function isSet({ state, t = [], f = [] }: {
     state: State,
-    t?: Node[],
-    f?: Node[]
+    t: Node[],
+    f: Node[]
 }): Node[] {
     const result = state.has(state.get('$conditional.key'));
     state.delete('$state.noop'); state.delete('$state.noop.key');
