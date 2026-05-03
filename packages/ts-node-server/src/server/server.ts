@@ -71,7 +71,7 @@ createServer((req, res) => {
     }
   } else if (p = req.url.match(/^\/api\/nodes$/)) {
     if (req.method === 'GET') {
-      getApiNodes(req, res);
+      getApiNodes(req, res).catch(err => { res.statusCode = 500; res.end(String(err)); });
     }
   } else if (p = req.url.match(/^\/api\/node\/(\d+)$/)) {
     if (req.method === 'GET') {
