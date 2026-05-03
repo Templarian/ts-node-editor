@@ -13,8 +13,10 @@ export interface ScriptNode {
     id: number;
     x?: number;
     y?: number;
+    width?: number;
+    height?: number;
     description?: string;
-    type: string;
+    type?: string;
     args: Record<string, unknown>;
 }
 
@@ -53,10 +55,6 @@ function parseCommentPosition(text: string): ParsedPosition | null {
     };
 }
 
-function parsePosition(text: string): { x: number; y: number } | null {
-    const p = parseCommentPosition(text);
-    return p ? { x: p.x, y: p.y } : null;
-}
 
 function extractValue(node: ts.Expression, source: string): unknown {
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
@@ -210,9 +208,6 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
         if (!ts.isNumericLiteral(caseExpr)) continue;
         const id = parseInt(caseExpr.text, 10);
 
-        // Skip case 0 — it's the exit/entry handler boilerplate
-        if (id === 0) continue;
-
         const stmts = clause.statements.filter(
             s => !ts.isBreakStatement(s) && !ts.isContinueStatement(s)
         );
@@ -220,19 +215,30 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
 
         const firstStmt = stmts[0];
         const ranges = ts.getLeadingCommentRanges(source, firstStmt.getFullStart()) ?? [];
-        let nodePos: { x: number; y: number } | null = null;
+        let parsedPos: ParsedPosition | null = null;
         let posIndex = -1;
         for (let i = 0; i < ranges.length; i++) {
-            const p = parsePosition(commentText(ranges[i], source));
-            if (p) { nodePos = p; posIndex = i; break; }
+            const p = parseCommentPosition(commentText(ranges[i], source));
+            if (p) { parsedPos = p; posIndex = i; break; }
         }
 
-        if (!nodePos) {
+        if (!parsedPos) {
             throw new Error(`Node ${id} is missing required position comment (// x y width height)`);
         }
 
+        const nodePos = {
+            x: parsedPos.x,
+            y: parsedPos.y,
+            ...(parsedPos.width !== null && { width: parsedPos.width }),
+            ...(parsedPos.height !== null && { height: parsedPos.height }),
+        };
         const descLines = ranges.slice(posIndex + 1).map(r => commentText(r, source));
         const description = descLines.length > 0 ? descLines.join('\n') : undefined;
+
+        if (id === 0) {
+            parsed.nodes.push({ id: 0, ...nodePos, args: {}, ...(description !== undefined ? { description } : {}) });
+            continue;
+        }
 
         const callInfo = extractCallInfo(firstStmt, source);
         if (!callInfo) continue;

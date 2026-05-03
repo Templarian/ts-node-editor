@@ -19,6 +19,13 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoCoinFlip",
     "nodes": [
       {
+        "args": {},
+        "description": "Simple coin flip demo.",
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
+      {
         "args": {
           "f": [
             3,
@@ -81,6 +88,13 @@ exports[`parseScripts > parses all scripts 1`] = `
     },
     "name": "demoConditional",
     "nodes": [
+      {
+        "args": {},
+        "description": "Demo showing how conditionals work.",
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
       {
         "args": {
           "character": "Merchant",
@@ -289,6 +303,12 @@ exports[`parseScripts > parses all scripts 1`] = `
     "name": "demoDialog",
     "nodes": [
       {
+        "args": {},
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
+      {
         "args": {
           "character": "Guide",
           "nodes": [
@@ -371,6 +391,12 @@ exports[`parseScripts > parses all scripts 1`] = `
     "initialState": {},
     "name": "demoRandom",
     "nodes": [
+      {
+        "args": {},
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
       {
         "args": {
           "nodes": [
@@ -477,6 +503,12 @@ This allows multiple line comment blocks also.",
     "name": "helloWorld",
     "nodes": [
       {
+        "args": {},
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
+      {
         "args": {
           "key": "message",
           "nodes": [
@@ -520,6 +552,12 @@ This allows multiple line comment blocks also.",
     },
     "name": "helloWorldInclude",
     "nodes": [
+      {
+        "args": {},
+        "id": 0,
+        "x": 1,
+        "y": 1,
+      },
       {
         "args": {
           "key": "name",

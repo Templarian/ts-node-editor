@@ -116,7 +116,13 @@ function propAccess(obj: string, prop: string): ts.PropertyAccessExpression {
     return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(obj), prop);
 }
 
-function createCase0(): ts.CaseClause {
+function createCase0(node: ScriptNode | undefined): ts.CaseClause {
+    const x = node?.x ?? 1;
+    const y = node?.y ?? 1;
+    const w = node?.width ?? '-';
+    const h = node?.height ?? '-';
+    const posComment = ` ${x} ${y} ${w} ${h}`;
+
     const noop = ts.factory.createStringLiteral('noop');
 
     const ifStmt = ts.factory.createIfStatement(
@@ -131,7 +137,8 @@ function createCase0(): ts.CaseClause {
             ts.factory.createContinueStatement(),
         ], true)
     );
-    ts.addSyntheticLeadingComment(ifStmt, ts.SyntaxKind.SingleLineCommentTrivia, ' 1 1 - - script', true);
+    ts.addSyntheticLeadingComment(ifStmt, ts.SyntaxKind.SingleLineCommentTrivia, posComment, true);
+    addDescriptionComments(ifStmt, node?.description);
 
     return ts.factory.createCaseClause(ts.factory.createNumericLiteral(0), [
         ifStmt,
@@ -147,7 +154,7 @@ function addDescriptionComments(node: ts.Node, description: string | undefined):
 }
 
 function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseClause {
-    const posComment = ` ${node.x != null ? `${node.x} ${node.y}` : '- -'} - -`;
+    const posComment = ` ${node.x ?? '-'} ${node.y ?? '-'} ${node.width ?? '-'} ${node.height ?? '-'}`;
 
     if (node.type === 'include') {
         const scriptName = node.args.script as string;
@@ -181,7 +188,7 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
         ),
     ];
 
-    const callExpr = call(node.type, [ts.factory.createObjectLiteralExpression(properties, true)]);
+    const callExpr = call(node.type!, [ts.factory.createObjectLiteralExpression(properties, true)]);
     const initExpr = sig?.isAsync ? ts.factory.createAwaitExpression(callExpr) : callExpr;
 
     const varStmt = ts.factory.createVariableStatement(undefined,
@@ -207,9 +214,10 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
 function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionDeclaration {
     const nodeArrayType = ts.factory.createArrayTypeNode(ts.factory.createTypeReferenceNode('Node'));
 
+    const node0 = script.nodes.find(n => n.id === 0);
     const cases: ts.CaseOrDefaultClause[] = [
-        createCase0(),
-        ...script.nodes.map(n => createNodeCase(n, n.type !== 'include' ? readNodeSignature(nodesDir, n.type) : null)),
+        createCase0(node0),
+        ...script.nodes.filter(n => n.id !== 0).map(n => createNodeCase(n, n.type !== 'include' ? readNodeSignature(nodesDir, n.type!) : null)),
     ];
 
     const loopBody = ts.factory.createBlock([
@@ -262,7 +270,7 @@ function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionD
 }
 
 export function writeScript(script: ParsedScript, nodesDir: string): string {
-    const nodeTypes = [...new Set(script.nodes.filter(n => n.type !== 'include').map(n => n.type))];
+    const nodeTypes = [...new Set(script.nodes.filter(n => n.type && n.type !== 'include').map(n => n.type as string))];
     const includeScripts = script.nodes.filter(n => n.type === 'include').map(n => n.args.script as string);
 
     const statements: ts.Statement[] = [

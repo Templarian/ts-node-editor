@@ -21,7 +21,7 @@ export async function run(state: State): Promise<State> {
         switch (node) {
             case 0:
                 // 1 1 - -
-                // Simple coin flip demo.
+                // Demo showing how conditionals work.
                 if (state.has('noop')) {
                     stack.unshift(state.get('noop'));
                     state.delete('noop');
