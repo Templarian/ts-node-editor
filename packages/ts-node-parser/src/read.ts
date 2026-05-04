@@ -23,7 +23,6 @@ export interface ScriptNode {
 export interface ParsedScript {
     name: string;
     initialState: Record<string, string>;
-    imports: string[];
     comments: ScriptComment[];
     nodes: ScriptNode[];
 }
@@ -139,7 +138,6 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
     const parsed: ParsedScript = {
         name: path.basename(name, '.ts'),
         initialState: {},
-        imports: [],
         comments: [],
         nodes: [],
     };
@@ -185,18 +183,6 @@ export function parseScript(source: string, name = 'script'): ParsedScript {
             }
         }
         flushComment();
-    }
-
-    for (const stmt of sf.statements) {
-        if (!ts.isImportDeclaration(stmt)) continue;
-        const mod = stmt.moduleSpecifier;
-        if (!ts.isStringLiteral(mod)) continue;
-        if (mod.text.includes('/nodes/')) {
-            const nodeName = path.basename(mod.text);
-            if (!parsed.imports.includes(nodeName)) {
-                parsed.imports.push(nodeName);
-            }
-        }
     }
 
     const switchStmt = findSwitchStatement(sf);

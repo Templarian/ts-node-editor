@@ -20,7 +20,6 @@ export interface ScriptNode {
 export interface ScriptJson {
     name: string;
     initialState: Record<string, string>;
-    imports: string[];
     comments: ScriptComment[];
     nodes: ScriptNode[];
 }
@@ -28,14 +27,12 @@ export interface ScriptJson {
 export default class Script {
     name: string;
     initialState: Record<string, string>;
-    imports: string[];
     comments: ScriptComment[];
     nodes: ScriptNode[];
 
     constructor(json: ScriptJson) {
         this.name = json.name;
         this.initialState = json.initialState;
-        this.imports = json.imports;
         this.comments = json.comments;
         this.nodes = json.nodes;
     }
@@ -44,7 +41,6 @@ export default class Script {
         return {
             name: this.name,
             initialState: this.initialState,
-            imports: this.imports,
             comments: this.comments,
             nodes: this.nodes,
         };
