@@ -46,7 +46,7 @@ Returns an array of script names and description (this is node 0's entry comment
 
 Using the `ts-node-parser` this will get a script's serialized JSON.
 
-### `PATCH` `api/scripts/{scriptName}/node/{id}`
+### `PATCH` `api/scripts/{scriptName}/nodes/{id}`
 
 Updates any of the node's data. The properties that can be updated are:
 
@@ -59,6 +59,59 @@ interface PatchNode {
     description: string | null
 }
 ```
+
+### `POST` `api/scripts/{scriptName}/nodes`
+
+Add a node to an existing script.
+
+- 401 if not script is found
+
+```typescript
+interface PostNode {
+    x: number,
+    y: number,
+    width: number | null,
+    height: number | null,
+    description: string | null,
+    type: string,
+    args: Record<string, any>
+}
+```
+
+### `PUT` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+
+Update a value.
+
+```typescript
+interface PutScriptNodeArgs {
+  value: string | number | boolean
+}
+```
+
+### `POST` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+
+Post can only be used on args of array type.
+
+- 401 on any args that are not array type
+
+```typescript
+interface PostScriptNodeArgs {
+  value: string | number | boolean
+}
+```
+
+### `DELETE` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+
+Delete can only be used on args of array type. For instance array.
+
+- 401 on any args that are not array type
+
+```typescript
+interface DeleteScriptNodeArgs {
+  value: string | number
+}
+```
+
 
 ### `POST` `api/scripts`
 
