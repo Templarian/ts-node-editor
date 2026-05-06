@@ -1,64 +1,17 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import {
-    existsSync,
-    readdirSync,
-    lstatSync,
-    createReadStream
-} from 'fs';
-import {
-    join
-} from 'path';
+import { existsSync } from 'fs';
+import { readdir, readFile, writeFile } from 'fs/promises';
+import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import * as tsNodeParser from '../../../../ts-node-parser/src/index.js';
+const { parseScript, writeScript } = tsNodeParser;
+import Script, { type ScriptJson } from '../utils/script.js';
 
-// All scripts have to start with a node definition
-const startScriptOrNode = 'import type { Node } from ';
+const scriptsDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/scripts');
+const nodesDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/nodes');
 
-function fromDir(startPath, filter) {
-
-    console.log(`Starting from dir ${startPath}/`);
-
-    if (!existsSync(startPath)) {
-        console.log("no dir ", startPath);
-        return;
-    }
-
-    const filenames = [];
-    const files = readdirSync(startPath);
-    for (let i = 0; i < files.length; i++) {
-        const filename = join(startPath, files[i]);
-        const stat = lstatSync(filename);
-        if (stat.isDirectory()) {
-            filenames.push(...fromDir(filename, filter)); //recurse
-        } else if (filename.endsWith(filter)) {
-            filenames.push(filename);
-        };
-    };
-    return filenames;
-};
-
-async function isValidNodeOrScript(filename: string) {
-    let readable = createReadStream(filename, {
-        encoding: 'utf8',
-        fd: null,
-    });
-    return new Promise((resolve) => {
-        readable.on('readable', function() {
-            let chunk = readable.read(startScriptOrNode.length);
-            if (chunk) {
-                console.log(startScriptOrNode, '=', chunk);
-                resolve(startScriptOrNode === chunk);
-                readable.destroy();
-                return;
-            }
-            resolve(false);
-        });
-    });
-}
-
-/**
- * Display a warning if executed outside of a git repo
- */
 export function getGit(
-    req: IncomingMessage,
+    _req: IncomingMessage,
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
@@ -66,19 +19,18 @@ export function getGit(
 }
 
 export async function getScript(
-    req: IncomingMessage,
+    name,
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
-    const files = fromDir('./src', '.ts');
-    const list = [];
-    for(let i = 0; i < files.length; i++) {
-        const result = await isValidNodeOrScript(files[i]);
-        if (result) {
-            list.push(files[i]);
-        }
-    }
-    res.end(JSON.stringify(list));
+    const source = await readFile(join(scriptsDir, `${name}.ts`), 'utf-8');
+    const obj = parseScript(source);
+    res.end(JSON.stringify(obj));
+}
+
+interface PostScriptBody {
+    name: string;
+    description: string;
 }
 
 export function postScript(
@@ -86,5 +38,25 @@ export function postScript(
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify(true));
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const { name, description }: PostScriptBody = JSON.parse(body);
+        const fileName = `${name}.ts`;
+        const filePath = join(scriptsDir, fileName);
+        if (existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify(`Script "${name}" already exists.`));
+            return;
+        }
+        const json: ScriptJson = {
+            name,
+            initialState: {},
+            comments: [],
+            nodes: [{ id: 0, args: { nodes: [1] }, description }],
+        };
+        const source = writeScript(new Script(json).toJson(), nodesDir);
+        await writeFile(filePath, source);
+        res.end(JSON.stringify(true));
+    });
 }

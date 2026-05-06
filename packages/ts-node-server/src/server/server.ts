@@ -83,9 +83,9 @@ createServer((req, res) => {
     } else if (req.method === 'DELETE') {
       deleteApiNode(req, res);
     }
-  } else if (req.url.match(/^\/api\/script$/)) {
+  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)$/)) {
     if (req.method === 'GET') {
-      getScript(req, res);
+      getScript(p.groups.name, res);
     }
   } else if (req.url.match(/^\/api\/git$/)) {
     if (req.method === 'GET') {
