@@ -6,15 +6,17 @@ import { fileURLToPath } from 'url';
 import { parseScript, writeScript } from 'ts-node-parser';
 import Script, { type ScriptJson } from '../utils/script.js';
 
-const scriptsDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/scripts');
-const nodesDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/nodes');
+const root = '../../../../../..';
+const scriptsDir = resolve(fileURLToPath(import.meta.url), root, 'src/scripts');
+const nodesDir = resolve(fileURLToPath(import.meta.url), root, 'src/nodes');
 
 export function getGit(
     _req: IncomingMessage,
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify(existsSync('.git')));
+    const git = resolve(fileURLToPath(import.meta.url), root, '.git');
+    res.end(JSON.stringify(existsSync(git)));
 }
 
 export async function getScript(
@@ -22,7 +24,13 @@ export async function getScript(
     res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
 ) {
     res.setHeader('content-type', 'application/json');
-    const source = await readFile(join(scriptsDir, `${name}.ts`), 'utf-8');
+    const filePath = join(scriptsDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Script not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
     const obj = parseScript(source);
     res.end(JSON.stringify(obj));
 }
