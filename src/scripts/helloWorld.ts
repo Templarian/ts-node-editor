@@ -12,13 +12,13 @@ export async function run(state: State): Promise<State> {
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
-        const node = stack.shift() || 0;
+        const node = stack.pop() ?? 0;
         callstack.push(node);
         switch (node) {
             case 0:
                 // 1 1 - -
                 if (state.has('noop')) {
-                    stack.unshift(state.get('noop'));
+                    stack.push(state.get('noop'));
                     state.delete('noop');
                     continue;
                 }
@@ -31,7 +31,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [2],
                     key: 'message'
                 });
-                stack.unshift(...r1);
+                stack.push(r1[0]);
                 continue;
             case 2:
                 // 11 1 - -
@@ -41,7 +41,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [0],
                     value: `Hello ${state.get('name')}!`
                 });
-                stack.unshift(...r2);
+                stack.push(r2[0]);
                 break;
         }
         callstack.shift();

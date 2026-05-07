@@ -9,14 +9,14 @@ export async function run(state: State): Promise<State> {
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
-        const node = stack.shift() || 0;
+        const node = stack.pop() ?? 0;
         callstack.push(node);
         switch (node) {
             case 0:
                 // 1 1 - -
                 // Simple coin flip demo.
                 if (state.has('noop')) {
-                    stack.unshift(state.get('noop'));
+                    stack.push(state.get('noop'));
                     state.delete('noop');
                     continue;
                 }
@@ -27,7 +27,7 @@ export async function run(state: State): Promise<State> {
                     t: [2],
                     f: [3]
                 });
-                stack.unshift(...r1);
+                stack.push(r1[0]);
                 break;
             case 2:
                 // 11 1 - -
@@ -35,7 +35,7 @@ export async function run(state: State): Promise<State> {
                     message: `Heads`,
                     nodes: [0]
                 });
-                stack.unshift(...r2);
+                stack.push(r2[0]);
                 break;
             case 3:
                 // 11 8 - -
@@ -43,7 +43,7 @@ export async function run(state: State): Promise<State> {
                     message: `Tails`,
                     nodes: [0]
                 });
-                stack.unshift(...r3);
+                stack.push(r3[0]);
                 break;
         }
         callstack.shift();

@@ -10,13 +10,13 @@ export async function run(state: State): Promise<State> {
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
-        const node = stack.shift() || 0;
+        const node = stack.pop() ?? 0;
         callstack.push(node);
         switch (node) {
             case 0:
                 // 1 1 - -
                 if (state.has('noop')) {
-                    stack.unshift(state.get('noop'));
+                    stack.push(state.get('noop'));
                     state.delete('noop');
                     continue;
                 }
@@ -30,7 +30,7 @@ export async function run(state: State): Promise<State> {
                     character: `Guide`,
                     text: `Which door will you choose?`
                 });
-                stack.unshift(...r1);
+                stack.push(...r1.slice().reverse());
                 continue;
             case 2:
                 // 11 1 - -
@@ -40,7 +40,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [4],
                     text: `Red Door`
                 });
-                stack.unshift(...r2);
+                stack.push(r2[0]);
                 break;
             case 3:
                 // 11 4 - -
@@ -50,7 +50,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [5],
                     text: `Blue Door`
                 });
-                stack.unshift(...r3);
+                stack.push(r3[0]);
                 break;
             case 4:
                 // 18 1 - -
@@ -58,7 +58,7 @@ export async function run(state: State): Promise<State> {
                     message: `You entered the red room`,
                     nodes: [0]
                 });
-                stack.unshift(...r4);
+                stack.push(r4[0]);
                 break;
             case 5:
                 // 18 4 - -
@@ -66,7 +66,7 @@ export async function run(state: State): Promise<State> {
                     message: `You entered the blue room`,
                     nodes: [0]
                 });
-                stack.unshift(...r5);
+                stack.push(r5[0]);
                 break;
         }
         callstack.shift();

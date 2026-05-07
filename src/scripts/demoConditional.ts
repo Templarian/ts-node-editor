@@ -16,14 +16,14 @@ export async function run(state: State): Promise<State> {
     const stack: Node[] = [1];
     const callstack: Node[] = [];
     loop: while (true) {
-        const node = stack.shift() || 0;
+        const node = stack.pop() ?? 0;
         callstack.push(node);
         switch (node) {
             case 0:
                 // 1 1 - -
                 // Demo showing how conditionals work.
                 if (state.has('noop')) {
-                    stack.unshift(state.get('noop'));
+                    stack.push(state.get('noop'));
                     state.delete('noop');
                     continue;
                 }
@@ -37,7 +37,7 @@ export async function run(state: State): Promise<State> {
                     character: `Merchant`,
                     text: `What would you like?`
                 });
-                stack.unshift(...r1);
+                stack.push(...r1.slice().reverse());
                 continue;
             case 2:
                 // 20 10 - -
@@ -47,7 +47,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [4],
                     text: `Can I have 5 gold?`
                 });
-                stack.unshift(...r2);
+                stack.push(r2[0]);
                 break;
             case 3:
                 // 20 20 - -
@@ -57,7 +57,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [13],
                     text: `Can I have 12 gold?`
                 });
-                stack.unshift(...r3);
+                stack.push(r3[0]);
                 break;
             case 4:
                 // 30 10 - -
@@ -67,7 +67,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [5],
                     key: `coins`
                 });
-                stack.unshift(...r4);
+                stack.push(r4[0]);
                 continue;
             case 5:
                 // 40 10 - -
@@ -77,7 +77,7 @@ export async function run(state: State): Promise<State> {
                     f: [10],
                     value: 5
                 });
-                stack.unshift(...r5);
+                stack.push(r5[0]);
                 break;
             case 6:
                 // 50 10 - -
@@ -87,7 +87,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [7],
                     key: `coins`
                 });
-                stack.unshift(...r6);
+                stack.push(r6[0]);
                 continue;
             case 7:
                 // 60 10 - -
@@ -97,7 +97,7 @@ export async function run(state: State): Promise<State> {
                     f: [10],
                     value: 10
                 });
-                stack.unshift(...r7);
+                stack.push(r7[0]);
                 break;
             case 8:
                 // 80 10 - -
@@ -107,7 +107,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [9],
                     key: `coins`
                 });
-                stack.unshift(...r8);
+                stack.push(r8[0]);
                 continue;
             case 9:
                 // 90 10 - -
@@ -117,7 +117,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [12],
                     value: 20
                 });
-                stack.unshift(...r9);
+                stack.push(r9[0]);
                 break;
             case 10:
                 // 100 10 - -
@@ -127,7 +127,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [11],
                     key: `coins`
                 });
-                stack.unshift(...r10);
+                stack.push(r10[0]);
                 continue;
             case 11:
                 // 110 10 - -
@@ -137,7 +137,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [12],
                     value: 5
                 });
-                stack.unshift(...r11);
+                stack.push(r11[0]);
                 break;
             case 12:
                 // 120 10 - -
@@ -145,7 +145,7 @@ export async function run(state: State): Promise<State> {
                     message: `Done`,
                     nodes: [0]
                 });
-                stack.unshift(...r12);
+                stack.push(r12[0]);
                 break;
             case 13:
                 // 130 10 - -
@@ -155,7 +155,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [14],
                     key: `coins`
                 });
-                stack.unshift(...r13);
+                stack.push(r13[0]);
                 continue;
             case 14:
                 // 140 10 - -
@@ -165,7 +165,7 @@ export async function run(state: State): Promise<State> {
                     nodes: [0],
                     value: 12
                 });
-                stack.unshift(...r14);
+                stack.push(r14[0]);
                 break;
             case 15:
                 // 150 10 - -
@@ -173,7 +173,7 @@ export async function run(state: State): Promise<State> {
                     message: `I'm rich!`,
                     nodes: [0]
                 });
-                stack.unshift(...r15);
+                stack.push(r15[0]);
                 break;
         }
         callstack.shift();

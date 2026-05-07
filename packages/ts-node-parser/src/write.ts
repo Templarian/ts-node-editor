@@ -129,7 +129,7 @@ function createCase0(node: ScriptNode | undefined): ts.CaseClause {
         call(propAccess('state', 'has'), [noop]),
         ts.factory.createBlock([
             ts.factory.createExpressionStatement(
-                call(propAccess('stack', 'unshift'), [call(propAccess('state', 'get'), [ts.factory.createStringLiteral('noop')])])
+                call(propAccess('stack', 'push'), [call(propAccess('state', 'get'), [ts.factory.createStringLiteral('noop')])])
             ),
             ts.factory.createExpressionStatement(
                 call(propAccess('state', 'delete'), [ts.factory.createStringLiteral('noop')])
@@ -166,9 +166,7 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
         return ts.factory.createCaseClause(ts.factory.createNumericLiteral(node.id), [
             awaitStmt,
             ts.factory.createExpressionStatement(
-                call(propAccess('stack', 'unshift'), [
-                    ts.factory.createSpreadElement(ts.factory.createArrayLiteralExpression([ts.factory.createNumericLiteral(0)]))
-                ])
+                call(propAccess('stack', 'push'), [ts.factory.createNumericLiteral(0)])
             ),
             ts.factory.createBreakStatement(),
         ]);
@@ -200,13 +198,29 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
     ts.addSyntheticLeadingComment(varStmt, ts.SyntaxKind.SingleLineCommentTrivia, posComment, true);
     addDescriptionComments(varStmt, node.description);
 
-    const spreadArg = sig?.returnsSingle
-        ? ts.factory.createIdentifier(rVar)
-        : ts.factory.createSpreadElement(ts.factory.createIdentifier(rVar));
+    // Use push(r[0]) when the node is known to always return exactly one node at
+    // generation time, avoiding a slice+reverse allocation on every interpreter tick.
+    // Multi-output nodes (e.g. dialog/random with nodes.length > 1) still need
+    // the reverse to preserve execution order with pop().
+    const nodesArg = node.args.nodes;
+    const isKnownSingle = Array.isArray(nodesArg) ? nodesArg.length === 1 : !nodesArg;
+    const pushArg = sig?.returnsSingle || isKnownSingle
+        ? (sig?.returnsSingle
+            ? ts.factory.createIdentifier(rVar)
+            : ts.factory.createElementAccessExpression(ts.factory.createIdentifier(rVar), 0))
+        : ts.factory.createSpreadElement(
+            call(
+                ts.factory.createPropertyAccessExpression(
+                    call(propAccess(rVar, 'slice'), []),
+                    'reverse'
+                ),
+                []
+            )
+        );
 
     return ts.factory.createCaseClause(ts.factory.createNumericLiteral(node.id), [
         varStmt,
-        ts.factory.createExpressionStatement(call(propAccess('stack', 'unshift'), [spreadArg])),
+        ts.factory.createExpressionStatement(call(propAccess('stack', 'push'), [pushArg])),
         sig?.isAsync ? ts.factory.createContinueStatement() : ts.factory.createBreakStatement(),
     ]);
 }
@@ -225,8 +239,8 @@ function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionD
             ts.factory.createVariableDeclarationList(
                 [ts.factory.createVariableDeclaration('node', undefined, undefined,
                     ts.factory.createBinaryExpression(
-                        call(propAccess('stack', 'shift'), []),
-                        ts.factory.createToken(ts.SyntaxKind.BarBarToken),
+                        call(propAccess('stack', 'pop'), []),
+                        ts.factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
                         ts.factory.createNumericLiteral(0)
                     )
                 )],

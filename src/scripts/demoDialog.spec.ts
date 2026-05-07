@@ -16,7 +16,7 @@ describe('demoDialog', () => {
         const logSpy = jest.spyOn(global.console, 'log');
         const state = new Map();
         const runPromise = run(state);
-        jest.runAllTimers();
+        await jest.runAllTimersAsync();
         await runPromise;
         expect(logSpy).toHaveBeenCalledWith('You entered the red room');
         logSpy.mockRestore();
@@ -27,7 +27,7 @@ describe('demoDialog', () => {
         const logSpy = jest.spyOn(global.console, 'log');
         const state = new Map();
         const runPromise = run(state);
-        jest.runAllTimers();
+        await jest.runAllTimersAsync();
         await runPromise;
         expect(logSpy).toHaveBeenCalledWith('You entered the blue room');
         logSpy.mockRestore();
