@@ -1,10 +1,9 @@
+import { existsSync } from 'fs';
 import { readdir, readFile } from 'fs/promises';
-import { join, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import { parseNode } from '../utils/parseNode.js';
 import type { Req, Res } from '../utils/types.js';
-
-const nodesDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/nodes');
+import { nodesDir } from '../utils/paths.js';
 
 export async function getApiNodes(
     _params: Record<string, string>,
@@ -22,12 +21,36 @@ export async function getApiNodes(
     res.end(JSON.stringify(output));
 }
 
-export function getApiNode(
-    { id: _id }: { id: string },
+export async function getApiNode(
+    { name }: { name: string },
     _req: Req,
     res: Res,
 ) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(nodesDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Node not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    res.end(JSON.stringify(parseNode(source)));
+}
 
+export async function getApiNodeSource(
+    { name }: { name: string },
+    _req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(nodesDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Node not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    res.end(JSON.stringify(source));
 }
 
 export function postApiNode(

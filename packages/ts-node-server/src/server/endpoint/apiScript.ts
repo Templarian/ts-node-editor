@@ -1,14 +1,10 @@
 import { existsSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
-import { join, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
 import Script, { type ScriptJson } from '../utils/script.js';
 import type { Req, Res } from '../utils/types.js';
-
-const root = '../../../../../..';
-const scriptsDir = resolve(fileURLToPath(import.meta.url), root, 'src/scripts');
-const nodesDir = resolve(fileURLToPath(import.meta.url), root, 'src/nodes');
+import { scriptsDir, gitFile } from '../utils/paths.js';
 
 export function getGit(
     _params: Record<string, string>,
@@ -16,8 +12,7 @@ export function getGit(
     res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
-    const git = resolve(fileURLToPath(import.meta.url), root, '.git');
-    res.end(JSON.stringify(existsSync(git)));
+    res.end(JSON.stringify(existsSync(gitFile)));
 }
 
 export async function getScript(
@@ -85,7 +80,7 @@ export function attachScriptNodeToArg(
         }
         const list = (node.args[arg] as number[] | undefined) ?? [];
         node.args[arg] = [...list, nodeId];
-        await writeFile(filePath, writeScript(script, nodesDir));
+        await writeFile(filePath, writeScript(script, scriptsDir));
         res.end(JSON.stringify(true));
     });
 }
@@ -116,7 +111,7 @@ export function removeScriptNodeToArg(
         }
         const list = (node.args[arg] as number[] | undefined) ?? [];
         node.args[arg] = list.filter(id => id !== nodeId);
-        await writeFile(filePath, writeScript(script, nodesDir));
+        await writeFile(filePath, writeScript(script, scriptsDir));
         res.end(JSON.stringify(true));
     });
 }
@@ -143,7 +138,7 @@ export function postScript(
             comments: [],
             nodes: [{ id: 0, args: { nodes: [1] }, description }],
         };
-        await writeFile(filePath, writeScript(new Script(json).toJson(), nodesDir));
+        await writeFile(filePath, writeScript(new Script(json).toJson(), scriptsDir));
         res.end(JSON.stringify(true));
     });
 }

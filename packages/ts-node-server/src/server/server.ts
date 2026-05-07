@@ -4,7 +4,7 @@ import type { Req, Res } from './utils/types.js';
 import { getApi } from './endpoint/api.js';
 import { getIndex, getStyles, getClient } from './endpoint/app.js';
 import { getApiComment, postApiComment, patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
-import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode } from './endpoint/apiNode.js';
+import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode, getApiNodeSource } from './endpoint/apiNode.js';
 import { attachScriptNodeToArg, getGit, getScript, getScriptNode, postScript, removeScriptNodeToArg } from './endpoint/apiScript.js';
 
 type Handler = (params: any, req: Req, res: Res) => void | Promise<void>;
@@ -34,15 +34,16 @@ const routes: Routes = {
         DELETE: deleteApiComment,
     },
     '/api/nodes': {
-        GET: getApiNodes,
-    },
-    '/api/node': {
+        GET:  getApiNodes,
         POST: postApiNode,
     },
-    '/api/node/:id': {
+    '/api/nodes/:name': {
         GET:    getApiNode,
         PATCH:  patchApiNode,
         DELETE: deleteApiNode,
+    },
+    '/api/nodes/:name/source': {
+        GET:    getApiNodeSource,
     },
     '/api/scripts/:name/nodes/:index/args/:arg': {
         POST:   attachScriptNodeToArg,
