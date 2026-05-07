@@ -1,8 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { Req, Res } from '../utils/types.js';
 
 export function getApi(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const output = {
@@ -18,5 +19,3 @@ export function getApi(
     };
     res.end(JSON.stringify(output));
 }
-
-

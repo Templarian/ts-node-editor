@@ -1,11 +1,12 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import type { Req, Res } from '../utils/types.js';
 
 export function getIndex(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'text/html');
     const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,8 +14,9 @@ export function getIndex(
 }
 
 export function getStyles(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'text/css');
     const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -22,8 +24,8 @@ export function getStyles(
 }
 
 export function getClient(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'text/javascript');
     let m = null;

@@ -1,111 +1,99 @@
 #!/usr/bin/env node
 import { createServer } from 'http';
-import {
-  getApi,
-} from './endpoint/api.js';
-import {
-  getIndex,
-  getStyles,
-  getClient,
-} from './endpoint/app.js';
-import {
-  getApiComment,
-  postApiComment,
-  patchApiComment,
-  deleteApiComment,
-} from './endpoint/apiComment.js';
-import {
-  getApiNodes,
-  getApiNode,
-  postApiNode,
-  patchApiNode,
-  deleteApiNode,
-} from './endpoint/apiNode.js';
-import {
-  attachScriptNodeToArg,
-  getGit,
-  getScript,
-  getScriptNode,
-  removeScriptNodeToArg,
-} from './endpoint/apiScript.js';
+import type { Req, Res } from './utils/types.js';
+import { getApi } from './endpoint/api.js';
+import { getIndex, getStyles, getClient } from './endpoint/app.js';
+import { getApiComment, postApiComment, patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
+import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode } from './endpoint/apiNode.js';
+import { attachScriptNodeToArg, getGit, getScript, getScriptNode, postScript, removeScriptNodeToArg } from './endpoint/apiScript.js';
+
+type Handler = (params: any, req: Req, res: Res) => void | Promise<void>;
+type Routes = Record<string, Partial<Record<string, Handler>>>;
+
+const CLIENT_JS = /^\/(client\.js|element\/.+\.js|utils\/.+\.js)$/;
+
+const routes: Routes = {
+    '/': {
+        GET: getIndex,
+    },
+    '/styles.css': {
+        GET: getStyles,
+    },
+    '/api': {
+        GET: getApi,
+    },
+    '/api/git': {
+        GET: getGit,
+    },
+    '/api/comment': {
+        POST: postApiComment,
+    },
+    '/api/comment/:id': {
+        GET:    getApiComment,
+        PATCH:  patchApiComment,
+        DELETE: deleteApiComment,
+    },
+    '/api/nodes': {
+        GET: getApiNodes,
+    },
+    '/api/node': {
+        POST: postApiNode,
+    },
+    '/api/node/:id': {
+        GET:    getApiNode,
+        PATCH:  patchApiNode,
+        DELETE: deleteApiNode,
+    },
+    '/api/scripts/:name/nodes/:index/args/:arg': {
+        POST:   attachScriptNodeToArg,
+        DELETE: removeScriptNodeToArg,
+    },
+    '/api/scripts/:name/nodes/:index': {
+        GET: getScriptNode,
+    },
+    '/api/scripts/:name': {
+        GET:  getScript,
+        POST: postScript,
+    },
+};
+
+function match(url: string, pattern: string): Record<string, string> | null {
+    const regexStr = pattern
+        .split(/(:[\w]+)/g)
+        .map((part, i) => i % 2 === 0
+            ? part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            : `(?<${part.slice(1)}>[^/]+)`)
+        .join('');
+    const m = url?.match(new RegExp(`^${regexStr}$`));
+    return m ? { ...m.groups } : null;
+}
 
 console.log('Server Started: localhost:3002');
 
 createServer((req, res) => {
-  console.log(`- Request: ${req.url}`);
-  let p = null;
-  if (p = req.url.match(/^\/$/)) {
-    if (req.method === "GET") {
-      getIndex(req, res);
-    } else {
-      throw new Error('Only get supported for /');
+    console.log(`- Request: ${req.url}`);
+    const url = req.url ?? '';
+    const method = req.method ?? '';
+
+    if (CLIENT_JS.test(url)) {
+        if (method === 'GET') getClient(req, res);
+        return;
     }
-  } else if (p = req.url.match(/^\/styles\.css$/)) {
-    if (req.method === "GET") {
-      getStyles(req, res);
-    } else {
-      throw new Error('Only get supported for /styles.css');
+
+    for (const [pattern, methods] of Object.entries(routes)) {
+        const params = match(url, pattern);
+        if (params === null) continue;
+
+        const handler = methods[method];
+        if (handler) {
+            Promise.resolve(handler(params, req, res)).catch(err => {
+                res.statusCode = 500;
+                res.end(String(err));
+            });
+        }
+        return;
     }
-  } else if (p = req.url.match(/^\/(client\.js|element\/.+\.js|utils\/.+\.js)$/)) {
-    if (req.method === "GET") {
-      getClient(req, res);
-    } else {
-      throw new Error('Only get supported for scripts');
-    }
-  } else if (req.url.match(/^\/api$/)) {
-    getApi(req, res);
-  } else if (p = req.url.match(/^\/api\/comment$/)) {
-    if (req.method === 'POST') {
-      postApiComment(req, res);
-    }
-  } else if (p = req.url.match(/^\/api\/comment\/(\d+)$/)) {
-    if (req.method === 'GET') {
-      getApiComment(req, res);
-    } else if (req.method === 'POST') {
-      res.end('Invalid. You meant: /api/comment');
-    } else if (req.method === 'PATCH') {
-      patchApiComment(req, res);
-    } else if (req.method === 'DELETE') {
-      deleteApiComment(req, res);
-    }
-  } else if (p = req.url.match(/^\/api\/node$/)) {
-    if (req.method === 'POST') {
-      postApiNode(req, res);
-    }
-  } else if (p = req.url.match(/^\/api\/nodes$/)) {
-    if (req.method === 'GET') {
-      getApiNodes(req, res).catch(err => { res.statusCode = 500; res.end(String(err)); });
-    }
-  } else if (p = req.url.match(/^\/api\/node\/(\d+)$/)) {
-    if (req.method === 'GET') {
-      getApiNode(req, res);
-    } else if (req.method === 'POST') {
-      res.end('Invalid. You meant: /api/node');
-    } else if (req.method === 'PATCH') {
-      patchApiNode(req, res);
-    } else if (req.method === 'DELETE') {
-      deleteApiNode(req, res);
-    }
-  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)\/nodes\/(?<index>.+)$/)) {
-    if (req.method === 'GET') {
-      getScriptNode(p.groups.name, p.groups.index, res);
-    }
-  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)\/nodes\/(?<index>.+)\/args\/(?<arg>.+)$/)) {
-    if (req.method === 'POST') {
-      attachScriptNodeToArg(p.groups.name, p.groups.index, p.groups.arg, req, res);
-    } else if (req.method === 'DELETE') {
-      removeScriptNodeToArg(p.groups.name, p.groups.index, p.groups.arg, req, res);
-    }
-  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)$/)) {
-    if (req.method === 'GET') {
-      getScript(p.groups.name, res);
-    }
-  } else if (req.url.match(/^\/api\/git$/)) {
-    if (req.method === 'GET') {
-      getGit(req, res);
-    }
-  } else {
-      res.statusCode = 404;
-      res.end("Page not found!");
-  }
+
+    res.statusCode = 404;
+    res.end('Page not found!');
 }).listen(3002);

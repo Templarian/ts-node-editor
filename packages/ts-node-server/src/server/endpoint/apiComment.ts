@@ -1,8 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { Req, Res } from '../utils/types.js';
 
 export function getApiComment(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id: _id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const output = {
@@ -13,24 +14,26 @@ export function getApiComment(
 }
 
 export function postApiComment(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
 }
 
 export function patchApiComment(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
-    const id = req.url.match(/^\/api\/comment\/(\d+)$/)[1];
     res.end(id);
 }
 
 export function deleteApiComment(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id: _id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
 }

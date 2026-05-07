@@ -1,18 +1,19 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { existsSync } from 'fs';
-import { readdir, readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
 import Script, { type ScriptJson } from '../utils/script.js';
+import type { Req, Res } from '../utils/types.js';
 
 const root = '../../../../../..';
 const scriptsDir = resolve(fileURLToPath(import.meta.url), root, 'src/scripts');
 const nodesDir = resolve(fileURLToPath(import.meta.url), root, 'src/nodes');
 
 export function getGit(
-    _req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const git = resolve(fileURLToPath(import.meta.url), root, '.git');
@@ -20,8 +21,9 @@ export function getGit(
 }
 
 export async function getScript(
-    name,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { name }: { name: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const filePath = join(scriptsDir, `${name}.ts`);
@@ -31,14 +33,13 @@ export async function getScript(
         return;
     }
     const source = await readFile(filePath, 'utf-8');
-    const obj = parseScript(source);
-    res.end(JSON.stringify(obj));
+    res.end(JSON.stringify(parseScript(source)));
 }
 
 export async function getScriptNode(
-    name,
-    index,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { name, index }: { name: string; index: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const filePath = join(scriptsDir, `${name}.ts`);
@@ -59,11 +60,9 @@ export async function getScriptNode(
 }
 
 export function attachScriptNodeToArg(
-    name,
-    index,
-    arg,
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { name, index, arg }: { name: string; index: string; arg: string },
+    req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     let body = '';
@@ -92,11 +91,9 @@ export function attachScriptNodeToArg(
 }
 
 export function removeScriptNodeToArg(
-    name,
-    index,
-    arg,
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { name, index, arg }: { name: string; index: string; arg: string },
+    req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     let body = '';
@@ -124,22 +121,17 @@ export function removeScriptNodeToArg(
     });
 }
 
-interface PostScriptBody {
-    name: string;
-    description: string;
-}
-
 export function postScript(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
-        const { name, description }: PostScriptBody = JSON.parse(body);
-        const fileName = `${name}.ts`;
-        const filePath = join(scriptsDir, fileName);
+        const { name, description }: { name: string; description: string } = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
         if (existsSync(filePath)) {
             res.statusCode = 401;
             res.end(JSON.stringify(`Script "${name}" already exists.`));
@@ -151,8 +143,7 @@ export function postScript(
             comments: [],
             nodes: [{ id: 0, args: { nodes: [1] }, description }],
         };
-        const source = writeScript(new Script(json).toJson(), nodesDir);
-        await writeFile(filePath, source);
+        await writeFile(filePath, writeScript(new Script(json).toJson(), nodesDir));
         res.end(JSON.stringify(true));
     });
 }

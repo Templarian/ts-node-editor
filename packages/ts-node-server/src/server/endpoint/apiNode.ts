@@ -1,14 +1,15 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { readdir, readFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { parseNode } from '../utils/parseNode.js';
+import type { Req, Res } from '../utils/types.js';
 
 const nodesDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/nodes');
 
 export async function getApiNodes(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
     const files = (await readdir(nodesDir)).filter(f => f.endsWith('.ts'));
@@ -22,31 +23,34 @@ export async function getApiNodes(
 }
 
 export function getApiNode(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id: _id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
 
 }
 
 export function postApiNode(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
 ) {
 
 }
 
 export function patchApiNode(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
     res.setHeader('content-type', 'application/json');
-    const id = req.url.match(/^\/api\/node\/(\d+)$/)[1];
     res.end(id);
 }
 
 export function deleteApiNode(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+    { id: _id }: { id: string },
+    _req: Req,
+    res: Res,
 ) {
 
 }
