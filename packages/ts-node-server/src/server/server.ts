@@ -22,8 +22,11 @@ import {
   deleteApiNode,
 } from './endpoint/apiNode.js';
 import {
+  attachScriptNodeToArg,
   getGit,
   getScript,
+  getScriptNode,
+  removeScriptNodeToArg,
 } from './endpoint/apiScript.js';
 
 console.log('Server Started: localhost:3002');
@@ -82,6 +85,16 @@ createServer((req, res) => {
       patchApiNode(req, res);
     } else if (req.method === 'DELETE') {
       deleteApiNode(req, res);
+    }
+  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)\/nodes\/(?<index>.+)$/)) {
+    if (req.method === 'GET') {
+      getScriptNode(p.groups.name, p.groups.index, res);
+    }
+  } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)\/nodes\/(?<index>.+)\/args\/(?<arg>.+)$/)) {
+    if (req.method === 'POST') {
+      attachScriptNodeToArg(p.groups.name, p.groups.index, p.groups.arg, req, res);
+    } else if (req.method === 'DELETE') {
+      removeScriptNodeToArg(p.groups.name, p.groups.index, p.groups.arg, req, res);
     }
   } else if (p = req.url.match(/^\/api\/scripts\/(?<name>.+)$/)) {
     if (req.method === 'GET') {

@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { parseScript, writeScript } from 'ts-node-parser';
+import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
 import Script, { type ScriptJson } from '../utils/script.js';
 
 const root = '../../../../../..';
@@ -33,6 +33,95 @@ export async function getScript(
     const source = await readFile(filePath, 'utf-8');
     const obj = parseScript(source);
     res.end(JSON.stringify(obj));
+}
+
+export async function getScriptNode(
+    name,
+    index,
+    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(scriptsDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Script not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    const script = parseScript(source);
+    const node = script.nodes.find((n: ScriptNode) => n.id === Number(index));
+    if (!node) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Node not found.' }));
+        return;
+    }
+    res.end(JSON.stringify(node));
+}
+
+export function attachScriptNodeToArg(
+    name,
+    index,
+    arg,
+    req: IncomingMessage,
+    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const { nodeId }: { nodeId: number } = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        const node = script.nodes.find((n: ScriptNode) => n.id === Number(index));
+        if (!node) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Node not found.' }));
+            return;
+        }
+        const list = (node.args[arg] as number[] | undefined) ?? [];
+        node.args[arg] = [...list, nodeId];
+        await writeFile(filePath, writeScript(script, nodesDir));
+        res.end(JSON.stringify(true));
+    });
+}
+
+export function removeScriptNodeToArg(
+    name,
+    index,
+    arg,
+    req: IncomingMessage,
+    res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const { nodeId }: { nodeId: number } = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        const node = script.nodes.find((n: ScriptNode) => n.id === Number(index));
+        if (!node) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Node not found.' }));
+            return;
+        }
+        const list = (node.args[arg] as number[] | undefined) ?? [];
+        node.args[arg] = list.filter(id => id !== nodeId);
+        await writeFile(filePath, writeScript(script, nodesDir));
+        res.end(JSON.stringify(true));
+    });
 }
 
 interface PostScriptBody {
