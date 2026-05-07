@@ -65,7 +65,7 @@ function extractValue(node: ts.Expression, source: string): unknown {
     if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
     if (node.kind === ts.SyntaxKind.FalseKeyword) return false;
     if (ts.isArrayLiteralExpression(node)) {
-        return node.elements.map(e => extractValue(e, source));
+        return node.elements.map((e: any) => extractValue(e, source));
     }
     if (ts.isTemplateLiteral(node)) {
         return source.substring(node.getStart(), node.getEnd());
@@ -126,7 +126,7 @@ function extractCallInfo(stmt: ts.Statement, source: string): { type: string; ar
 function findSwitchStatement(node: ts.Node): ts.SwitchStatement | null {
     if (ts.isSwitchStatement(node)) return node;
     let found: ts.SwitchStatement | null = null;
-    ts.forEachChild(node, child => {
+    ts.forEachChild(node, (child: any) => {
         if (!found) found = findSwitchStatement(child);
     });
     return found;

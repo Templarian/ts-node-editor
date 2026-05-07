@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/Templarian/ts-node-editor#readme",
   "workspaces": [
-    "packages/ts-node-editor"
+    "packages/ts-node-editor",
+    "packages/ts-node-parser",
+    "packages/ts-node-server"
   ],
   "devDependencies": {
     "@jest/globals": "29.1.2",

@@ -4,7 +4,12 @@
   ],
   "compilerOptions": {
     "outDir": "dist",
-    "baseUrl": "src",
+    "baseUrl": ".",
+    "paths": {
+      "ts-node-parser": [
+        "../ts-node-parser/src/index.ts"
+      ]
+    },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": [

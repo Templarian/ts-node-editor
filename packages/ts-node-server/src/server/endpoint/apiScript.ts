@@ -3,8 +3,7 @@ import { existsSync } from 'fs';
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import * as tsNodeParser from '../../../../ts-node-parser/src/index.js';
-const { parseScript, writeScript } = tsNodeParser;
+import { parseScript, writeScript } from 'ts-node-parser';
 import Script, { type ScriptJson } from '../utils/script.js';
 
 const scriptsDir = resolve(fileURLToPath(import.meta.url), '../../../../../../src/scripts');
