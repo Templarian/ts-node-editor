@@ -108,12 +108,22 @@ const html = `<!DOCTYPE html>
 
   .script-view { flex: 1; overflow: auto; background: #0a0c14; background-image: linear-gradient(#1a1d2e 1px, transparent 1px), linear-gradient(90deg, #1a1d2e 1px, transparent 1px); background-size: 1rem 1rem; background-attachment: local; }
   .sv-canvas { position: relative; padding: 1rem; }
-  .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-width: 0; }
+  .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
-  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; user-select: none; }
-  .sv-entry .sv-type { color: #7c8cf8; }
   .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
-  .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; overflow: hidden; }
+  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; }
+  .sv-entry .sv-type { color: #7c8cf8; }
+  .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; padding: 5px 8px; overflow: hidden; }
+  .sv-body { display: flex; flex: 1; overflow: hidden; }
+  .sv-args { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 5px 6px; overflow: hidden; }
+  .sv-arg { display: flex; flex-direction: column; gap: 1px; }
+  .sv-arg-label { font-size: 10px; color: #475569; }
+  .sv-arg-input { background: #0f1117; border: 1px solid #2d3148; color: #e2e8f0; border-radius: 4px; padding: 2px 5px; font-size: 11px; font-family: monospace; width: 100%; outline: none; }
+  .sv-arg-input:focus { border-color: #7c8cf8; }
+  .sv-pins { display: flex; flex-direction: column; gap: 4px; padding: 6px 0 6px 4px; justify-content: flex-start; flex-shrink: 0; }
+  .sv-pin { display: flex; align-items: center; gap: 5px; }
+  .sv-pin-label { font-size: 10px; color: #475569; white-space: nowrap; }
+  .sv-pin-dot { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
 </style>
 </head>
 <body>
@@ -461,42 +471,90 @@ function resetScript() {
 
 let currentView = 'playground';
 
-function setView(view) {
+async function setView(view) {
   const prev = currentView;
   currentView = view;
   document.getElementById('layoutView').style.display = view === 'playground' ? 'flex' : 'none';
   document.getElementById('scriptView').style.display = view === 'script' ? 'flex' : 'none';
   document.getElementById('btnPlayground').classList.toggle('active', view === 'playground');
   document.getElementById('btnScript').classList.toggle('active', view === 'script');
-  if (view === 'script') renderScriptView();
+  if (view === 'script') await renderScriptView();
   if (view === 'playground' && prev === 'script' && currentScript) resetScript();
 }
 
-function renderScriptView() {
+const nodeDefCache = new Map();
+
+async function fetchNodeDef(type) {
+  if (nodeDefCache.has(type)) return nodeDefCache.get(type);
+  try {
+    const res = await fetch('/api/nodes/' + type);
+    const def = res.ok ? await res.json() : null;
+    nodeDefCache.set(type, def);
+    return def;
+  } catch {
+    nodeDefCache.set(type, null);
+    return null;
+  }
+}
+
+async function renderScriptView() {
   const canvas = document.getElementById('svCanvas');
   if (!currentScript) { canvas.innerHTML = ''; return; }
+
+  const nodes = currentScript.nodes;
+  const types = [...new Set(nodes.filter(n => n.id !== 0 && n.type).map(n => n.type))];
+  await Promise.all(types.map(fetchNodeDef));
+
   let maxX = 0;
   let maxY = 0;
-  const nodes = currentScript.nodes;
   nodes.forEach(n => {
     maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 14) + 1);
     maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 6) + 1);
   });
   canvas.style.width = maxX + 'rem';
   canvas.style.height = maxY + 'rem';
+
   canvas.innerHTML = nodes.map(node => {
     const x = node.x ?? 0;
     const y = node.y ?? 0;
     const w = node.width ?? 14;
     const h = node.height ?? 6;
     const isEntry = node.id === 0;
-    const label = isEntry ? 'Entry' : (node.type || 'unknown');
-    const desc = isEntry && node.description
-      ? \`<div class="sv-desc">\${esc(node.description)}</div>\`
-      : '';
-    return \`<div class="sv-node\${isEntry ? ' sv-entry' : ''}" data-id="\${node.id}" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
-      <div class="sv-type" onmousedown="startDrag(event,\${node.id})">\${esc(label)}</div>
-      \${desc}
+
+    if (isEntry) {
+      const desc = node.description
+        ? \`<div class="sv-desc">\${esc(node.description)}</div>\`
+        : '';
+      return \`<div class="sv-node sv-entry" data-id="0" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
+        <div class="sv-type" onmousedown="startDrag(event,0)">Entry</div>
+        \${desc}
+      </div>\`;
+    }
+
+    const def = nodeDefCache.get(node.type) ?? null;
+    const argDefs = def?.args ?? [];
+    const pinDefs = def?.nodes ?? [];
+
+    const argsHtml = argDefs.map(a => {
+      const val = node.args[a.key] ?? '';
+      const inputType = a.editor === 'Number' ? 'number' : 'text';
+      return \`<div class="sv-arg">
+        <span class="sv-arg-label">\${esc(a.label)}</span>
+        <input class="sv-arg-input" type="\${inputType}" value="\${esc(String(val))}">
+      </div>\`;
+    }).join('');
+
+    const pinsHtml = pinDefs.map(p => \`<div class="sv-pin">
+      <span class="sv-pin-label">\${esc(p.label)}</span>
+      <span class="sv-pin-dot"></span>
+    </div>\`).join('');
+
+    return \`<div class="sv-node" data-id="\${node.id}" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
+      <div class="sv-type" onmousedown="startDrag(event,\${node.id})">\${esc(node.type || 'unknown')}</div>
+      <div class="sv-body">
+        <div class="sv-args">\${argsHtml}</div>
+        <div class="sv-pins">\${pinsHtml}</div>
+      </div>
     </div>\`;
   }).join('');
 }

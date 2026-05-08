@@ -53,7 +53,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r3[0]);
                 break;
             case 4:
-                // 29 15 - -
+                // 49 1 - -
                 const r4 = stateGet({
                     nodes: [5],
                     key: `coins`
@@ -61,7 +61,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r4[0]);
                 break;
             case 5:
-                // 40 15 - -
+                // 64 1 - -
                 const r5 = greaterThan({
                     t: [6],
                     f: [10],
@@ -70,7 +70,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r5[0]);
                 break;
             case 6:
-                // 50 10 - -
+                // 79 1 - -
                 const r6 = stateGet({
                     nodes: [7],
                     key: `coins`
@@ -78,7 +78,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r6[0]);
                 break;
             case 7:
-                // 60 10 - -
+                // 94 1 - -
                 const r7 = lessThan({
                     t: [8],
                     f: [10],
@@ -87,7 +87,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r7[0]);
                 break;
             case 8:
-                // 80 10 - -
+                // 109 1 - -
                 const r8 = stateGet({
                     nodes: [9],
                     key: `coins`
@@ -95,7 +95,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r8[0]);
                 break;
             case 9:
-                // 90 10 - -
+                // 124 1 - -
                 const r9 = stateAdd({
                     nodes: [12],
                     value: 20
@@ -103,7 +103,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r9[0]);
                 break;
             case 10:
-                // 100 10 - -
+                // 49 9 - -
                 const r10 = stateGet({
                     nodes: [11],
                     key: `coins`
@@ -111,7 +111,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r10[0]);
                 break;
             case 11:
-                // 110 10 - -
+                // 64 9 - -
                 const r11 = stateAdd({
                     nodes: [12],
                     value: 5
@@ -119,7 +119,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r11[0]);
                 break;
             case 12:
-                // 120 10 - -
+                // 79 9 - -
                 const r12 = log({
                     message: `Done`,
                     nodes: [0]
@@ -127,7 +127,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r12[0]);
                 break;
             case 13:
-                // 130 10 - -
+                // 95 9 - -
                 const r13 = stateGet({
                     nodes: [14],
                     key: `coins`
@@ -135,7 +135,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r13[0]);
                 break;
             case 14:
-                // 140 10 - -
+                // 110 9 - -
                 const r14 = stateAdd({
                     nodes: [0],
                     value: 12
@@ -143,7 +143,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r14[0]);
                 break;
             case 15:
-                // 150 10 - -
+                // 126 9 - -
                 const r15 = log({
                     message: `I'm rich!`,
                     nodes: [0]
