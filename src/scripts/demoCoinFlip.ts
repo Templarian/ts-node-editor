@@ -22,7 +22,7 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
-                // 4 1 - -
+                // 17 1 - -
                 const r1 = coinFlip({
                     t: [2],
                     f: [3]
@@ -30,7 +30,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r1[0]);
                 break;
             case 2:
-                // 23 1 - -
+                // 33 1 - -
                 const r2 = log({
                     message: `Heads`,
                     nodes: [0]
@@ -38,7 +38,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r2[0]);
                 break;
             case 3:
-                // 11 8 - -
+                // 33 9 - -
                 const r3 = log({
                     message: `Tails`,
                     nodes: [0]

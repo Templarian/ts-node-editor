@@ -338,11 +338,15 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
             leadingComments.push(` ${line}`);
         }
     }
-    for (const text of leadingComments) {
-        runFn = ts.addSyntheticLeadingComment(runFn, ts.SyntaxKind.SingleLineCommentTrivia, text, true);
-    }
-
     statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
+    if (leadingComments.length > 0) {
+        let commentsNode = ts.factory.createIdentifier('') as unknown as ts.FunctionDeclaration;
+        for (const text of leadingComments) {
+            commentsNode = ts.addSyntheticLeadingComment(commentsNode, ts.SyntaxKind.SingleLineCommentTrivia, text, true) as unknown as ts.FunctionDeclaration;
+        }
+        statements.push(commentsNode as unknown as ts.Statement);
+        statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
+    }
     statements.push(runFn);
 
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
