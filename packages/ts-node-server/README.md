@@ -10,6 +10,16 @@ npm start
 
 ## Endpoints
 
+### `GET` `api`
+
+Returns an example script JSON structure (demo data).
+
+### `GET` `api/git`
+
+Returns `true` if the git file exists, `false` otherwise.
+
+---
+
 ### `GET` `api/nodes`
 
 Returns a list of all nodes.
@@ -21,12 +31,14 @@ Returns a list of all nodes.
 }]
 ```
 
-### `GET` `api/nodes/:nodeName`
+### `GET` `api/nodes/:name`
 
-Parse the node a easy to read JSON format.
+Parse the node into an easy to read JSON format.
+
+- 401 if the node is not found
 
 ```json
-[{
+{
     "name": "between",
     "description": "Between",
     "editor": null,
@@ -46,16 +58,26 @@ Parse the node a easy to read JSON format.
         "key": "f",
         "label": "False"
     }]
-}]
+}
 ```
+
+### `GET` `api/nodes/:name/source`
+
+Get a node's raw TypeScript source as a JSON string.
+
+- 401 if the node is not found
 
 ### `GET` `api/nodes/:name/compiled`
 
-Get a node's TypeScript compiled javascript.
+Get a node's TypeScript compiled to JavaScript as a JSON string.
+
+- 401 if the node is not found
+
+---
 
 ### `GET` `api/scripts`
 
-Returns an array of script names and description (this is node 0's entry comment). If node 0 does not have a comment `description` will be null.
+Returns an array of script names and descriptions (node 0's description). If node 0 does not have a description, `description` will be an empty string.
 
 ```json
 [{
@@ -64,94 +86,91 @@ Returns an array of script names and description (this is node 0's entry comment
 }]
 ```
 
-### `GET` `api/scripts/:scriptName`
+### `GET` `api/scripts/:name`
 
 Using the `ts-node-parser` this will get a script's serialized JSON.
 
-### `PATCH` `api/scripts/:scriptName/nodes/:id`
+- 401 if the script is not found
 
-Updates any of the node's data. The properties that can be updated are:
+### `POST` `api/scripts/:name`
 
-```typescript
-interface PatchNode {
-    x: number,
-    y: number,
-    width: number | null,
-    height: number | null,
-    description: string | null
-}
-```
-
-### `POST` `api/scripts/:scriptName/nodes`
-
-Add a node to an existing script.
-
-- 401 if not script is found
-
-```typescript
-interface PostNode {
-    x: number,
-    y: number,
-    width: number | null,
-    height: number | null,
-    description: string | null,
-    type: string,
-    args: Record<string, any>
-}
-```
-
-### `PUT` `api/scripts/:scriptName/nodes/:index/args/:argKey`
-
-Update a value.
-
-```typescript
-interface PutScriptNodeArgs {
-  value: string | number | boolean
-}
-```
-
-### `POST` `api/scripts/:scriptName/nodes/:id/args/:argKey`
-
-Post can only be used on args of array type.
-
-- 401 on any args that are not array type
-
-```typescript
-interface PostScriptNodeArgs {
-  value: string | number | boolean
-}
-```
-
-### `DELETE` `api/scripts/:scriptName/nodes/:id/args/:argKey`
-
-Delete can only be used on args of array type. For instance array.
-
-- 401 on any args that are not array type
-
-```typescript
-interface DeleteScriptNodeArgs {
-  value: string | number
-}
-```
-
-
-### `POST` `api/scripts`
-
-Create a new script. If the name exists it will throw a `401`. Only the entry node 0 should exist with the description.
+Create a new script. If the name exists it will throw a `401`.
 
 ```typescript
 interface PostScript {
     name: string,
-    description: number
+    description: string
 }
 ```
 
-### `PATCH` `api/scripts/:scriptName`
+### `GET` `api/scripts/:name/nodes/:index`
 
-This handles renaming an existing script.
+Get a single node from a script by its id.
+
+- 401 if the script or node is not found
+
+### `POST` `api/scripts/:name/nodes/:index/args/:arg`
+
+Attach a node id to an array-type arg on a script node.
+
+- 401 if the script or node is not found
 
 ```typescript
-interface PatchScript {
-    name: string,
+interface AttachScriptNodeArg {
+    nodeId: number
 }
+```
+
+### `DELETE` `api/scripts/:name/nodes/:index/args/:arg`
+
+Remove a node id from an array-type arg on a script node.
+
+- 401 if the script or node is not found
+
+```typescript
+interface RemoveScriptNodeArg {
+    nodeId: number
+}
+```
+
+### `GET` `api/scripts/:name/comments`
+
+Returns all comments for a script.
+
+- 401 if the script is not found
+
+```typescript
+interface ScriptComment {
+    x: number,
+    y: number,
+    width?: number,
+    height?: number,
+    text: string
+}
+```
+
+### `POST` `api/scripts/:name/comments`
+
+Add a new comment to a script.
+
+- 401 if the script is not found
+
+```typescript
+interface ScriptComment {
+    x: number,
+    y: number,
+    width?: number,
+    height?: number,
+    text: string
+}
+```
+
+### `PATCH` `api/scripts/:name/comments/:index`
+
+Update an existing comment by index.
+
+- 401 if the script or comment index is not found
+
+```typescript
+type PatchScriptComment = Partial<ScriptComment>
 ```
