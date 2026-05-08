@@ -5,7 +5,8 @@ import { getApi } from './endpoint/api.js';
 import { getIndex, getStyles, getClient } from './endpoint/app.js';
 import { patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
 import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode, getApiNodeSource, getApiNodeCompiled } from './endpoint/apiNode.js';
-import { attachScriptNodeToArg, getGit, getScript, getScriptComments, getScriptNode, patchScriptComments, postScript, postScriptComments, removeScriptNodeToArg } from './endpoint/apiScript.js';
+import { attachScriptNodeToArg, getGit, getScript, getScriptComments, getScriptNode, getScripts, patchScriptComments, postScript, postScriptComments, removeScriptNodeToArg } from './endpoint/apiScript.js';
+import { getPlayground } from './endpoint/apiPlayground.js';
 
 type Handler = (params: any, req: Req, res: Res) => void | Promise<void>;
 type Routes = Record<string, Partial<Record<string, Handler>>>;
@@ -13,6 +14,9 @@ type Routes = Record<string, Partial<Record<string, Handler>>>;
 const CLIENT_JS = /^\/(client\.js|element\/.+\.js|utils\/.+\.js)$/;
 
 const routes: Routes = {
+    '/playground': {
+        GET: getPlayground,
+    },
     '/': {
         GET: getIndex,
     },
@@ -43,6 +47,9 @@ const routes: Routes = {
     },
     '/api/nodes/:name/compiled': {
         GET:    getApiNodeCompiled,
+    },
+    '/api/scripts': {
+      GET: getScripts,
     },
     '/api/scripts/:name/nodes/:index/args/:arg': {
         POST:   attachScriptNodeToArg,

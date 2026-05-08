@@ -1,10 +1,31 @@
 import { existsSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
+import { readdir, readFile, writeFile } from 'fs/promises';
+import { basename, join } from 'path';
 import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
 import Script, { ScriptComment, type ScriptJson } from '../utils/script.js';
 import type { Req, Res } from '../utils/types.js';
 import { scriptsDir, gitFile } from '../utils/paths.js';
+
+export async function getScripts(
+    _params: Record<string, string>,
+    _req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    const files = await readdir(scriptsDir);
+    const scripts = await Promise.all(
+        files
+            .filter(f => f.endsWith('.ts') && !f.endsWith('.spec.ts'))
+            .map(async f => {
+                const name = basename(f, '.ts');
+                const source = await readFile(join(scriptsDir, f), 'utf-8');
+                const script = parseScript(source);
+                const description = script.nodes.find((n: { id: number }) => n.id === 0)?.description ?? '';
+                return { name, description };
+            })
+    );
+    res.end(JSON.stringify(scripts));
+}
 
 export async function getScriptComments(
     { name }: { name: string },

@@ -18,7 +18,7 @@ export async function getApiNodes(
             const source = await readFile(join(nodesDir, f), 'utf-8');
             return parseNode(source);
         })
-    )).filter(Boolean);
+    )).filter(Boolean).map(n => ({ name: n!.name, description: n!.description }));
     res.end(JSON.stringify(output));
 }
 

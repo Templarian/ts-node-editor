@@ -13,6 +13,7 @@ interface NodeConnection {
 
 export interface ParsedNode {
     name: string;
+    description: string | null;
     editor: string | null;
     args: NodeArg[];
     nodes: NodeConnection[];
@@ -79,6 +80,7 @@ export function parseNode(source: string): ParsedNode | null {
 
             result = {
                 name: node.name.text,
+                description: jsDocDescription(node),
                 editor: jsDocEditorTag(node),
                 args,
                 nodes,

@@ -6,11 +6,23 @@ The server controls all the endpoints and serving the initial application's comp
 
 ### `GET` `api/nodes`
 
-Parse all of the nodes TS files and return their meta data.
+Returns a list of all nodes.
 
 ```json
 [{
     "name": "between",
+    "description": "Between"
+}]
+```
+
+### `GET` `api/nodes/{nodeName}`
+
+Parse the node a easy to read JSON format.
+
+```json
+[{
+    "name": "between",
+    "description": "Between",
     "editor": null,
     "args": [{
         "key": "min",
@@ -42,7 +54,7 @@ Returns an array of script names and description (this is node 0's entry comment
 }]
 ```
 
-### `GET` `api/script/{scriptName}`
+### `GET` `api/scripts/{scriptName}`
 
 Using the `ts-node-parser` this will get a script's serialized JSON.
 
