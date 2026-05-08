@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
-import Script, { type ScriptJson } from '../utils/script.js';
+import Script, { ScriptComment, type ScriptJson } from '../utils/script.js';
 import type { Req, Res } from '../utils/types.js';
 import { scriptsDir, gitFile } from '../utils/paths.js';
 
@@ -20,6 +20,30 @@ export async function getScriptComments(
     }
     const source = await readFile(filePath, 'utf-8');
     res.end(JSON.stringify(parseScript(source).comments));
+}
+
+export function postScriptComments(
+    { name }: { name: string },
+    req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const comment: ScriptComment = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        script.comments.push(comment);
+        await writeFile(filePath, writeScript(script, scriptsDir));
+        res.end(JSON.stringify(comment));
+    });
 }
 
 export function getGit(

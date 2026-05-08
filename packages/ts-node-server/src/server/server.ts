@@ -3,9 +3,9 @@ import { createServer } from 'http';
 import type { Req, Res } from './utils/types.js';
 import { getApi } from './endpoint/api.js';
 import { getIndex, getStyles, getClient } from './endpoint/app.js';
-import { postApiComment, patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
+import { patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
 import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode, getApiNodeSource, getApiNodeCompiled } from './endpoint/apiNode.js';
-import { attachScriptNodeToArg, getGit, getScript, getScriptComments, getScriptNode, postScript, removeScriptNodeToArg } from './endpoint/apiScript.js';
+import { attachScriptNodeToArg, getGit, getScript, getScriptComments, getScriptNode, postScript, postScriptComments, removeScriptNodeToArg } from './endpoint/apiScript.js';
 
 type Handler = (params: any, req: Req, res: Res) => void | Promise<void>;
 type Routes = Record<string, Partial<Record<string, Handler>>>;
@@ -24,9 +24,6 @@ const routes: Routes = {
     },
     '/api/git': {
         GET: getGit,
-    },
-    '/api/comment': {
-        POST: postApiComment,
     },
     '/api/comment/:id': {
         PATCH:  patchApiComment,
@@ -53,6 +50,7 @@ const routes: Routes = {
     },
     '/api/scripts/:name/comments': {
       GET: getScriptComments,
+      POST: postScriptComments,
     },
     '/api/scripts/:name/nodes/:index': {
         GET: getScriptNode,
