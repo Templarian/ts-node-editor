@@ -106,7 +106,7 @@ const html = `<!DOCTYPE html>
   .state-key { color: #64748b; font-size: 11px; margin-bottom: 1px; }
   .state-val { color: #7dd3fc; font-family: monospace; word-break: break-all; }
 
-  .script-view { flex: 1; overflow: auto; background: #0a0c14; background-image: linear-gradient(#1a1d2e 1px, transparent 1px), linear-gradient(90deg, #1a1d2e 1px, transparent 1px); background-size: 1rem 1rem; }
+  .script-view { flex: 1; overflow: auto; background: #0a0c14; background-image: linear-gradient(#1a1d2e 1px, transparent 1px), linear-gradient(90deg, #1a1d2e 1px, transparent 1px); background-size: 1rem 1rem; background-attachment: local; }
   .sv-canvas { position: relative; padding: 1rem; }
   .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }

@@ -1,14 +1,13 @@
-import type { Node, State } from './../nodes/node';
-import { dialog } from "./../nodes/dialog";
-import { dialogChoice } from "./../nodes/dialogChoice";
-import { stateGet } from "./../nodes/stateGet";
-import { greaterThan } from "./../nodes/greaterThan";
-import { lessThan } from "./../nodes/lessThan";
-import { stateAdd } from "./../nodes/stateAdd";
-import { log } from "./../nodes/log";
+import type { Node, State } from '../nodes/node';
+import { dialog } from '../nodes/dialog';
+import { dialogChoice } from '../nodes/dialogChoice';
+import { stateGet } from '../nodes/stateGet';
+import { greaterThan } from '../nodes/greaterThan';
+import { lessThan } from '../nodes/lessThan';
+import { stateAdd } from '../nodes/stateAdd';
+import { log } from '../nodes/log';
 
 // coins: "6"
-
 // 0 15 - -
 // Ask for gold, then check if coins are between 5 and 10.
 
@@ -29,50 +28,41 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
-                // 10 12 - -
-                const r1 = await dialog({
-                    state,
-                    node: 1,
+                // 17 1 - -
+                const r1 = dialog({
                     nodes: [2, 3],
                     character: `Merchant`,
                     text: `What would you like?`
                 });
                 stack.push(...r1.slice().reverse());
-                continue;
+                break;
             case 2:
-                // 20 10 - -
+                // 33 1 - -
                 const r2 = dialogChoice({
-                    state,
-                    callstack,
                     nodes: [4],
                     text: `Can I have 5 gold?`
                 });
                 stack.push(r2[0]);
                 break;
             case 3:
-                // 20 20 - -
+                // 33 9 - -
                 const r3 = dialogChoice({
-                    state,
-                    callstack,
                     nodes: [13],
                     text: `Can I have 12 gold?`
                 });
                 stack.push(r3[0]);
                 break;
             case 4:
-                // 30 10 - -
+                // 29 15 - -
                 const r4 = stateGet({
-                    state,
-                    node: 4,
                     nodes: [5],
                     key: `coins`
                 });
                 stack.push(r4[0]);
-                continue;
+                break;
             case 5:
-                // 40 10 - -
+                // 40 15 - -
                 const r5 = greaterThan({
-                    state,
                     t: [6],
                     f: [10],
                     value: 5
@@ -82,17 +72,14 @@ export async function run(state: State): Promise<State> {
             case 6:
                 // 50 10 - -
                 const r6 = stateGet({
-                    state,
-                    node: 6,
                     nodes: [7],
                     key: `coins`
                 });
                 stack.push(r6[0]);
-                continue;
+                break;
             case 7:
                 // 60 10 - -
                 const r7 = lessThan({
-                    state,
                     t: [8],
                     f: [10],
                     value: 10
@@ -102,18 +89,14 @@ export async function run(state: State): Promise<State> {
             case 8:
                 // 80 10 - -
                 const r8 = stateGet({
-                    state,
-                    node: 8,
                     nodes: [9],
                     key: `coins`
                 });
                 stack.push(r8[0]);
-                continue;
+                break;
             case 9:
                 // 90 10 - -
                 const r9 = stateAdd({
-                    state,
-                    callstack,
                     nodes: [12],
                     value: 20
                 });
@@ -122,18 +105,14 @@ export async function run(state: State): Promise<State> {
             case 10:
                 // 100 10 - -
                 const r10 = stateGet({
-                    state,
-                    node: 10,
                     nodes: [11],
                     key: `coins`
                 });
                 stack.push(r10[0]);
-                continue;
+                break;
             case 11:
                 // 110 10 - -
                 const r11 = stateAdd({
-                    state,
-                    callstack,
                     nodes: [12],
                     value: 5
                 });
@@ -150,18 +129,14 @@ export async function run(state: State): Promise<State> {
             case 13:
                 // 130 10 - -
                 const r13 = stateGet({
-                    state,
-                    node: 13,
                     nodes: [14],
                     key: `coins`
                 });
                 stack.push(r13[0]);
-                continue;
+                break;
             case 14:
                 // 140 10 - -
                 const r14 = stateAdd({
-                    state,
-                    callstack,
                     nodes: [0],
                     value: 12
                 });
