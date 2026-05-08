@@ -2,6 +2,12 @@
 
 The server controls all the endpoints and serving the initial application's compiled content.
 
+```bash
+npm start
+```
+
+- `/playground` serves `ts-node-playground/index.html`
+
 ## Endpoints
 
 ### `GET` `api/nodes`
@@ -15,7 +21,7 @@ Returns a list of all nodes.
 }]
 ```
 
-### `GET` `api/nodes/{nodeName}`
+### `GET` `api/nodes/:nodeName`
 
 Parse the node a easy to read JSON format.
 
@@ -43,6 +49,10 @@ Parse the node a easy to read JSON format.
 }]
 ```
 
+### `GET` `api/nodes/:name/compiled`
+
+Get a node's TypeScript compiled javascript.
+
 ### `GET` `api/scripts`
 
 Returns an array of script names and description (this is node 0's entry comment). If node 0 does not have a comment `description` will be null.
@@ -54,11 +64,11 @@ Returns an array of script names and description (this is node 0's entry comment
 }]
 ```
 
-### `GET` `api/scripts/{scriptName}`
+### `GET` `api/scripts/:scriptName`
 
 Using the `ts-node-parser` this will get a script's serialized JSON.
 
-### `PATCH` `api/scripts/{scriptName}/nodes/{id}`
+### `PATCH` `api/scripts/:scriptName/nodes/:id`
 
 Updates any of the node's data. The properties that can be updated are:
 
@@ -72,7 +82,7 @@ interface PatchNode {
 }
 ```
 
-### `POST` `api/scripts/{scriptName}/nodes`
+### `POST` `api/scripts/:scriptName/nodes`
 
 Add a node to an existing script.
 
@@ -90,7 +100,7 @@ interface PostNode {
 }
 ```
 
-### `PUT` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+### `PUT` `api/scripts/:scriptName/nodes/:index/args/:argKey`
 
 Update a value.
 
@@ -100,7 +110,7 @@ interface PutScriptNodeArgs {
 }
 ```
 
-### `POST` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+### `POST` `api/scripts/:scriptName/nodes/:id/args/:argKey`
 
 Post can only be used on args of array type.
 
@@ -112,7 +122,7 @@ interface PostScriptNodeArgs {
 }
 ```
 
-### `DELETE` `api/scripts/{scriptName}/nodes/{id}/args/{argKey}`
+### `DELETE` `api/scripts/:scriptName/nodes/:id/args/:argKey`
 
 Delete can only be used on args of array type. For instance array.
 
@@ -136,7 +146,7 @@ interface PostScript {
 }
 ```
 
-### `PATCH` `api/scripts/{scriptName}`
+### `PATCH` `api/scripts/:scriptName`
 
 This handles renaming an existing script.
 
