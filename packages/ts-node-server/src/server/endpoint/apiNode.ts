@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
+import ts from 'typescript';
 import { parseNode } from '../utils/parseNode.js';
 import type { Req, Res } from '../utils/types.js';
 import { nodesDir } from '../utils/paths.js';
@@ -51,6 +52,28 @@ export async function getApiNodeSource(
     }
     const source = await readFile(filePath, 'utf-8');
     res.end(JSON.stringify(source));
+}
+
+export async function getApiNodeCompiled(
+    { name }: { name: string },
+    _req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(nodesDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Node not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    const { outputText } = ts.transpileModule(source, {
+        compilerOptions: {
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.ESNext,
+        },
+    });
+    res.end(JSON.stringify(outputText));
 }
 
 export function postApiNode(
