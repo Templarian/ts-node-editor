@@ -1,11 +1,11 @@
 import type { Node, State } from './../nodes/node';
-import { dialog } from "./../nodes/dialog";
-import { dialogChoice } from "./../nodes/dialogChoice";
-import { stateGet } from "./../nodes/stateGet";
-import { greaterThan } from "./../nodes/greaterThan";
-import { lessThan } from "./../nodes/lessThan";
-import { stateAdd } from "./../nodes/stateAdd";
-import { log } from "./../nodes/log";
+import { dialog } from '../nodes/dialog';
+import { dialogChoice } from '../nodes/dialogChoice';
+import { stateGet } from '../nodes/stateGet';
+import { greaterThan } from '../nodes/greaterThan';
+import { lessThan } from '../nodes/lessThan';
+import { stateAdd } from '../nodes/stateAdd';
+import { log } from '../nodes/log';
 
 // coins: "6"
 
