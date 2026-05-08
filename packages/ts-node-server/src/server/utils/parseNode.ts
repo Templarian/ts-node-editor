@@ -15,6 +15,7 @@ export interface ParsedNode {
     name: string;
     description: string | null;
     editor: string | null;
+    async: boolean;
     args: NodeArg[];
     nodes: NodeConnection[];
 }
@@ -82,6 +83,7 @@ export function parseNode(source: string): ParsedNode | null {
                 name: node.name.text,
                 description: jsDocDescription(node),
                 editor: jsDocEditorTag(node),
+                async: node.modifiers?.some(m => m.kind === ts.SyntaxKind.AsyncKeyword) ?? false,
                 args,
                 nodes,
             };
