@@ -104,7 +104,7 @@ function createValueExpression(val: unknown): ts.Expression {
         }
         return ts.factory.createNoSubstitutionTemplateLiteral(val);
     }
-    return ts.factory.createStringLiteral(String(val));
+    return ts.factory.createStringLiteral(String(val), true);
 }
 
 function call(name: string | ts.Expression, args: ts.Expression[]): ts.CallExpression {
@@ -123,16 +123,16 @@ function createCase0(node: ScriptNode | undefined): ts.CaseClause {
     const h = node?.height ?? '-';
     const posComment = ` ${x} ${y} ${w} ${h}`;
 
-    const noop = ts.factory.createStringLiteral('noop');
+    const noop = ts.factory.createStringLiteral('noop', true);
 
     const ifStmt = ts.factory.createIfStatement(
         call(propAccess('state', 'has'), [noop]),
         ts.factory.createBlock([
             ts.factory.createExpressionStatement(
-                call(propAccess('stack', 'push'), [call(propAccess('state', 'get'), [ts.factory.createStringLiteral('noop')])])
+                call(propAccess('stack', 'push'), [call(propAccess('state', 'get'), [ts.factory.createStringLiteral('noop', true)])])
             ),
             ts.factory.createExpressionStatement(
-                call(propAccess('state', 'delete'), [ts.factory.createStringLiteral('noop')])
+                call(propAccess('state', 'delete'), [ts.factory.createStringLiteral('noop', true)])
             ),
             ts.factory.createContinueStatement(),
         ], true)
@@ -296,7 +296,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
                     ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(name))
                 ))
             ),
-            ts.factory.createStringLiteral('../nodes/node')
+            ts.factory.createStringLiteral('../nodes/node', true)
         ),
         ...nodeTypes.map(typeName =>
             ts.factory.createImportDeclaration(undefined,
@@ -305,7 +305,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
                         ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(typeName))
                     ])
                 ),
-                ts.factory.createStringLiteral(`../nodes/${typeName.charAt(0).toLowerCase()}${typeName.slice(1)}`)
+                ts.factory.createStringLiteral(`../nodes/${typeName.charAt(0).toLowerCase()}${typeName.slice(1)}`, true)
             )
         ),
         ...includeScripts.map(scriptName =>
@@ -319,7 +319,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
                         )
                     ])
                 ),
-                ts.factory.createStringLiteral(`./${scriptName.charAt(0).toLowerCase()}${scriptName.slice(1)}`)
+                ts.factory.createStringLiteral(`./${scriptName.charAt(0).toLowerCase()}${scriptName.slice(1)}`, true)
             )
         ),
     ];
@@ -342,6 +342,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
         runFn = ts.addSyntheticLeadingComment(runFn, ts.SyntaxKind.SingleLineCommentTrivia, text, true);
     }
 
+    statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
     statements.push(runFn);
 
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
