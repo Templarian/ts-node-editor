@@ -4,6 +4,7 @@ import { log } from '../nodes/log';
 
 // 0 5 - -
 // Flip a coin and log which is selected
+
 export async function run(state: State): Promise<State> {
     const stack: Node[] = [1];
     const callstack: Node[] = [];
