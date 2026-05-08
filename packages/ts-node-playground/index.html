@@ -12,6 +12,10 @@
   header h1 { font-size: 16px; font-weight: 600; color: #7c8cf8; letter-spacing: 0.5px; }
   select { background: #252840; color: #e2e8f0; border: 1px solid #3d4270; border-radius: 6px; padding: 6px 10px; font-size: 14px; cursor: pointer; outline: none; }
   select:focus { border-color: #7c8cf8; }
+  .view-toggle { display: flex; gap: 2px; background: #0f1117; border: 1px solid #2d3148; border-radius: 7px; padding: 2px; margin-left: auto; }
+  .toggle-btn { background: none; border: none; color: #64748b; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 5px; cursor: pointer; transition: all 0.15s; }
+  .toggle-btn.active { background: #252840; color: #e2e8f0; }
+  .toggle-btn:not(.active):hover { color: #94a3b8; }
 
   .layout { display: flex; flex: 1; gap: 0; overflow: hidden; }
 
@@ -95,6 +99,14 @@
   .state-item { display: flex; flex-direction: column; padding: 6px 0; border-bottom: 1px solid #1e2244; }
   .state-key { color: #64748b; font-size: 11px; margin-bottom: 1px; }
   .state-val { color: #7dd3fc; font-family: monospace; word-break: break-all; }
+
+  .script-view { flex: 1; overflow: auto; background: #0a0c14; background-image: linear-gradient(#1a1d2e 1px, transparent 1px), linear-gradient(90deg, #1a1d2e 1px, transparent 1px); background-size: 1rem 1rem; }
+  .sv-canvas { position: relative; padding: 1rem; }
+  .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-width: 0; }
+  .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
+  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sv-entry .sv-type { color: #7c8cf8; }
+  .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; overflow: hidden; }
 </style>
 </head>
 <body>
@@ -102,8 +114,12 @@
   <h1>ts-node playground</h1>
   <select id="scriptSelect"></select>
   <button class="btn btn-reset" onclick="resetScript()">↺ Reset</button>
+  <div class="view-toggle">
+    <button id="btnPlayground" class="toggle-btn active" onclick="setView('playground')">Playground</button>
+    <button id="btnScript" class="toggle-btn" onclick="setView('script')">Script</button>
+  </div>
 </header>
-<div class="layout">
+<div class="layout" id="layoutView">
   <div class="main">
     <div class="script-info">
       <div class="name" id="scriptName"></div>
@@ -115,6 +131,9 @@
     <h2>State</h2>
     <div class="state-list" id="stateList"></div>
   </div>
+</div>
+<div class="script-view" id="scriptView" style="display:none">
+  <div class="sv-canvas" id="svCanvas"></div>
 </div>
 
 <script>
@@ -423,13 +442,56 @@ function loadScript(script, inheritedState) {
   document.getElementById('scriptDesc').textContent =
     script.nodes?.find(n => n.id === 0)?.description || script.comments?.[0]?.text || '';
   renderState();
+  if (currentView === 'script') renderScriptView();
   const node0 = script.nodes?.find(n => n.id === 0);
   const startId = Array.isArray(node0?.args?.nodes) ? (node0.args.nodes[0] ?? 1) : 1;
-  executeNode(startId);
+  if (currentView === 'playground') executeNode(startId);
 }
 
 function resetScript() {
   if (currentScript) loadScriptByName(currentScript.name);
+}
+
+let currentView = 'playground';
+
+function setView(view) {
+  const prev = currentView;
+  currentView = view;
+  document.getElementById('layoutView').style.display = view === 'playground' ? 'flex' : 'none';
+  document.getElementById('scriptView').style.display = view === 'script' ? 'flex' : 'none';
+  document.getElementById('btnPlayground').classList.toggle('active', view === 'playground');
+  document.getElementById('btnScript').classList.toggle('active', view === 'script');
+  if (view === 'script') renderScriptView();
+  if (view === 'playground' && prev === 'script' && currentScript) resetScript();
+}
+
+function renderScriptView() {
+  const canvas = document.getElementById('svCanvas');
+  if (!currentScript) { canvas.innerHTML = ''; return; }
+  let maxX = 0;
+  let maxY = 0;
+  const nodes = currentScript.nodes;
+  nodes.forEach(n => {
+    maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 4) + 1);
+    maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 2) + 1);
+  });
+  canvas.style.width = maxX + 'rem';
+  canvas.style.height = maxY + 'rem';
+  canvas.innerHTML = nodes.map(node => {
+    const x = node.x ?? 0;
+    const y = node.y ?? 0;
+    const w = node.width ?? 4;
+    const h = node.height ?? 2;
+    const isEntry = node.id === 0;
+    const label = isEntry ? 'Entry' : (node.type || 'unknown');
+    const desc = isEntry && node.description
+      ? `<div class="sv-desc">${esc(node.description)}</div>`
+      : '';
+    return `<div class="sv-node${isEntry ? ' sv-entry' : ''}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem">
+      <div class="sv-type">${esc(label)}</div>
+      ${desc}
+    </div>`;
+  }).join('');
 }
 
 async function loadScriptByName(name) {
