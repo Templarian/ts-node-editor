@@ -6,6 +6,22 @@ import Script, { type ScriptJson } from '../utils/script.js';
 import type { Req, Res } from '../utils/types.js';
 import { scriptsDir, gitFile } from '../utils/paths.js';
 
+export async function getScriptComments(
+    { name }: { name: string },
+    _req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(scriptsDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Script not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    res.end(JSON.stringify(parseScript(source).comments));
+}
+
 export function getGit(
     _params: Record<string, string>,
     _req: Req,
@@ -142,3 +158,4 @@ export function postScript(
         res.end(JSON.stringify(true));
     });
 }
+
