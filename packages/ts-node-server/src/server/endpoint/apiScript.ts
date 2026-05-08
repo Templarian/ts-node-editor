@@ -97,6 +97,36 @@ export function patchScriptComments(
     });
 }
 
+export function patchScriptNode(
+    { name, index }: { name: string; index: string },
+    req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const partial: Partial<ScriptNode> = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        const i = script.nodes.findIndex((n: ScriptNode) => n.id === Number(index));
+        if (i === -1) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Node not found.' }));
+            return;
+        }
+        script.nodes[i] = { ...script.nodes[i], ...partial, id: script.nodes[i].id };
+        await writeFile(filePath, writeScript(script, scriptsDir));
+        res.end(JSON.stringify(script.nodes[i]));
+    });
+}
+
 export function getGit(
     _params: Record<string, string>,
     _req: Req,

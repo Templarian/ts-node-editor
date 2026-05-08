@@ -109,6 +109,16 @@ Get a single node from a script by its id.
 
 - 401 if the script or node is not found
 
+### `PATCH` `api/scripts/:name/nodes/:index`
+
+Update a script node's properties by its id.
+
+- 401 if the script or node is not found
+
+```typescript
+type PatchScriptNode = Partial<Omit<ScriptNode, 'id'>>
+```
+
 ### `POST` `api/scripts/:name/nodes/:index/args/:arg`
 
 Attach a node id to an array-type arg on a script node.

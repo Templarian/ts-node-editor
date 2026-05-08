@@ -104,8 +104,9 @@
   .sv-canvas { position: relative; padding: 1rem; }
   .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
-  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; user-select: none; }
   .sv-entry .sv-type { color: #7c8cf8; }
+  .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
   .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; overflow: hidden; }
 </style>
 </head>
@@ -472,23 +473,23 @@ function renderScriptView() {
   let maxY = 0;
   const nodes = currentScript.nodes;
   nodes.forEach(n => {
-    maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 4) + 1);
-    maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 2) + 1);
+    maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 14) + 1);
+    maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 6) + 1);
   });
   canvas.style.width = maxX + 'rem';
   canvas.style.height = maxY + 'rem';
   canvas.innerHTML = nodes.map(node => {
     const x = node.x ?? 0;
     const y = node.y ?? 0;
-    const w = node.width ?? 4;
-    const h = node.height ?? 2;
+    const w = node.width ?? 14;
+    const h = node.height ?? 6;
     const isEntry = node.id === 0;
     const label = isEntry ? 'Entry' : (node.type || 'unknown');
     const desc = isEntry && node.description
       ? `<div class="sv-desc">${esc(node.description)}</div>`
       : '';
-    return `<div class="sv-node${isEntry ? ' sv-entry' : ''}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem">
-      <div class="sv-type">${esc(label)}</div>
+    return `<div class="sv-node${isEntry ? ' sv-entry' : ''}" data-id="${node.id}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem">
+      <div class="sv-type" onmousedown="startDrag(event,${node.id})">${esc(label)}</div>
       ${desc}
     </div>`;
   }).join('');
@@ -502,6 +503,48 @@ async function loadScriptByName(name) {
     loadScript(script, null);
   } catch {
     showError('Failed to load script: ' + name);
+  }
+}
+
+let _drag = null;
+
+function startDrag(e, nodeId) {
+  e.preventDefault();
+  const nodeEl = e.currentTarget.closest('.sv-node');
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const node = currentScript.nodes.find(n => n.id === nodeId);
+  nodeEl.classList.add('dragging');
+  _drag = { nodeId, nodeEl, origX: node.x ?? 0, origY: node.y ?? 0, startX: e.clientX, startY: e.clientY, rem };
+  document.addEventListener('mousemove', _onDragMove);
+  document.addEventListener('mouseup', _onDragEnd);
+}
+
+function _onDragMove(e) {
+  if (!_drag) return;
+  const { nodeEl, origX, origY, startX, startY, rem } = _drag;
+  nodeEl.style.left = Math.max(0, origX + (e.clientX - startX) / rem) + 'rem';
+  nodeEl.style.top  = Math.max(0, origY + (e.clientY - startY) / rem) + 'rem';
+}
+
+function _onDragEnd(e) {
+  if (!_drag) return;
+  document.removeEventListener('mousemove', _onDragMove);
+  document.removeEventListener('mouseup', _onDragEnd);
+  const { nodeId, nodeEl, origX, origY, startX, startY, rem } = _drag;
+  _drag = null;
+  nodeEl.classList.remove('dragging');
+  const newX = Math.max(0, Math.round(origX + (e.clientX - startX) / rem));
+  const newY = Math.max(0, Math.round(origY + (e.clientY - startY) / rem));
+  nodeEl.style.left = newX + 'rem';
+  nodeEl.style.top  = newY + 'rem';
+  if (newX !== origX || newY !== origY) {
+    const node = currentScript.nodes.find(n => n.id === nodeId);
+    if (node) { node.x = newX; node.y = newY; }
+    fetch('/api/scripts/' + currentScript.name + '/nodes/' + nodeId, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ x: newX, y: newY }),
+    });
   }
 }
 
