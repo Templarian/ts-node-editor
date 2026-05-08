@@ -119,7 +119,7 @@ export async function getScript(
         return;
     }
     const source = await readFile(filePath, 'utf-8');
-    res.end(JSON.stringify(parseScript(source)));
+    res.end(JSON.stringify(parseScript(source, `${name}.ts`)));
 }
 
 export async function getScriptNode(

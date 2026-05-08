@@ -1,21 +1,8 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { parseScript } = require('../ts-node-parser/dist/index.js');
 
-const scriptsDir = path.resolve(__dirname, '../../src/scripts');
 const outFile = path.resolve(__dirname, 'index.html');
-
-const scriptFiles = fs.readdirSync(scriptsDir)
-    .filter(f => f.endsWith('.ts') && !f.endsWith('.spec.ts') && f !== 'verify.ts')
-    .sort();
-
-const scripts = scriptFiles.map(f => {
-    const src = fs.readFileSync(path.join(scriptsDir, f), 'utf-8');
-    return parseScript(src, f);
-});
-
-const scriptsJson = JSON.stringify(scripts);
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -137,11 +124,28 @@ const html = `<!DOCTYPE html>
 </div>
 
 <script>
-const SCRIPTS = ${scriptsJson};
-
 let currentScript = null;
 let state = new Map();
 let historyCards = [];
+const nodeFnCache = new Map();
+
+async function loadNodeFn(type) {
+  if (nodeFnCache.has(type)) return nodeFnCache.get(type);
+  try {
+    const res = await fetch('/api/nodes/' + type + '/compiled');
+    if (!res.ok) { nodeFnCache.set(type, null); return null; }
+    const code = await res.json();
+    const clean = code
+      .replace(/^import [^\\n]+\\n/gm, '')
+      .replace(/^export (?:default )?/gm, '');
+    const fn = new Function(clean + '\\nreturn ' + type + ';')();
+    nodeFnCache.set(type, fn);
+    return fn;
+  } catch(e) {
+    nodeFnCache.set(type, null);
+    return null;
+  }
+}
 
 function nodeById(id) {
   return currentScript.nodes.find(n => n.id === id) || null;
@@ -196,7 +200,9 @@ function cardHeaderHtml(type, id) {
   </div>\`;
 }
 
-function executeNode(nodeId) {
+const COMPARATOR_TYPES = new Set(['greaterThan','greaterThanOrEqual','lessThan','lessThanOrEqual','equalTo','notEqualTo','between','contains','startsWith','endsWith','in','match','empty','notEmpty','isSet','isNotSet','isTrue','isFalse']);
+
+async function executeNode(nodeId) {
   if (nodeId === 0) {
     showEnd();
     return;
@@ -208,8 +214,6 @@ function executeNode(nodeId) {
   }
 
   const type = node.type;
-
-  const COMPARATOR_TYPES = new Set(['greaterThan','greaterThanOrEqual','lessThan','lessThanOrEqual','equalTo','notEqualTo','between','contains','startsWith','endsWith','in','match','empty','notEmpty','isSet','isNotSet','isTrue','isFalse']);
 
   if (type === 'stateGet') {
     const key = String(node.args.key || '');
@@ -251,32 +255,59 @@ function executeNode(nodeId) {
       addHistoryCard(cardHeaderHtml(type, node.id) + body);
       executeNode(nextId);
     }
+    return;
+  }
 
-  } else if (type === 'log') {
+  if (COMPARATOR_TYPES.has(type)) {
+    const raw = String(state.get('$conditional.value') ?? '');
+    const t = Array.isArray(node.args.t) ? node.args.t : [];
+    const f = Array.isArray(node.args.f) ? node.args.f : [];
+    const fn = await loadNodeFn(type);
+    let result = f;
+    if (fn) {
+      result = fn({ ...node.args, t, f, state });
+    }
+    const nextId = Array.isArray(result) ? (result[0] ?? 0) : 0;
+    const isTrueBranch = result === t;
+    const body = \`<div class="card-body">
+      <div class="row"><span class="label">value</span><span class="val mono">\${esc(raw)}</span></div>
+      <div class="row"><span class="label">result</span><span class="val" style="color:\${isTrueBranch ? '#34d399' : '#f87171'}">\${isTrueBranch ? 'true → t' : 'false → f'}</span></div>
+    </div>\`;
+    addHistoryCard(cardHeaderHtml(type, node.id) + body);
+    executeNode(nextId);
+    return;
+  }
+
+  if (type === 'log') {
     const msg = evalValue(String(node.args.message || ''));
     const body = \`<div class="card-body">
       <div class="row"><span class="label">message</span><span class="val">\${esc(msg)}</span></div>
       <div class="outcome">→ logged</div>
     </div>\`;
-    const next = Array.isArray(node.args.nodes) ? node.args.nodes[0] : 0;
-    const nextId = next ?? 0;
+    const nextId = Array.isArray(node.args.nodes) ? (node.args.nodes[0] ?? 0) : 0;
     renderHistory(cardHeaderHtml(type, node.id) + body +
       \`<div class="action-bar"><button class="btn btn-primary" onclick="advance(\${nextId})">Continue</button></div>\`);
     renderState();
+    return;
+  }
 
-  } else if (type === 'coinFlip') {
-    const isHeads = Math.random() < 0.5;
-    const branch = isHeads ? 't' : 'f';
-    const nextNodes = Array.isArray(node.args[branch]) ? node.args[branch] : [];
-    const nextId = nextNodes[0] ?? 0;
+  if (type === 'coinFlip') {
+    const t = Array.isArray(node.args.t) ? node.args.t : [];
+    const f = Array.isArray(node.args.f) ? node.args.f : [];
+    const fn = await loadNodeFn('coinFlip');
+    const result = fn ? fn({ t, f }) : (Math.random() < 0.5 ? t : f);
+    const isHeads = result === t;
+    const nextId = Array.isArray(result) ? (result[0] ?? 0) : 0;
     const body = \`<div class="card-body">
       <div class="row"><span class="label">result</span><span class="val">\${isHeads ? 'Heads (true)' : 'Tails (false)'}</span></div>
-      <div class="row"><span class="label">→ branch</span><span class="val mono">\${branch}</span></div>
+      <div class="row"><span class="label">→ branch</span><span class="val mono">\${isHeads ? 't' : 'f'}</span></div>
     </div>\`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
+    return;
+  }
 
-  } else if (type === 'dialog') {
+  if (type === 'dialog') {
     const character = evalValue(String(node.args.character || ''));
     const text = evalValue(String(node.args.text || ''));
     const choiceNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
@@ -294,8 +325,10 @@ function executeNode(nodeId) {
     renderHistory(cardHeaderHtml(type, node.id) + body);
     renderState();
     window._pendingDialogNode = node.id;
+    return;
+  }
 
-  } else if (type === 'random') {
+  if (type === 'random') {
     const choiceNodeIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
     const choices = choiceNodeIds.map(cid => nodeById(cid)).filter(Boolean);
     const totalWeight = choices.reduce((sum, c) => sum + (Number(c.args.weight) || 1), 0);
@@ -312,71 +345,45 @@ function executeNode(nodeId) {
     </div>\`;
     addHistoryCard(cardHeaderHtml(type, node.id) + body);
     executeNode(nextId);
+    return;
+  }
 
-  } else if (COMPARATOR_TYPES.has(type)) {
-    const val = node.args.value;
-    const ignoreCase = node.args.ignoreCase ?? false;
-    const raw = String(state.get('$conditional.value') ?? '');
-    const a = ignoreCase ? raw.toLowerCase() : raw;
-    const num = parseFloat(raw) || 0;
-    let result = false;
-    if (type === 'greaterThan') result = num > Number(val);
-    else if (type === 'greaterThanOrEqual') result = num >= Number(val);
-    else if (type === 'lessThan') result = num < Number(val);
-    else if (type === 'lessThanOrEqual') result = num <= Number(val);
-    else if (type === 'between') result = node.args.inclusive ? num >= Number(node.args.min) && num <= Number(node.args.max) : num > Number(node.args.min) && num < Number(node.args.max);
-    else if (type === 'equalTo') result = a === (ignoreCase ? String(val).toLowerCase() : String(val));
-    else if (type === 'notEqualTo') result = a !== (ignoreCase ? String(val).toLowerCase() : String(val));
-    else if (type === 'contains') result = a.includes(ignoreCase ? String(val).toLowerCase() : String(val));
-    else if (type === 'startsWith') result = a.startsWith(ignoreCase ? String(val).toLowerCase() : String(val));
-    else if (type === 'endsWith') result = a.endsWith(ignoreCase ? String(val).toLowerCase() : String(val));
-    else if (type === 'in') { const list = (Array.isArray(val) ? val : []).map(v => ignoreCase ? String(v).toLowerCase() : String(v)); result = list.includes(a); }
-    else if (type === 'match') result = new RegExp(String(val), ignoreCase ? 'i' : '').test(raw);
-    else if (type === 'empty') result = raw === '' || raw === '0' || raw === 'undefined' || !state.has(state.get('$conditional.key'));
-    else if (type === 'notEmpty') result = raw !== '' && raw !== '0' && raw !== 'undefined' && state.has(state.get('$conditional.key'));
-    else if (type === 'isSet') result = state.has(state.get('$conditional.key'));
-    else if (type === 'isNotSet') result = !state.has(state.get('$conditional.key'));
-    else if (type === 'isTrue') result = raw === 'true' || raw === '1';
-    else if (type === 'isFalse') result = raw === 'false' || raw === '0';
-    state.delete('$conditional.value');
-    state.delete('$conditional.key');
-    state.delete('$state.noop');
-    state.delete('$state.noop.key');
-    const tNodes = Array.isArray(node.args.t) ? node.args.t : [];
-    const fNodes = Array.isArray(node.args.f) ? node.args.f : [];
-    const nextId = result ? (tNodes[0] ?? 0) : (fNodes[0] ?? 0);
-    const body = \`<div class="card-body">
-      <div class="row"><span class="label">value</span><span class="val mono">\${esc(raw)}</span></div>
-      <div class="row"><span class="label">result</span><span class="val" style="color:\${result ? '#34d399' : '#f87171'}">\${result ? 'true → t' : 'false → f'}</span></div>
-    </div>\`;
-    addHistoryCard(cardHeaderHtml(type, node.id) + body);
-    executeNode(nextId);
-
-  } else if (type === 'include') {
+  if (type === 'include') {
     const scriptName = String(node.args.script || '');
-    const target = SCRIPTS.find(s => s.name.toLowerCase() === scriptName.toLowerCase() ||
-      s.name.toLowerCase() === ('hello' + scriptName).toLowerCase() ||
-      s.name.endsWith(scriptName));
-    if (target) {
+    try {
+      const res = await fetch('/api/scripts/' + scriptName);
+      if (!res.ok) throw new Error('not found');
+      const target = await res.json();
       const body = \`<div class="card-body">
         <div class="row"><span class="label">script</span><span class="val">\${esc(scriptName)}</span></div>
         <div class="outcome">→ including script</div>
       </div>\`;
       addHistoryCard(cardHeaderHtml(type, node.id) + body);
       loadScript(target, state);
-    } else {
+    } catch {
       showError(\`Script "\${scriptName}" not found\`);
     }
+    return;
+  }
 
+  // Unknown node type: use compiled code via new Function
+  const fn = await loadNodeFn(type);
+  if (fn) {
+    const result = await Promise.resolve(fn({ ...node.args, state, node: nodeId }));
+    const nextIds = Array.isArray(result) ? result : [];
+    const nextId = nextIds[0] ?? 0;
+    const argRows = Object.entries(node.args)
+      .filter(([k]) => !['nodes', 'state', 'callstack'].includes(k))
+      .map(([k, v]) => \`<div class="row"><span class="label">\${esc(k)}</span><span class="val mono">\${esc(JSON.stringify(v))}</span></div>\`)
+      .join('');
+    addHistoryCard(cardHeaderHtml(type, node.id) + \`<div class="card-body">\${argRows}</div>\`);
+    executeNode(nextId);
   } else {
-    // Generic node — show args and let user continue
     const argRows = Object.entries(node.args).filter(([k]) => k !== 'nodes' && k !== 'state' && k !== 'callstack').map(([k, v]) =>
       \`<div class="row"><span class="label">\${esc(k)}</span><span class="val mono">\${esc(JSON.stringify(v))}</span></div>\`
     ).join('');
-    const nextIds = Array.isArray(node.args.nodes) ? node.args.nodes : [];
-    const nextId = nextIds[0] ?? 0;
-    const body = \`<div class="card-body">\${argRows}<div class="action-bar"><button class="btn btn-primary" onclick="advance(\${nextId})">Continue</button></div></div>\`;
-    renderHistory(cardHeaderHtml(type, node.id) + body);
+    const nextId = Array.isArray(node.args.nodes) ? (node.args.nodes[0] ?? 0) : 0;
+    renderHistory(cardHeaderHtml(type, node.id) + \`<div class="card-body">\${argRows}<div class="action-bar"><button class="btn btn-primary" onclick="advance(\${nextId})">Continue</button></div></div>\`);
     renderState();
   }
 }
@@ -419,28 +426,44 @@ function loadScript(script, inheritedState) {
   state = inheritedState || new Map(Object.entries(script.initialState || {}));
   window._pendingDialogNode = null;
   document.getElementById('scriptName').textContent = script.name;
-  document.getElementById('scriptDesc').textContent = script.comments?.[0]?.text || '';
+  document.getElementById('scriptDesc').textContent =
+    script.nodes?.find(n => n.id === 0)?.description || script.comments?.[0]?.text || '';
   renderState();
-  const node0 = script.nodes.find(n => n.id === 0);
+  const node0 = script.nodes?.find(n => n.id === 0);
   const startId = Array.isArray(node0?.args?.nodes) ? (node0.args.nodes[0] ?? 1) : 1;
   executeNode(startId);
 }
 
 function resetScript() {
-  const idx = document.getElementById('scriptSelect').value;
-  loadScript(SCRIPTS[idx]);
+  if (currentScript) loadScriptByName(currentScript.name);
 }
 
-function init() {
-  const sel = document.getElementById('scriptSelect');
-  SCRIPTS.forEach((s, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = s.name;
-    sel.appendChild(opt);
-  });
-  sel.addEventListener('change', () => loadScript(SCRIPTS[sel.value]));
-  if (SCRIPTS.length > 0) loadScript(SCRIPTS[0]);
+async function loadScriptByName(name) {
+  try {
+    const res = await fetch('/api/scripts/' + name);
+    if (!res.ok) throw new Error('not found');
+    const script = await res.json();
+    loadScript(script, null);
+  } catch {
+    showError('Failed to load script: ' + name);
+  }
+}
+
+async function init() {
+  try {
+    const scripts = await fetch('/api/scripts').then(r => r.json());
+    const sel = document.getElementById('scriptSelect');
+    scripts.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.name;
+      opt.textContent = s.name;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', () => loadScriptByName(sel.value));
+    if (scripts.length > 0) loadScriptByName(scripts[0].name);
+  } catch {
+    showError('Failed to connect to API. Is the server running?');
+  }
 }
 
 init();

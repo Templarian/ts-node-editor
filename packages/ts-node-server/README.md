@@ -174,3 +174,9 @@ Update an existing comment by index.
 ```typescript
 type PatchScriptComment = Partial<ScriptComment>
 ```
+
+### `DELETE` `api/scripts/:name/comments/:index`
+
+Remove a comment by index.
+
+- 401 if the script or comment index is not found
