@@ -5,7 +5,7 @@ import { getApi } from './endpoint/api.js';
 import { getIndex, getStyles, getClient } from './endpoint/app.js';
 import { patchApiComment, deleteApiComment } from './endpoint/apiComment.js';
 import { getApiNodes, getApiNode, postApiNode, patchApiNode, deleteApiNode, getApiNodeSource, getApiNodeCompiled } from './endpoint/apiNode.js';
-import { attachScriptNodeToArg, getGit, getScript, getScriptComments, getScriptNode, getScripts, patchScriptComments, patchScriptNode, postScript, postScriptComments, postScriptNode, removeScriptNodeToArg } from './endpoint/apiScript.js';
+import { attachScriptNodeToArg, deleteScriptNode, getGit, getScript, getScriptComments, getScriptNode, getScripts, patchScriptComments, patchScriptNode, postScript, postScriptComments, postScriptNode, removeScriptNodeToArg } from './endpoint/apiScript.js';
 import { getPlayground } from './endpoint/apiPlayground.js';
 
 type Handler = (params: any, req: Req, res: Res) => void | Promise<void>;
@@ -66,8 +66,9 @@ const routes: Routes = {
         POST: postScriptNode,
     },
     '/api/scripts/:name/nodes/:index': {
-        GET: getScriptNode,
-        PATCH: patchScriptNode,
+        GET:    getScriptNode,
+        PATCH:  patchScriptNode,
+        DELETE: deleteScriptNode,
     },
     '/api/scripts/:name': {
         GET:  getScript,

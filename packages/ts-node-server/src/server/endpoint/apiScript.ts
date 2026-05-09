@@ -159,6 +159,30 @@ export function patchScriptNode(
     });
 }
 
+export async function deleteScriptNode(
+    { name, index }: { name: string; index: string },
+    _req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    const filePath = join(scriptsDir, `${name}.ts`);
+    if (!existsSync(filePath)) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Script not found.' }));
+        return;
+    }
+    const source = await readFile(filePath, 'utf-8');
+    const script = parseScript(source);
+    const s = new Script(script);
+    if (!s.removeNodeById(Number(index))) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Node not found.' }));
+        return;
+    }
+    await writeFile(filePath, writeScript(s.toJson(), getNodeSource));
+    res.end(JSON.stringify(true));
+}
+
 export function getGit(
     _params: Record<string, string>,
     _req: Req,

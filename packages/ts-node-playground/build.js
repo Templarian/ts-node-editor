@@ -111,6 +111,7 @@ const html = `<!DOCTYPE html>
   .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; display: flex; flex-direction: column; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
   .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
+  .sv-node.selected { box-shadow: 0 0 0 2px #7c8cf8; }
   .sv-connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; display: flex; align-items: center; }
   .sv-type-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -465,6 +466,7 @@ function showError(msg) {
 
 function loadScript(script, inheritedState) {
   currentScript = script;
+  _selected.clear();
   historyCards = [];
   state = inheritedState || new Map(Object.entries(script.initialState || {}));
   window._pendingDialogNode = null;
@@ -528,8 +530,8 @@ async function renderScriptView() {
 
     if (isEntry) {
       const headerPin = node.args?.nodes != null ? \`<span class="sv-header-pin"></span>\` : '';
-      return \`<div class="sv-node sv-entry" data-id="0" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
-        <div class="sv-type" onmousedown="startDrag(event,0)"><span class="sv-type-label">Entry</span>\${headerPin}</div>
+      return \`<div class="sv-node sv-entry" data-id="0" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem" onmousedown="onNodeMouseDown(event,0)">
+        <div class="sv-type"><span class="sv-type-label">Entry</span>\${headerPin}</div>
         <textarea class="sv-desc-edit" placeholder="Description..." onblur="saveEntryDesc(event)" onmousedown="event.stopPropagation()">\${esc(node.description || '')}</textarea>
       </div>\`;
     }
@@ -553,8 +555,8 @@ async function renderScriptView() {
     </div>\`).join('');
 
     const headerPin = node.args?.nodes != null ? \`<span class="sv-header-pin"></span>\` : '';
-    return \`<div class="sv-node" data-id="\${node.id}" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
-      <div class="sv-type" onmousedown="startDrag(event,\${node.id})"><span class="sv-input-pin"></span><span class="sv-type-label">\${esc(node.type || 'unknown')}</span>\${headerPin}</div>
+    return \`<div class="sv-node" data-id="\${node.id}" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem" onmousedown="onNodeMouseDown(event,\${node.id})">
+      <div class="sv-type"><span class="sv-input-pin"></span><span class="sv-type-label">\${esc(node.type || 'unknown')}</span>\${headerPin}</div>
       <div class="sv-body">
         <div class="sv-args">\${argsHtml}</div>
         <div class="sv-pins">\${pinsHtml}</div>
@@ -574,6 +576,65 @@ async function loadScriptByName(name) {
   } catch {
     showError('Failed to load script: ' + name);
   }
+}
+
+let _selected = new Set();
+
+function onNodeMouseDown(e, nodeId) {
+  if (e.shiftKey) {
+    if (_selected.has(nodeId)) _selected.delete(nodeId);
+    else _selected.add(nodeId);
+  } else {
+    if (!_selected.has(nodeId)) {
+      _selected.clear();
+      _selected.add(nodeId);
+    }
+  }
+  renderSelection();
+  e.stopPropagation();
+  if (e.target.closest('.sv-type')) startDrag(e, nodeId);
+}
+
+function renderSelection() {
+  const canvas = document.getElementById('svCanvas');
+  if (!canvas) return;
+  canvas.querySelectorAll('.sv-node').forEach(el => {
+    el.classList.toggle('selected', _selected.has(Number(el.dataset.id)));
+  });
+}
+
+async function deleteSelectedNodes() {
+  if (!currentScript || _selected.size === 0) return;
+  const toDelete = [..._selected].filter(id => id !== 0);
+  if (toDelete.length === 0) return;
+  currentScript.nodes = currentScript.nodes.filter(n => !toDelete.includes(n.id));
+  _selected.clear();
+  await Promise.all(toDelete.map(id =>
+    fetch('/api/scripts/' + currentScript.name + '/nodes/' + id, { method: 'DELETE' })
+  ));
+  await renderScriptView();
+}
+
+async function moveSelectedNodes(dx, dy) {
+  if (!currentScript || _selected.size === 0) return;
+  const canvas = document.getElementById('svCanvas');
+  const patches = [];
+  for (const id of _selected) {
+    const node = currentScript.nodes.find(n => n.id === id);
+    if (!node) continue;
+    node.x = Math.max(0, (node.x ?? 0) + dx);
+    node.y = Math.max(0, (node.y ?? 0) + dy);
+    const el = canvas?.querySelector('.sv-node[data-id="' + id + '"]');
+    if (el) { el.style.left = node.x + 'rem'; el.style.top = node.y + 'rem'; }
+    patches.push(fetch('/api/scripts/' + currentScript.name + '/nodes/' + id, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ x: node.x, y: node.y }),
+    }));
+  }
+  updateCanvasSize();
+  drawConnections();
+  await Promise.all(patches);
 }
 
 let _drag = null;
@@ -768,6 +829,13 @@ async function init() {
   }
 }
 
+document.addEventListener('mousedown', e => {
+  if (currentView !== 'script' || !currentScript) return;
+  if (e.target.closest('.sv-node')) return;
+  if (_selected.size === 0) return;
+  _selected.clear();
+  renderSelection();
+});
 document.addEventListener('contextmenu', e => {
   if (currentView !== 'script' || !currentScript) return;
   if (!document.getElementById('scriptView').contains(e.target)) return;
@@ -776,7 +844,15 @@ document.addEventListener('contextmenu', e => {
   openCtxMenu(e.clientX, e.clientY);
 });
 document.addEventListener('click', e => { if (e.button === 0) closeCtxMenu(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtxMenu(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeCtxMenu(); return; }
+  if (currentView !== 'script' || !currentScript) return;
+  const tag = document.activeElement?.tagName?.toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return;
+  if (e.key === 'Delete' || e.key === 'Backspace') { deleteSelectedNodes(); return; }
+  const arrowMap = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+  if (arrowMap[e.key]) { e.preventDefault(); moveSelectedNodes(...arrowMap[e.key]); }
+});
 
 init();
 </script>
