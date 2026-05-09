@@ -32,7 +32,7 @@ export async function run(state: State): Promise<State> {
             case 2:
                 // 33 1 - -
                 const r2 = log({
-                    message: `Heads`,
+                    message: 'Heads',
                     nodes: [0]
                 });
                 stack.push(r2[0]);
@@ -40,7 +40,7 @@ export async function run(state: State): Promise<State> {
             case 3:
                 // 33 9 - -
                 const r3 = log({
-                    message: `Tails`,
+                    message: 'Tails',
                     nodes: [0]
                 });
                 stack.push(r3[0]);
