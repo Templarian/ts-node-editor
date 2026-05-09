@@ -131,6 +131,11 @@ const html = `<!DOCTYPE html>
   .sv-pin-dot { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
   .sv-header-pin { width: 9px; height: 9px; border-radius: 50%; background: #1e2244; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
   .sv-input-pin { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-left: -5px; }
+  .ctx-menu { position: fixed; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 4px 0; min-width: 160px; max-height: 320px; overflow-y: auto; z-index: 1000; box-shadow: 0 8px 24px #0006; display: none; }
+  .ctx-menu.open { display: block; }
+  .ctx-item { padding: 6px 12px; font-size: 12px; color: #94a3b8; cursor: pointer; white-space: nowrap; }
+  .ctx-item:hover { background: #252840; color: #e2e8f0; }
+  .ctx-sep { height: 1px; background: #2d3148; margin: 4px 0; }
 </style>
 </head>
 <body>
@@ -159,6 +164,7 @@ const html = `<!DOCTYPE html>
 <div class="script-view" id="scriptView" style="display:none">
   <div class="sv-canvas" id="svCanvas"></div>
 </div>
+<div class="ctx-menu" id="ctxMenu"></div>
 
 <script>
 let currentScript = null;
@@ -705,6 +711,46 @@ async function saveEntryDesc(e) {
   });
 }
 
+let _ctxPos = { x: 0, y: 0 };
+
+async function openCtxMenu(clientX, clientY) {
+  const menu = document.getElementById('ctxMenu');
+  const canvas = document.getElementById('svCanvas');
+  const cr = canvas.getBoundingClientRect();
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  _ctxPos = {
+    x: Math.round((clientX - cr.left) / rem),
+    y: Math.round((clientY - cr.top) / rem),
+  };
+  menu.innerHTML = '<div class="ctx-item" style="color:#475569;cursor:default">Add node</div><div class="ctx-sep"></div>';
+  menu.style.left = clientX + 'px';
+  menu.style.top  = clientY + 'px';
+  menu.classList.add('open');
+  const nodes = await fetch('/api/nodes').then(r => r.json());
+  menu.innerHTML = '<div class="ctx-item" style="color:#475569;cursor:default">Add node</div><div class="ctx-sep"></div>' +
+    nodes.map(n => \`<div class="ctx-item" data-type="\${esc(n.name)}">\${esc(n.description || n.name)}</div>\`).join('');
+  menu.querySelectorAll('.ctx-item[data-type]').forEach(el => {
+    el.addEventListener('click', () => addNodeAtPos(el.dataset.type));
+  });
+}
+
+function closeCtxMenu() {
+  document.getElementById('ctxMenu').classList.remove('open');
+}
+
+async function addNodeAtPos(type) {
+  closeCtxMenu();
+  const res = await fetch('/api/scripts/' + currentScript.name + '/nodes', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ type, x: _ctxPos.x, y: _ctxPos.y }),
+  });
+  if (!res.ok) return;
+  const node = await res.json();
+  currentScript.nodes.push(node);
+  await renderScriptView();
+}
+
 async function init() {
   try {
     const scripts = await fetch('/api/scripts').then(r => r.json());
@@ -721,6 +767,16 @@ async function init() {
     showError('Failed to connect to API. Is the server running?');
   }
 }
+
+document.addEventListener('contextmenu', e => {
+  if (currentView !== 'script' || !currentScript) return;
+  if (!document.getElementById('scriptView').contains(e.target)) return;
+  e.preventDefault();
+  if (e.target.closest('.sv-node')) return;
+  openCtxMenu(e.clientX, e.clientY);
+});
+document.addEventListener('click', e => { if (e.button === 0) closeCtxMenu(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtxMenu(); });
 
 init();
 </script>

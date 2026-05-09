@@ -103,6 +103,32 @@ export function patchScriptComments(
     });
 }
 
+export function postScriptNode(
+    { name }: { name: string },
+    req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const { type, x, y }: { type: string; x?: number; y?: number } = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        const node: ScriptNode = { id: 0, type, x, y, args: {} };
+        const s = new Script(script);
+        s.addNode(node);
+        await writeFile(filePath, writeScript(s.toJson(), getNodeSource));
+        res.end(JSON.stringify(node));
+    });
+}
+
 export function patchScriptNode(
     { name, index }: { name: string; index: string },
     req: Req,
