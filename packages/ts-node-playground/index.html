@@ -123,9 +123,10 @@
   .sv-pins { display: flex; flex-direction: column; gap: 4px; padding: 6px 0 6px 4px; justify-content: flex-start; flex-shrink: 0; }
   .sv-pin { display: flex; align-items: center; gap: 5px; }
   .sv-pin-label { font-size: 10px; color: #475569; white-space: nowrap; }
-  .sv-pin-dot { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
-  .sv-header-pin { width: 9px; height: 9px; border-radius: 50%; background: #1e2244; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
-  .sv-input-pin { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-left: -5px; }
+  .sv-pin-dot { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; cursor: crosshair; }
+  .sv-header-pin { width: 9px; height: 9px; border-radius: 50%; background: #1e2244; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; cursor: crosshair; }
+  .sv-input-pin { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-left: -5px; cursor: crosshair; }
+  .sv-header-pin:hover, .sv-pin-dot:hover, .sv-input-pin:hover { border-color: #7c8cf8; }
   .ctx-menu { position: fixed; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; padding: 4px 0; min-width: 160px; max-height: 320px; overflow-y: auto; z-index: 1000; box-shadow: 0 8px 24px #0006; display: none; }
   .ctx-menu.open { display: block; }
   .ctx-item { padding: 6px 12px; font-size: 12px; color: #94a3b8; cursor: pointer; white-space: nowrap; }
@@ -523,7 +524,7 @@ async function renderScriptView() {
     const isEntry = node.id === 0;
 
     if (isEntry) {
-      const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin"></span>` : '';
+      const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,0,'nodes')"></span>` : '';
       return `<div class="sv-node sv-entry" data-id="0" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem" onmousedown="onNodeMouseDown(event,0)">
         <div class="sv-type"><span class="sv-type-label">Entry</span>${headerPin}</div>
         <textarea class="sv-desc-edit" placeholder="Description..." onblur="saveEntryDesc(event)" onmousedown="event.stopPropagation()">${esc(node.description || '')}</textarea>
@@ -545,12 +546,12 @@ async function renderScriptView() {
 
     const pinsHtml = pinDefs.map(p => `<div class="sv-pin" data-key="${esc(p.key)}">
       <span class="sv-pin-label">${esc(p.label)}</span>
-      <span class="sv-pin-dot"></span>
+      <span class="sv-pin-dot" data-arg-key="${esc(p.key)}" onmousedown="startConnDrag(event,${node.id},'${esc(p.key)}')"></span>
     </div>`).join('');
 
-    const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin"></span>` : '';
+    const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,${node.id},'nodes')"></span>` : '';
     return `<div class="sv-node" data-id="${node.id}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem" onmousedown="onNodeMouseDown(event,${node.id})">
-      <div class="sv-type"><span class="sv-input-pin"></span><span class="sv-type-label">${esc(node.type || 'unknown')}</span>${headerPin}</div>
+      <div class="sv-type"><span class="sv-input-pin" onmousedown="startConnDrag(event,${node.id},null)"></span><span class="sv-type-label">${esc(node.type || 'unknown')}</span>${headerPin}</div>
       <div class="sv-body">
         <div class="sv-args">${argsHtml}</div>
         <div class="sv-pins">${pinsHtml}</div>
@@ -691,6 +692,106 @@ function updateCanvasSize() {
   }
 }
 
+let _connDrag = null;
+let _connGhost = null;
+
+function startConnDrag(e, nodeId, argKey) {
+  e.preventDefault();
+  e.stopPropagation();
+  const canvas = document.getElementById('svCanvas');
+  const cr = canvas.getBoundingClientRect();
+  const pr = e.currentTarget.getBoundingClientRect();
+  const isOutput = argKey !== null;
+  const srcPt = {
+    x: (isOutput ? pr.right : pr.left) - cr.left,
+    y: pr.top + pr.height / 2 - cr.top,
+  };
+  _connDrag = { nodeId, argKey, isOutput, srcPt };
+  let svg = canvas.querySelector('.sv-connections');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('sv-connections');
+    canvas.insertBefore(svg, canvas.firstChild);
+  }
+  _connGhost = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  _connGhost.setAttribute('fill', 'none');
+  _connGhost.setAttribute('stroke', '#7c8cf8');
+  _connGhost.setAttribute('stroke-width', '1.5');
+  _connGhost.setAttribute('stroke-dasharray', '5 3');
+  _connGhost.style.pointerEvents = 'none';
+  svg.appendChild(_connGhost);
+  document.addEventListener('mousemove', _onConnDragMove);
+  document.addEventListener('mouseup', _onConnDragEnd);
+}
+
+function _onConnDragMove(e) {
+  if (!_connDrag || !_connGhost) return;
+  const canvas = document.getElementById('svCanvas');
+  const cr = canvas.getBoundingClientRect();
+  const { srcPt, isOutput } = _connDrag;
+  const cur = { x: e.clientX - cr.left, y: e.clientY - cr.top };
+  const src = isOutput ? srcPt : cur;
+  const tgt = isOutput ? cur : srcPt;
+  const dx = Math.max(Math.abs(tgt.x - src.x) * 0.5, 30);
+  _connGhost.setAttribute('d', 'M ' + src.x + ',' + src.y + ' C ' + (src.x + dx) + ',' + src.y + ' ' + (tgt.x - dx) + ',' + tgt.y + ' ' + tgt.x + ',' + tgt.y);
+}
+
+function _onConnDragEnd(e) {
+  document.removeEventListener('mousemove', _onConnDragMove);
+  document.removeEventListener('mouseup', _onConnDragEnd);
+  if (_connGhost) { _connGhost.remove(); _connGhost = null; }
+  if (!_connDrag) return;
+  const { nodeId, argKey, isOutput } = _connDrag;
+  _connDrag = null;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el) return;
+  if (isOutput) {
+    const inputPin = el.closest('.sv-input-pin');
+    if (!inputPin) return;
+    const nodeEl = inputPin.closest('.sv-node');
+    if (!nodeEl) return;
+    const tgtId = Number(nodeEl.dataset.id);
+    if (tgtId === nodeId) return;
+    addConnection(nodeId, argKey, tgtId);
+  } else {
+    const outPin = el.closest('.sv-header-pin') || el.closest('.sv-pin-dot');
+    if (!outPin) return;
+    const nodeEl = outPin.closest('.sv-node');
+    if (!nodeEl) return;
+    const srcId = Number(nodeEl.dataset.id);
+    if (srcId === nodeId) return;
+    addConnection(srcId, outPin.dataset.argKey, nodeId);
+  }
+}
+
+async function addConnection(srcNodeId, argKey, tgtNodeId) {
+  const node = currentScript.nodes.find(n => n.id === srcNodeId);
+  if (!node) return;
+  const list = Array.isArray(node.args[argKey]) ? node.args[argKey] : [];
+  if (list.includes(tgtNodeId)) return;
+  node.args[argKey] = [...list, tgtNodeId];
+  drawConnections();
+  await fetch('/api/scripts/' + currentScript.name + '/nodes/' + srcNodeId + '/args/' + argKey, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ nodeId: tgtNodeId }),
+  });
+}
+
+async function removeConnection(srcNodeId, argKey, tgtNodeId) {
+  const node = currentScript.nodes.find(n => n.id === srcNodeId);
+  if (!node) return;
+  const list = node.args[argKey];
+  if (!Array.isArray(list)) return;
+  node.args[argKey] = list.filter(id => id !== tgtNodeId);
+  drawConnections();
+  await fetch('/api/scripts/' + currentScript.name + '/nodes/' + srcNodeId + '/args/' + argKey, {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ nodeId: tgtNodeId }),
+  });
+}
+
 function drawConnections() {
   const canvas = document.getElementById('svCanvas');
   if (!canvas || !currentScript) return;
@@ -720,7 +821,7 @@ function drawConnections() {
         const src = pinPos(srcEl, 'r');
         for (const tid of node.args.nodes) {
           const tgtEl = canvas.querySelector('.sv-node[data-id="' + tid + '"] .sv-input-pin');
-          if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'));
+          if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'), { srcNodeId: node.id, argKey: 'nodes', tgtNodeId: tid });
         }
       }
     }
@@ -735,13 +836,13 @@ function drawConnections() {
       const src = pinPos(dotEl, 'r');
       for (const tid of targets) {
         const tgtEl = canvas.querySelector('.sv-node[data-id="' + tid + '"] .sv-input-pin');
-        if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'));
+        if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'), { srcNodeId: node.id, argKey: pinEl.dataset.key, tgtNodeId: tid });
       }
     }
   }
 }
 
-function drawPath(svg, src, tgt) {
+function drawPath(svg, src, tgt, meta) {
   const dx = Math.max(Math.abs(tgt.x - src.x) * 0.5, 30);
   const d = 'M ' + src.x + ',' + src.y + ' C ' + (src.x + dx) + ',' + src.y + ' ' + (tgt.x - dx) + ',' + tgt.y + ' ' + tgt.x + ',' + tgt.y;
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -749,7 +850,20 @@ function drawPath(svg, src, tgt) {
   path.setAttribute('fill', 'none');
   path.setAttribute('stroke', '#4a5580');
   path.setAttribute('stroke-width', '1.5');
+  path.style.pointerEvents = 'none';
   svg.appendChild(path);
+  if (!meta) return;
+  const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  hit.setAttribute('d', d);
+  hit.setAttribute('fill', 'none');
+  hit.setAttribute('stroke', 'transparent');
+  hit.setAttribute('stroke-width', '10');
+  hit.style.cursor = 'pointer';
+  hit.style.pointerEvents = 'stroke';
+  hit.addEventListener('mouseenter', () => { path.setAttribute('stroke', '#a5b4fc'); path.setAttribute('stroke-width', '2.5'); });
+  hit.addEventListener('mouseleave', () => { path.setAttribute('stroke', '#4a5580'); path.setAttribute('stroke-width', '1.5'); });
+  hit.addEventListener('click', e => { e.stopPropagation(); removeConnection(meta.srcNodeId, meta.argKey, meta.tgtNodeId); });
+  svg.appendChild(hit);
 }
 
 async function saveEntryDesc(e) {
@@ -826,6 +940,7 @@ async function init() {
 document.addEventListener('mousedown', e => {
   if (currentView !== 'script' || !currentScript) return;
   if (e.target.closest('.sv-node')) return;
+  if (e.target.closest('.sv-connections')) return;
   if (_selected.size === 0) return;
   _selected.clear();
   renderSelection();
