@@ -110,7 +110,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r8[0]);
                 continue;
             case 9:
-                // 130 1 - -
+                // 129 1 - -
                 const r9 = stateAdd({
                     state,
                     callstack,
