@@ -7,6 +7,7 @@ interface NodeSignature {
     params: string[];
     isAsync: boolean;
     returnsSingle: boolean;
+    defaults: Record<string, ts.Expression>;
 }
 
 function parseNodeSignature(source: string, typeName: string): NodeSignature | null {
@@ -28,7 +29,16 @@ function parseNodeSignature(source: string, typeName: string): NodeSignature | n
             && !returnTypeText.includes('Node[]')
             && !returnTypeText.includes('Promise');
 
-        return { params, isAsync, returnsSingle };
+        const defaults: Record<string, ts.Expression> = {};
+        for (const e of param.name.elements) {
+            if (!ts.isBindingElement(e) || !ts.isIdentifier(e.name)) continue;
+            const pName = e.name.text;
+            if (RUNTIME_PARAMS.has(pName) || !e.initializer) continue;
+            if (ts.isIdentifier(e.initializer) && e.initializer.text === 'undefined') continue;
+            defaults[pName] = synthesizeExpression(e.initializer, source);
+        }
+
+        return { params, isAsync, returnsSingle, defaults };
     }
     return null;
 }
@@ -78,6 +88,11 @@ function synthesizeExpression(node: ts.Expression, source: string): ts.Expressio
     }
     if (ts.isParenthesizedExpression(node)) {
         return ts.factory.createParenthesizedExpression(synthesizeExpression(node.expression, source));
+    }
+    if (ts.isArrayLiteralExpression(node)) {
+        return ts.factory.createArrayLiteralExpression(
+            node.elements.map(e => synthesizeExpression(e as ts.Expression, source))
+        );
     }
     return node;
 }
@@ -167,6 +182,8 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
 
     const rVar = `r${node.id}`;
     const runtimeInSig = (sig?.params ?? []).filter(p => RUNTIME_PARAMS.has(p));
+    const nonRuntimeSigParams = (sig?.params ?? []).filter(p => !RUNTIME_PARAMS.has(p));
+    const sigKeySet = new Set(nonRuntimeSigParams);
 
     const properties: ts.ObjectLiteralElementLike[] = [
         ...runtimeInSig.map(p =>
@@ -174,9 +191,16 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
                 ? ts.factory.createPropertyAssignment('node', ts.factory.createNumericLiteral(node.id))
                 : ts.factory.createShorthandPropertyAssignment(p)
         ),
-        ...Object.entries(node.args).map(([k, v]) =>
-            ts.factory.createPropertyAssignment(k, createValueExpression(v))
-        ),
+        ...nonRuntimeSigParams
+            .map(k => {
+                if (k in node.args) return ts.factory.createPropertyAssignment(k, createValueExpression(node.args[k]));
+                if (sig?.defaults && k in sig.defaults) return ts.factory.createPropertyAssignment(k, sig.defaults[k]);
+                return null;
+            })
+            .filter((p): p is ts.PropertyAssignment => p !== null),
+        ...Object.entries(node.args)
+            .filter(([k]) => !sigKeySet.has(k))
+            .map(([k, v]) => ts.factory.createPropertyAssignment(k, createValueExpression(v))),
     ];
 
     const callExpr = call(node.type!, [ts.factory.createObjectLiteralExpression(properties, true)]);
