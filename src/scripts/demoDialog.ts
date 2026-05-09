@@ -1,7 +1,7 @@
 import type { Node, State } from '../nodes/node';
-import { dialog } from "../nodes/dialog";
-import { dialogChoice } from "../nodes/dialogChoice";
-import { log } from "../nodes/log";
+import { dialog } from '../nodes/dialog';
+import { dialogChoice } from '../nodes/dialogChoice';
+import { log } from '../nodes/log';
 
 // 0 5 - -
 // Ask the player which door to enter and log the result.
@@ -22,7 +22,7 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
-                // 4 1 - -
+                // 17 1 - -
                 const r1 = await dialog({
                     state,
                     node: 1,
@@ -33,7 +33,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(...r1.slice().reverse());
                 continue;
             case 2:
-                // 11 1 - -
+                // 33 1 - -
                 const r2 = dialogChoice({
                     state,
                     callstack,
@@ -43,7 +43,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r2[0]);
                 break;
             case 3:
-                // 11 4 - -
+                // 33 9 - -
                 const r3 = dialogChoice({
                     state,
                     callstack,
@@ -53,7 +53,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r3[0]);
                 break;
             case 4:
-                // 18 1 - -
+                // 49 1 - -
                 const r4 = log({
                     message: `You entered the red room`,
                     nodes: [0]
@@ -61,7 +61,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r4[0]);
                 break;
             case 5:
-                // 18 4 - -
+                // 49 9 - -
                 const r5 = log({
                     message: `You entered the blue room`,
                     nodes: [0]
