@@ -34,8 +34,8 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 1,
                     nodes: [2, 3],
-                    character: `Merchant`,
-                    text: `What would you like?`
+                    character: 'Merchant',
+                    text: 'What would you like?'
                 });
                 stack.push(...r1.slice().reverse());
                 continue;
@@ -45,17 +45,17 @@ export async function run(state: State): Promise<State> {
                     state,
                     callstack,
                     nodes: [4],
-                    text: `Can I have 5 gold?`
+                    text: 'Can I have 5 gold?'
                 });
                 stack.push(r2[0]);
                 break;
             case 3:
-                // 20 18 - -
+                // 33 11 - -
                 const r3 = dialogChoice({
                     state,
                     callstack,
                     nodes: [13],
-                    text: `Can I have 12 gold?`
+                    text: 'Can I have 12 gold?'
                 });
                 stack.push(r3[0]);
                 break;
@@ -65,7 +65,7 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 4,
                     nodes: [5],
-                    key: `coins`
+                    key: 'coins'
                 });
                 stack.push(r4[0]);
                 continue;
@@ -85,7 +85,7 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 6,
                     nodes: [7],
-                    key: `coins`
+                    key: 'coins'
                 });
                 stack.push(r6[0]);
                 continue;
@@ -105,7 +105,7 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 8,
                     nodes: [9],
-                    key: `coins`
+                    key: 'coins'
                 });
                 stack.push(r8[0]);
                 continue;
@@ -125,7 +125,7 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 10,
                     nodes: [11],
-                    key: `coins`
+                    key: 'coins'
                 });
                 stack.push(r10[0]);
                 continue;
@@ -142,23 +142,23 @@ export async function run(state: State): Promise<State> {
             case 12:
                 // 147 1 - -
                 const r12 = log({
-                    message: `Done`,
+                    message: 'Done',
                     nodes: [0]
                 });
                 stack.push(r12[0]);
                 break;
             case 13:
-                // 36 18 - -
+                // 49 11 - -
                 const r13 = stateGet({
                     state,
                     node: 13,
                     nodes: [14],
-                    key: `coins`
+                    key: 'coins'
                 });
                 stack.push(r13[0]);
                 continue;
             case 14:
-                // 52 18 - -
+                // 65 11 - -
                 const r14 = stateAdd({
                     state,
                     callstack,
@@ -168,9 +168,9 @@ export async function run(state: State): Promise<State> {
                 stack.push(r14[0]);
                 break;
             case 15:
-                // 68 18 - -
+                // 81 11 - -
                 const r15 = log({
-                    message: `I'm rich!`,
+                    message: 'I\'m rich!',
                     nodes: [0]
                 });
                 stack.push(r15[0]);
