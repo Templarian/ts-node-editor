@@ -506,15 +506,6 @@ async function renderScriptView() {
   const types = [...new Set(nodes.filter(n => n.id !== 0 && n.type).map(n => n.type))];
   await Promise.all(types.map(fetchNodeDef));
 
-  let maxX = 0;
-  let maxY = 0;
-  nodes.forEach(n => {
-    maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 14) + 1);
-    maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 6) + 1);
-  });
-  canvas.style.width = maxX + 'rem';
-  canvas.style.height = maxY + 'rem';
-
   canvas.innerHTML = '';
   canvas.innerHTML = nodes.map(node => {
     const x = node.x ?? 0;
@@ -557,7 +548,8 @@ async function renderScriptView() {
         <div class="sv-pins">${pinsHtml}</div>
       </div>
     </div>`;
-  }).join('');
+  }).join('') + '<div id="svSpacer" style="position:absolute;left:0;top:0;width:1px;height:1px;pointer-events:none;"></div>';
+  updateCanvasSize();
   requestAnimationFrame(drawConnections);
 }
 
@@ -604,16 +596,32 @@ function _onDragEnd(e) {
   const newY = Math.max(0, Math.round(origY + (e.clientY - startY) / rem));
   nodeEl.style.left = newX + 'rem';
   nodeEl.style.top  = newY + 'rem';
+  const node = currentScript.nodes.find(n => n.id === nodeId);
+  if (node) { node.x = newX; node.y = newY; }
   if (newX !== origX || newY !== origY) {
-    const node = currentScript.nodes.find(n => n.id === nodeId);
-    if (node) { node.x = newX; node.y = newY; }
     fetch('/api/scripts/' + currentScript.name + '/nodes/' + nodeId, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ x: newX, y: newY }),
     });
   }
+  updateCanvasSize();
   drawConnections();
+}
+
+function updateCanvasSize() {
+  if (!currentScript) return;
+  let maxX = 0;
+  let maxY = 0;
+  for (const n of currentScript.nodes) {
+    maxX = Math.max(maxX, (n.x ?? 0) + (n.width ?? 14));
+    maxY = Math.max(maxY, (n.y ?? 0) + (n.height ?? 6));
+  }
+  const spacer = document.getElementById('svSpacer');
+  if (spacer) {
+    spacer.style.left = (maxX + 20) + 'rem';
+    spacer.style.top  = (maxY + 20) + 'rem';
+  }
 }
 
 function drawConnections() {
