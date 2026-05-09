@@ -50,7 +50,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r2[0]);
                 break;
             case 3:
-                // 17 9 - -
+                // 20 18 - -
                 const r3 = dialogChoice({
                     state,
                     callstack,
@@ -100,7 +100,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r7[0]);
                 break;
             case 8:
-                // 113 1 - -
+                // 115 1 - -
                 const r8 = stateGet({
                     state,
                     node: 8,
@@ -110,7 +110,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r8[0]);
                 continue;
             case 9:
-                // 129 1 - -
+                // 131 1 - -
                 const r9 = stateAdd({
                     state,
                     callstack,
@@ -120,7 +120,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r9[0]);
                 break;
             case 10:
-                // 33 9 - -
+                // 115 11 - -
                 const r10 = stateGet({
                     state,
                     node: 10,
@@ -130,7 +130,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r10[0]);
                 continue;
             case 11:
-                // 49 9 - -
+                // 131 11 - -
                 const r11 = stateAdd({
                     state,
                     callstack,
@@ -140,7 +140,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r11[0]);
                 break;
             case 12:
-                // 65 9 - -
+                // 147 1 - -
                 const r12 = log({
                     message: `Done`,
                     nodes: [0]
@@ -148,7 +148,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r12[0]);
                 break;
             case 13:
-                // 81 9 - -
+                // 36 18 - -
                 const r13 = stateGet({
                     state,
                     node: 13,
@@ -158,7 +158,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r13[0]);
                 continue;
             case 14:
-                // 97 9 - -
+                // 52 18 - -
                 const r14 = stateAdd({
                     state,
                     callstack,
@@ -168,7 +168,7 @@ export async function run(state: State): Promise<State> {
                 stack.push(r14[0]);
                 break;
             case 15:
-                // 113 9 - -
+                // 68 18 - -
                 const r15 = log({
                     message: `I'm rich!`,
                     nodes: [0]
