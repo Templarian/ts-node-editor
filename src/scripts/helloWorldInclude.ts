@@ -17,6 +17,7 @@ export async function run(state: State): Promise<State> {
         switch (node) {
             case 0:
                 // 1 1 - -
+                // Hello world with include of another script.
                 if (state.has('noop')) {
                     stack.push(state.get('noop'));
                     state.delete('noop');
