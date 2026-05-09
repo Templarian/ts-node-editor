@@ -114,6 +114,9 @@ const html = `<!DOCTYPE html>
   .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; }
   .sv-entry .sv-type { color: #7c8cf8; }
   .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; padding: 5px 8px; overflow: hidden; }
+  .sv-desc-edit { font-size: 11px; color: #94a3b8; line-height: 1.4; padding: 5px 8px; background: transparent; border: none; outline: none; resize: none; flex: 1; width: 100%; box-sizing: border-box; font-family: inherit; }
+  .sv-desc-edit::placeholder { color: #2d3148; }
+  .sv-desc-edit:focus { background: #12142a; border-radius: 0 0 6px 6px; }
   .sv-body { display: flex; flex: 1; }
   .sv-args { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 5px 6px; overflow: hidden; }
   .sv-arg { display: flex; flex-direction: column; gap: 1px; }
@@ -522,12 +525,9 @@ async function renderScriptView() {
     const isEntry = node.id === 0;
 
     if (isEntry) {
-      const desc = node.description
-        ? \`<div class="sv-desc">\${esc(node.description)}</div>\`
-        : '';
       return \`<div class="sv-node sv-entry" data-id="0" style="left:\${x}rem;top:\${y}rem;width:\${w}rem;height:\${h}rem">
         <div class="sv-type" onmousedown="startDrag(event,0)">Entry</div>
-        \${desc}
+        <textarea class="sv-desc-edit" placeholder="Description..." onblur="saveEntryDesc(event)" onmousedown="event.stopPropagation()">\${esc(node.description || '')}</textarea>
       </div>\`;
     }
 
@@ -610,6 +610,20 @@ function _onDragEnd(e) {
       body: JSON.stringify({ x: newX, y: newY }),
     });
   }
+}
+
+async function saveEntryDesc(e) {
+  const val = e.target.value;
+  const node = currentScript.nodes.find(n => n.id === 0);
+  if (!node || val === (node.description || '')) return;
+  node.description = val;
+  const descEl = document.querySelector('.script-info .desc');
+  if (descEl) descEl.textContent = val;
+  await fetch('/api/scripts/' + currentScript.name + '/nodes/0', {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ description: val }),
+  });
 }
 
 async function init() {
