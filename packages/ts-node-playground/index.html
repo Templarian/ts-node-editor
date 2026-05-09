@@ -105,7 +105,8 @@
   .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; display: flex; flex-direction: column; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
   .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
-  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; }
+  .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; display: flex; align-items: center; }
+  .sv-type-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sv-entry .sv-type { color: #7c8cf8; }
   .sv-desc { font-size: 11px; color: #64748b; line-height: 1.4; padding: 5px 8px; overflow: hidden; }
   .sv-desc-edit { font-size: 11px; color: #94a3b8; line-height: 1.4; padding: 5px 8px; background: transparent; border: none; outline: none; resize: none; flex: 1; width: 100%; box-sizing: border-box; font-family: inherit; }
@@ -121,6 +122,8 @@
   .sv-pin { display: flex; align-items: center; gap: 5px; }
   .sv-pin-label { font-size: 10px; color: #475569; white-space: nowrap; }
   .sv-pin-dot { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
+  .sv-header-pin { width: 9px; height: 9px; border-radius: 50%; background: #1e2244; border: 2px solid #3d4270; flex-shrink: 0; margin-right: -5px; }
+  .sv-input-pin { width: 9px; height: 9px; border-radius: 50%; background: #1a1d2e; border: 2px solid #3d4270; flex-shrink: 0; margin-left: -5px; }
 </style>
 </head>
 <body>
@@ -519,15 +522,16 @@ async function renderScriptView() {
     const isEntry = node.id === 0;
 
     if (isEntry) {
+      const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin"></span>` : '';
       return `<div class="sv-node sv-entry" data-id="0" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem">
-        <div class="sv-type" onmousedown="startDrag(event,0)">Entry</div>
+        <div class="sv-type" onmousedown="startDrag(event,0)"><span class="sv-type-label">Entry</span>${headerPin}</div>
         <textarea class="sv-desc-edit" placeholder="Description..." onblur="saveEntryDesc(event)" onmousedown="event.stopPropagation()">${esc(node.description || '')}</textarea>
       </div>`;
     }
 
     const def = nodeDefCache.get(node.type) ?? null;
     const argDefs = def?.args ?? [];
-    const pinDefs = def?.nodes ?? [];
+    const pinDefs = (def?.nodes ?? []).filter(p => p.key !== 'nodes');
 
     const argsHtml = argDefs.map(a => {
       const val = node.args[a.key] ?? '';
@@ -543,8 +547,9 @@ async function renderScriptView() {
       <span class="sv-pin-dot"></span>
     </div>`).join('');
 
+    const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin"></span>` : '';
     return `<div class="sv-node" data-id="${node.id}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem">
-      <div class="sv-type" onmousedown="startDrag(event,${node.id})">${esc(node.type || 'unknown')}</div>
+      <div class="sv-type" onmousedown="startDrag(event,${node.id})"><span class="sv-input-pin"></span><span class="sv-type-label">${esc(node.type || 'unknown')}</span>${headerPin}</div>
       <div class="sv-body">
         <div class="sv-args">${argsHtml}</div>
         <div class="sv-pins">${pinsHtml}</div>
