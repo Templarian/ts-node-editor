@@ -162,7 +162,7 @@ export async function run(state: State): Promise<State> {
                 const r14 = stateAdd({
                     state,
                     callstack,
-                    nodes: [0],
+                    nodes: [15],
                     value: 12
                 });
                 stack.push(r14[0]);
