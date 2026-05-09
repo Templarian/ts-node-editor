@@ -1,10 +1,16 @@
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { basename, join } from 'path';
 import { parseScript, writeScript, type ScriptNode } from 'ts-node-parser';
 import Script, { ScriptComment, type ScriptJson } from '../utils/script.js';
 import type { Req, Res } from '../utils/types.js';
-import { scriptsDir, gitFile } from '../utils/paths.js';
+import { scriptsDir, nodesDir, gitFile } from '../utils/paths.js';
+
+function getNodeSource(nodeName: string): string {
+    const fileName = nodeName.charAt(0).toLowerCase() + nodeName.slice(1) + '.ts';
+    const filePath = join(nodesDir, fileName);
+    return existsSync(filePath) ? readFileSync(filePath, 'utf-8') : '';
+}
 
 export async function getScripts(
     _params: Record<string, string>,
@@ -62,7 +68,7 @@ export function postScriptComments(
         const source = await readFile(filePath, 'utf-8');
         const script = parseScript(source);
         script.comments.push(comment);
-        await writeFile(filePath, writeScript(script, scriptsDir));
+        await writeFile(filePath, writeScript(script, getNodeSource));
         res.end(JSON.stringify(comment));
     });
 }
@@ -92,7 +98,7 @@ export function patchScriptComments(
             return;
         }
         script.comments[i] = { ...script.comments[i], ...partial };
-        await writeFile(filePath, writeScript(script, scriptsDir));
+        await writeFile(filePath, writeScript(script, getNodeSource));
         res.end(JSON.stringify(script.comments[i]));
     });
 }
@@ -122,7 +128,7 @@ export function patchScriptNode(
             return;
         }
         script.nodes[i] = { ...script.nodes[i], ...partial, id: script.nodes[i].id };
-        await writeFile(filePath, writeScript(script, scriptsDir));
+        await writeFile(filePath, writeScript(script, getNodeSource));
         res.end(JSON.stringify(script.nodes[i]));
     });
 }
@@ -201,7 +207,7 @@ export function attachScriptNodeToArg(
         }
         const list = (node.args[arg] as number[] | undefined) ?? [];
         node.args[arg] = [...list, nodeId];
-        await writeFile(filePath, writeScript(script, scriptsDir));
+        await writeFile(filePath, writeScript(script, getNodeSource));
         res.end(JSON.stringify(true));
     });
 }
@@ -232,7 +238,7 @@ export function removeScriptNodeToArg(
         }
         const list = (node.args[arg] as number[] | undefined) ?? [];
         node.args[arg] = list.filter(id => id !== nodeId);
-        await writeFile(filePath, writeScript(script, scriptsDir));
+        await writeFile(filePath, writeScript(script, getNodeSource));
         res.end(JSON.stringify(true));
     });
 }

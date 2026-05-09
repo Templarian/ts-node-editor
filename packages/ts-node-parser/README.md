@@ -55,7 +55,7 @@ const script = parseScript(source, 'helloWorld');
 | `nodes[].type` | The node function name (e.g. `setState`, `log`, `coinFlip`) or `"include"` for script calls |
 | `nodes[].args` | All non-runtime arguments passed to the node function. Runtime params (`state`, `node`, `callstack`) are stripped. `nodes`, `t`, `f` etc. are kept as they encode the graph edges. |
 
-## `writeScript(script, nodesDir)`
+## `writeScript(script, getNodeSource, nodesDir?)`
 
 Takes a `ParsedScript` object and generates TypeScript source using `ts.factory`. Reads each node's function signature from `nodesDir` to determine which runtime parameters (`state`, `node`, `callstack`) to re-inject and whether to use `await`/`continue` or `break`.
 
@@ -70,7 +70,16 @@ const script = parseScript(source, 'helloWorld');
 // Modify the script
 script.nodes[0].args.value = '`Hi ${state.get("name")}!`';
 
-const output = writeScript(script, path.resolve('src/nodes'));
+const output = writeScript(
+  script,
+  (name) => {
+    return readFileSync(
+      path.join(path.resolve('src/nodes'), `${name}.ts`),
+      'utf-8'
+    );
+  },
+  '../nodes'
+);
 writeFileSync('src/scripts/helloWorld.ts', output);
 ```
 

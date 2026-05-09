@@ -1,6 +1,4 @@
 import * as ts from 'typescript';
-import * as fs from 'fs';
-import * as path from 'path';
 import type { ParsedScript, ScriptNode } from './read';
 
 const RUNTIME_PARAMS = new Set(['state', 'node', 'callstack']);
@@ -11,13 +9,9 @@ interface NodeSignature {
     returnsSingle: boolean;
 }
 
-function readNodeSignature(nodesDir: string, typeName: string): NodeSignature | null {
+function parseNodeSignature(source: string, typeName: string): NodeSignature | null {
     const fileName = typeName.charAt(0).toLowerCase() + typeName.slice(1) + '.ts';
-    const filePath = path.join(nodesDir, fileName);
-    if (!fs.existsSync(filePath)) return null;
-
-    const source = fs.readFileSync(filePath, 'utf-8');
-    const sf = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
+    const sf = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true);
 
     for (const stmt of sf.statements) {
         if (!ts.isFunctionDeclaration(stmt)) continue;
@@ -221,17 +215,21 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
     return ts.factory.createCaseClause(ts.factory.createNumericLiteral(node.id), [
         varStmt,
         ts.factory.createExpressionStatement(call(propAccess('stack', 'push'), [pushArg])),
-        sig?.isAsync ? ts.factory.createContinueStatement() : ts.factory.createBreakStatement(),
+        sig?.params.includes('node') ? ts.factory.createContinueStatement() : ts.factory.createBreakStatement(),
     ]);
 }
 
-function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionDeclaration {
+function createRunFunction(script: ParsedScript, getNodeSource: (nodeName: string) => string): ts.FunctionDeclaration {
     const nodeArrayType = ts.factory.createArrayTypeNode(ts.factory.createTypeReferenceNode('Node'));
 
     const node0 = script.nodes.find(n => n.id === 0);
     const cases: ts.CaseOrDefaultClause[] = [
         createCase0(node0),
-        ...script.nodes.filter(n => n.id !== 0).map(n => createNodeCase(n, n.type !== 'include' ? readNodeSignature(nodesDir, n.type!) : null)),
+        ...script.nodes.filter(n => n.id !== 0).map(n => {
+            if (n.type === 'include') return createNodeCase(n, null);
+            const src = getNodeSource(n.type!);
+            return createNodeCase(n, src ? parseNodeSignature(src, n.type!) : null);
+        }),
     ];
 
     const loopBody = ts.factory.createBlock([
@@ -285,7 +283,17 @@ function createRunFunction(script: ParsedScript, nodesDir: string): ts.FunctionD
     );
 }
 
-export function writeScript(script: ParsedScript, nodesDir: string): string {
+/**
+ * Write a script based on the JSON layout and nodes.
+ * @param script Source in JSON format.
+ * @param getNodeSource The parent app reads the source node scripts as strings.
+ * @param nodesDir Directory where nodes will be stored.
+ * @returns Script Source
+ */
+export function writeScript(
+    script: ParsedScript,
+    getNodeSource: (nodeName: string) => string
+): string {
     const nodeTypes = [...new Set(script.nodes.filter(n => n.type && n.type !== 'include').map(n => n.type as string))];
     const includeScripts = script.nodes.filter(n => n.type === 'include').map(n => n.args.script as string);
 
@@ -324,7 +332,7 @@ export function writeScript(script: ParsedScript, nodesDir: string): string {
         ),
     ];
 
-    let runFn = createRunFunction(script, nodesDir);
+    let runFn = createRunFunction(script, getNodeSource);
 
     // Attach file-level metadata as synthetic leading comments on the run function
     const leadingComments: string[] = [];
