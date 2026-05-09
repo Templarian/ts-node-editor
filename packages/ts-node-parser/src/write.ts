@@ -334,27 +334,32 @@ export function writeScript(
 
     let runFn = createRunFunction(script, getNodeSource);
 
-    // Attach file-level metadata as synthetic leading comments on the run function
-    const leadingComments: string[] = [];
+    const initialStateLines: string[] = [];
     for (const [key, val] of Object.entries(script.initialState)) {
-        leadingComments.push(` ${key}: "${val}"`);
+        initialStateLines.push(` ${key}: "${val}"`);
     }
+    const commentLines: string[] = [];
     for (const comment of script.comments) {
         const { x, y, width, height } = comment;
-        leadingComments.push(` ${x} ${y} ${width ?? '-'} ${height ?? '-'}`);
+        commentLines.push(` ${x} ${y} ${width ?? '-'} ${height ?? '-'}`);
         for (const line of comment.text.split('\n').filter(Boolean)) {
-            leadingComments.push(` ${line}`);
+            commentLines.push(` ${line}`);
         }
     }
-    statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
-    if (leadingComments.length > 0) {
-        let commentsNode = ts.factory.createIdentifier('') as unknown as ts.FunctionDeclaration;
-        for (const text of leadingComments) {
-            commentsNode = ts.addSyntheticLeadingComment(commentsNode, ts.SyntaxKind.SingleLineCommentTrivia, text, true) as unknown as ts.FunctionDeclaration;
+
+    const pushCommentBlock = (lines: string[]) => {
+        if (lines.length === 0) return;
+        let node = ts.factory.createIdentifier('') as unknown as ts.FunctionDeclaration;
+        for (const text of lines) {
+            node = ts.addSyntheticLeadingComment(node, ts.SyntaxKind.SingleLineCommentTrivia, text, true) as unknown as ts.FunctionDeclaration;
         }
-        statements.push(commentsNode as unknown as ts.Statement);
+        statements.push(node as unknown as ts.Statement);
         statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
-    }
+    };
+
+    statements.push(ts.factory.createIdentifier('\n') as unknown as ts.Statement);
+    pushCommentBlock(initialStateLines);
+    pushCommentBlock(commentLines);
     statements.push(runFn);
 
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });

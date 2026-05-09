@@ -1,4 +1,4 @@
-import type { Node, State } from './../nodes/node';
+import type { Node, State } from '../nodes/node';
 import { dialog } from '../nodes/dialog';
 import { dialogChoice } from '../nodes/dialogChoice';
 import { stateGet } from '../nodes/stateGet';
@@ -29,7 +29,7 @@ export async function run(state: State): Promise<State> {
                 }
                 break loop;
             case 1:
-                // 10 12 - -
+                // 17 1 - -
                 const r1 = await dialog({
                     state,
                     node: 1,
