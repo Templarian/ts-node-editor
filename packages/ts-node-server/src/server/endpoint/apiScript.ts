@@ -174,10 +174,19 @@ export async function deleteScriptNode(
     const source = await readFile(filePath, 'utf-8');
     const script = parseScript(source);
     const s = new Script(script);
-    if (!s.removeNodeById(Number(index))) {
+    const deletedId = Number(index);
+    if (!s.removeNodeById(deletedId)) {
         res.statusCode = 401;
         res.end(JSON.stringify({ message: 'Node not found.' }));
         return;
+    }
+    for (const node of s.nodes) {
+        for (const key of Object.keys(node.args)) {
+            const val = node.args[key];
+            if (Array.isArray(val)) {
+                node.args[key] = (val as number[]).filter(id => id !== deletedId);
+            }
+        }
     }
     await writeFile(filePath, writeScript(s.toJson(), getNodeSource));
     res.end(JSON.stringify(true));

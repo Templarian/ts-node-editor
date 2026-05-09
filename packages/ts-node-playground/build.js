@@ -609,6 +609,12 @@ async function deleteSelectedNodes() {
   const toDelete = [..._selected].filter(id => id !== 0);
   if (toDelete.length === 0) return;
   currentScript.nodes = currentScript.nodes.filter(n => !toDelete.includes(n.id));
+  for (const node of currentScript.nodes) {
+    for (const key of Object.keys(node.args)) {
+      const val = node.args[key];
+      if (Array.isArray(val)) node.args[key] = val.filter(id => !toDelete.includes(id));
+    }
+  }
   _selected.clear();
   await Promise.all(toDelete.map(id =>
     fetch('/api/scripts/' + currentScript.name + '/nodes/' + id, { method: 'DELETE' })
