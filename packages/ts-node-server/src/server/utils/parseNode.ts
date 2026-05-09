@@ -4,6 +4,7 @@ interface NodeArg {
     key: string;
     label: string;
     editor: string | null;
+    value?: unknown;
 }
 
 interface NodeConnection {
@@ -44,6 +45,17 @@ function jsDocEditorTag(node: ts.Node): string | null {
     return null;
 }
 
+function extractDefaultValue(expr: ts.Expression): unknown {
+    if (ts.isNumericLiteral(expr)) return parseFloat(expr.text);
+    if (ts.isStringLiteral(expr) || ts.isNoSubstitutionTemplateLiteral(expr)) return expr.text;
+    if (expr.kind === ts.SyntaxKind.TrueKeyword) return true;
+    if (expr.kind === ts.SyntaxKind.FalseKeyword) return false;
+    if (ts.isPrefixUnaryExpression(expr) && expr.operator === ts.SyntaxKind.MinusToken) {
+        if (ts.isNumericLiteral(expr.operand)) return -parseFloat((expr.operand as ts.NumericLiteral).text);
+    }
+    return undefined;
+}
+
 function isNodeArray(typeNode: ts.TypeNode | undefined): boolean {
     if (!typeNode) return false;
     if (ts.isArrayTypeNode(typeNode)) {
@@ -64,6 +76,16 @@ export function parseNode(source: string): ParsedNode | null {
             const nodes: NodeConnection[] = [];
 
             const param = node.parameters[0];
+
+            const defaults = new Map<string, unknown>();
+            if (param?.name && ts.isObjectBindingPattern(param.name)) {
+                for (const element of param.name.elements) {
+                    if (!ts.isBindingElement(element) || !ts.isIdentifier(element.name) || !element.initializer) continue;
+                    const val = extractDefaultValue(element.initializer);
+                    if (val !== undefined) defaults.set(element.name.text, val);
+                }
+            }
+
             if (param?.type && ts.isTypeLiteralNode(param.type)) {
                 for (const member of param.type.members) {
                     if (!ts.isPropertySignature(member)) continue;
@@ -74,7 +96,9 @@ export function parseNode(source: string): ParsedNode | null {
                     if (isNodeArray(member.type)) {
                         nodes.push({ key, label });
                     } else {
-                        args.push({ key, label, editor: jsDocEditorTag(member) });
+                        const arg: NodeArg = { key, label, editor: jsDocEditorTag(member) };
+                        if (defaults.has(key)) arg.value = defaults.get(key);
+                        args.push(arg);
                     }
                 }
             }
