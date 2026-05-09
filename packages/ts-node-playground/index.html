@@ -105,6 +105,7 @@
   .sv-node { position: absolute; background: #1a1d2e; border: 1px solid #2d3148; border-radius: 6px; display: flex; flex-direction: column; min-width: 0; }
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
   .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
+  .sv-connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; display: flex; align-items: center; }
   .sv-type-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sv-entry .sv-type { color: #7c8cf8; }
@@ -514,6 +515,7 @@ async function renderScriptView() {
   canvas.style.width = maxX + 'rem';
   canvas.style.height = maxY + 'rem';
 
+  canvas.innerHTML = '';
   canvas.innerHTML = nodes.map(node => {
     const x = node.x ?? 0;
     const y = node.y ?? 0;
@@ -542,7 +544,7 @@ async function renderScriptView() {
       </div>`;
     }).join('');
 
-    const pinsHtml = pinDefs.map(p => `<div class="sv-pin">
+    const pinsHtml = pinDefs.map(p => `<div class="sv-pin" data-key="${esc(p.key)}">
       <span class="sv-pin-label">${esc(p.label)}</span>
       <span class="sv-pin-dot"></span>
     </div>`).join('');
@@ -556,6 +558,7 @@ async function renderScriptView() {
       </div>
     </div>`;
   }).join('');
+  requestAnimationFrame(drawConnections);
 }
 
 async function loadScriptByName(name) {
@@ -587,6 +590,7 @@ function _onDragMove(e) {
   const { nodeEl, origX, origY, startX, startY, rem } = _drag;
   nodeEl.style.left = Math.max(0, origX + (e.clientX - startX) / rem) + 'rem';
   nodeEl.style.top  = Math.max(0, origY + (e.clientY - startY) / rem) + 'rem';
+  drawConnections();
 }
 
 function _onDragEnd(e) {
@@ -609,6 +613,68 @@ function _onDragEnd(e) {
       body: JSON.stringify({ x: newX, y: newY }),
     });
   }
+  drawConnections();
+}
+
+function drawConnections() {
+  const canvas = document.getElementById('svCanvas');
+  if (!canvas || !currentScript) return;
+
+  let svg = canvas.querySelector('.sv-connections');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('sv-connections');
+    canvas.insertBefore(svg, canvas.firstChild);
+  }
+  svg.innerHTML = '';
+
+  const cr = canvas.getBoundingClientRect();
+
+  function pinPos(el, side) {
+    const r = el.getBoundingClientRect();
+    return { x: (side === 'r' ? r.right : r.left) - cr.left, y: r.top + r.height / 2 - cr.top };
+  }
+
+  for (const node of currentScript.nodes) {
+    const nodeEl = canvas.querySelector('.sv-node[data-id="' + node.id + '"]');
+    if (!nodeEl) continue;
+
+    if (Array.isArray(node.args?.nodes) && node.args.nodes.length) {
+      const srcEl = nodeEl.querySelector('.sv-header-pin');
+      if (srcEl) {
+        const src = pinPos(srcEl, 'r');
+        for (const tid of node.args.nodes) {
+          const tgtEl = canvas.querySelector('.sv-node[data-id="' + tid + '"] .sv-input-pin');
+          if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'));
+        }
+      }
+    }
+
+    const pinEls = nodeEl.querySelectorAll('.sv-pin[data-key]');
+    for (const pinEl of pinEls) {
+      const val = node.args?.[pinEl.dataset.key];
+      if (!val) continue;
+      const targets = Array.isArray(val) ? val : [val];
+      const dotEl = pinEl.querySelector('.sv-pin-dot');
+      if (!dotEl) continue;
+      const src = pinPos(dotEl, 'r');
+      for (const tid of targets) {
+        const tgtEl = canvas.querySelector('.sv-node[data-id="' + tid + '"] .sv-input-pin');
+        if (tgtEl) drawPath(svg, src, pinPos(tgtEl, 'l'));
+      }
+    }
+  }
+}
+
+function drawPath(svg, src, tgt) {
+  const dx = Math.max(Math.abs(tgt.x - src.x) * 0.5, 30);
+  const d = 'M ' + src.x + ',' + src.y + ' C ' + (src.x + dx) + ',' + src.y + ' ' + (tgt.x - dx) + ',' + tgt.y + ' ' + tgt.x + ',' + tgt.y;
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', '#4a5580');
+  path.setAttribute('stroke-width', '1.5');
+  svg.appendChild(path);
 }
 
 async function saveEntryDesc(e) {
