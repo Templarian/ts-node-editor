@@ -4,7 +4,7 @@ import type { Node, State } from './node';
  * Between
  * @editor Between
  */
-export function between({ state, t = [], f = [], min, max }: {
+export function between({ state, t = [], f = [], min = 0, max = 100 }: {
     state: State,
     /**
      * True
