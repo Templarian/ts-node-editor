@@ -89,14 +89,13 @@ function createValueExpression(val: unknown): ts.Expression {
         return ts.factory.createArrayLiteralExpression(val.map(createValueExpression));
     }
     if (typeof val === 'string') {
-        if (val.startsWith('`')) {
-            // Template literals with expressions are stored as raw source — parse then
-            // deep-synthesize so nodes aren't bound to the temporary source file.
-            const sf = ts.createSourceFile('tmp.ts', val, ts.ScriptTarget.Latest, true);
+        if (val.includes('${')) {
+            const src = '`' + val + '`';
+            const sf = ts.createSourceFile('tmp.ts', src, ts.ScriptTarget.Latest, true);
             const stmt = sf.statements[0];
-            if (ts.isExpressionStatement(stmt)) return synthesizeExpression(stmt.expression, val);
+            if (ts.isExpressionStatement(stmt)) return synthesizeExpression(stmt.expression, src);
         }
-        return ts.factory.createNoSubstitutionTemplateLiteral(val);
+        return ts.factory.createStringLiteral(val, true);
     }
     return ts.factory.createStringLiteral(String(val), true);
 }

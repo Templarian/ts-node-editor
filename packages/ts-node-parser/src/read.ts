@@ -68,7 +68,8 @@ function extractValue(node: ts.Expression, source: string): unknown {
         return node.elements.map((e: any) => extractValue(e, source));
     }
     if (ts.isTemplateLiteral(node)) {
-        return source.substring(node.getStart(), node.getEnd());
+        const raw = source.substring(node.getStart(), node.getEnd());
+        return raw.slice(1, -1);
     }
     if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken) {
         return -parseFloat((node.operand as ts.NumericLiteral).text);
