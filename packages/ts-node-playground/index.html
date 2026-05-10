@@ -524,7 +524,7 @@ async function renderScriptView() {
     const isEntry = node.id === 0;
 
     if (isEntry) {
-      const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,0,'nodes')"></span>` : '';
+      const headerPin = `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,0,'nodes')"></span>`;
       return `<div class="sv-node sv-entry" data-id="0" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem" onmousedown="onNodeMouseDown(event,0)">
         <div class="sv-type"><span class="sv-type-label">Entry</span>${headerPin}</div>
         <textarea class="sv-desc-edit" placeholder="Description..." onblur="saveEntryDesc(event)" onmousedown="event.stopPropagation()">${esc(node.description || '')}</textarea>
@@ -536,11 +536,13 @@ async function renderScriptView() {
     const pinDefs = (def?.nodes ?? []).filter(p => p.key !== 'nodes');
 
     const argsHtml = argDefs.map(a => {
-      const val = node.args[a.key] ?? '';
+      const val = node.args[a.key] ?? (a.value ?? '');
       const inputType = a.editor === 'Number' ? 'number' : 'text';
       return `<div class="sv-arg">
         <span class="sv-arg-label">${esc(a.label)}</span>
-        <input class="sv-arg-input" type="${inputType}" value="${esc(String(val))}">
+        <input class="sv-arg-input" type="${inputType}" value="${esc(String(val))}"
+          data-node-id="${node.id}" data-arg-key="${esc(a.key)}" data-editor="${esc(a.editor ?? '')}"
+          onblur="saveArgValue(event)" onkeydown="if(event.key==='Enter')this.blur()" onmousedown="event.stopPropagation()">
       </div>`;
     }).join('');
 
@@ -549,7 +551,8 @@ async function renderScriptView() {
       <span class="sv-pin-dot" data-arg-key="${esc(p.key)}" onmousedown="startConnDrag(event,${node.id},'${esc(p.key)}')"></span>
     </div>`).join('');
 
-    const headerPin = node.args?.nodes != null ? `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,${node.id},'nodes')"></span>` : '';
+    const hasFlowOutput = (def?.nodes ?? []).some(p => p.key === 'nodes');
+    const headerPin = hasFlowOutput ? `<span class="sv-header-pin" data-arg-key="nodes" onmousedown="startConnDrag(event,${node.id},'nodes')"></span>` : '';
     return `<div class="sv-node" data-id="${node.id}" style="left:${x}rem;top:${y}rem;width:${w}rem;height:${h}rem" onmousedown="onNodeMouseDown(event,${node.id})">
       <div class="sv-type"><span class="sv-input-pin" onmousedown="startConnDrag(event,${node.id},null)"></span><span class="sv-type-label">${esc(node.type || 'unknown')}</span>${headerPin}</div>
       <div class="sv-body">
@@ -883,6 +886,24 @@ async function saveEntryDesc(e) {
     method: 'PATCH',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ description: val }),
+  });
+}
+
+async function saveArgValue(e) {
+  const input = e.target;
+  const nodeId = Number(input.dataset.nodeId);
+  const argKey = input.dataset.argKey;
+  const editor = input.dataset.editor;
+  const node = currentScript?.nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  const raw = input.value;
+  const value = editor === 'Number' ? (isNaN(Number(raw)) ? 0 : Number(raw)) : raw;
+  if (node.args[argKey] === value) return;
+  node.args[argKey] = value;
+  await fetch('/api/scripts/' + currentScript.name + '/nodes/' + nodeId + '/args/' + argKey, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ value }),
   });
 }
 

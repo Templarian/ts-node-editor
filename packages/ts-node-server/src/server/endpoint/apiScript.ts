@@ -240,6 +240,36 @@ export async function getScriptNode(
     res.end(JSON.stringify(node));
 }
 
+export function patchScriptNodeArg(
+    { name, index, arg }: { name: string; index: string; arg: string },
+    req: Req,
+    res: Res,
+) {
+    res.setHeader('content-type', 'application/json');
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+        const { value } = JSON.parse(body);
+        const filePath = join(scriptsDir, `${name}.ts`);
+        if (!existsSync(filePath)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Script not found.' }));
+            return;
+        }
+        const source = await readFile(filePath, 'utf-8');
+        const script = parseScript(source);
+        const node = script.nodes.find((n: ScriptNode) => n.id === Number(index));
+        if (!node) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ message: 'Node not found.' }));
+            return;
+        }
+        node.args[arg] = value;
+        await writeFile(filePath, writeScript(script, getNodeSource));
+        res.end(JSON.stringify(value));
+    });
+}
+
 export function attachScriptNodeToArg(
     { name, index, arg }: { name: string; index: string; arg: string },
     req: Req,
