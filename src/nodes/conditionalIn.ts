@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * In
  */
-function conditionalIn({ state, t = [], f = [], value, ignoreCase = false }: {
+function conditionalIn({ state, t = [], f = [], value = ['item1'], ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

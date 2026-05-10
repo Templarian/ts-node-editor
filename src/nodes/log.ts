@@ -5,7 +5,7 @@ import type { Node } from './node';
  * @width 6
  * @height 6
  */
-export function log({ nodes, message }: {
+export function log({ nodes = [], message = '' }: {
     nodes: Node[]
     /**
      * Message

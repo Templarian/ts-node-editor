@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Unset
  */
-export function stateUnset({ state, callstack, nodes }: {
+export function stateUnset({ state, callstack, nodes = [] }: {
     state: State,
     callstack: Node[],
     nodes: Node[]

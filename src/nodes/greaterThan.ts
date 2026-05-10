@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Greater Than
  */
-export function greaterThan({ state, t = [], f = [], value }: {
+export function greaterThan({ state, t = [], f = [], value = 0 }: {
     state: State,
     t: Node[],
     f: Node[],

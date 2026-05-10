@@ -3,7 +3,7 @@ import type { Node } from './node';
 /**
  * Coin Flip
  */
-export function coinFlip({ t, f }: {
+export function coinFlip({ t = [], f = [] }: {
     /**
      * True
      */

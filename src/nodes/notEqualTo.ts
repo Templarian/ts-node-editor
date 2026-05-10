@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Not Equal To
  */
-export function notEqualTo({ state, t = [], f = [], value, ignoreCase = false }: {
+export function notEqualTo({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

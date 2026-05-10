@@ -5,7 +5,7 @@ import type { Node, State } from './node';
  * @width 6
  * @height 6
  */
-export function stateGet({ state, node, nodes, key }: {
+export function stateGet({ state, node, nodes = [], key = '' }: {
     state: State,
     node: Node,
     nodes: Node[],

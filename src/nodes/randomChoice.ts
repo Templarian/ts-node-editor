@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Random Choice
  */
-export function randomChoice({ state, callstack, node: _node, nodes, weight = 1 }: {
+export function randomChoice({ state, callstack, node: _node, nodes = [], weight = 1 }: {
     state: State,
     callstack: Node[],
     node: Node,

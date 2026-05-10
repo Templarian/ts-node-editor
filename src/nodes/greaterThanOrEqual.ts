@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Greater Than Or Equal
  */
-export function greaterThanOrEqual({ state, t = [], f = [], value }: {
+export function greaterThanOrEqual({ state, t = [], f = [], value = 0 }: {
     state: State,
     t: Node[],
     f: Node[],

@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Starts With
  */
-export function startsWith({ state, t = [], f = [], value, ignoreCase = false }: {
+export function startsWith({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

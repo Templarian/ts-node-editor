@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Random
  */
-export async function random({ state, node, nodes }: {
+export async function random({ state, node, nodes = [] }: {
     state: State,
     node: Node,
     nodes: Node[],

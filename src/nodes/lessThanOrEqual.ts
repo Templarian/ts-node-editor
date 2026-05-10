@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Less Than Or Equal
  */
-export function lessThanOrEqual({ state, t = [], f = [], value }: {
+export function lessThanOrEqual({ state, t = [], f = [], value = 0 }: {
     state: State,
     t: Node[],
     f: Node[],

@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Match
  */
-export function match({ state, t = [], f = [], value, ignoreCase = false }: {
+export function match({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

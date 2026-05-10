@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Ends With
  */
-export function endsWith({ state, t = [], f = [], value, ignoreCase = false }: {
+export function endsWith({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

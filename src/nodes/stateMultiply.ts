@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Multiply
  */
-export function stateMultiply({ state, callstack, nodes, value }: {
+export function stateMultiply({ state, callstack, nodes = [], value = 0 }: {
     state: State,
     callstack: Node[],
     nodes: Node[],

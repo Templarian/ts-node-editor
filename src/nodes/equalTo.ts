@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Equal To
  */
-export function equalTo({ state, t = [], f = [], value, ignoreCase = false }: {
+export function equalTo({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

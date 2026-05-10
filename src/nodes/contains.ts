@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Contains
  */
-export function contains({ state, t = [], f = [], value, ignoreCase = false }: {
+export function contains({ state, t = [], f = [], value = '', ignoreCase = false }: {
     state: State,
     t: Node[],
     f: Node[],

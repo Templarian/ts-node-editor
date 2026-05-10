@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Divide
  */
-export function stateDivide({ state, callstack, nodes, value }: {
+export function stateDivide({ state, callstack, nodes = [], value = 0 }: {
     state: State,
     callstack: Node[],
     nodes: Node[],

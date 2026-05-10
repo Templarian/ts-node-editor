@@ -3,7 +3,7 @@ import type { Node, State } from './node';
 /**
  * Set Random
  */
-export function stateRandom({ state, callstack, nodes, min, max }: {
+export function stateRandom({ state, callstack, nodes = [], min = 0, max = 100 }: {
     state: State,
     callstack: Node[],
     nodes: Node[],
