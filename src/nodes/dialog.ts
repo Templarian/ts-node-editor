@@ -41,13 +41,13 @@ export async function dialog({ state, node, nodes = [], character, text }: {
             return state.get(`$dialog.${n}.text`);
         }).flat();
         return new Promise((resolve) => {
-            console.log('Choices: [', results.join(', '), ']');
-            console.log('Your selection?');
-            setTimeout(function () {
-                const s = parseInt(window.prompt(results.join(', '), '2') || '2', 10) - 1;
-                console.log('select', nResults[s]);
-                resolve([nResults[s]]);
-            }, 3000);
+            const options = results.map((text, index) => {
+                return `${index + 1}. ${text}`;
+            });
+            console.log(`Your selection?`);
+            const s = parseInt(window.prompt(options.join('\n'), '1') || '1', 10) - 1;
+            console.log('select', nResults[s]);
+            resolve([nResults[s]]);
             nodes.forEach((n) => {
                 state.delete(`$dialog.${n}`);
                 state.delete(`$dialog.${n}.text`);
