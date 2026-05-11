@@ -115,6 +115,12 @@ function createValueExpression(val: unknown): ts.Expression {
     return ts.factory.createStringLiteral(String(val), true);
 }
 
+function resolveNodes(v: unknown): unknown {
+    if (!Array.isArray(v)) return v;
+    const filtered = (v as unknown[]).filter(n => n !== 0);
+    return filtered.length === 0 ? [0] : filtered;
+}
+
 function call(name: string | ts.Expression, args: ts.Expression[]): ts.CallExpression {
     const expr = typeof name === 'string' ? ts.factory.createIdentifier(name) : name;
     return ts.factory.createCallExpression(expr, undefined, args);
@@ -193,14 +199,26 @@ function createNodeCase(node: ScriptNode, sig: NodeSignature | null): ts.CaseCla
         ),
         ...nonRuntimeSigParams
             .map(k => {
-                if (k in node.args) return ts.factory.createPropertyAssignment(k, createValueExpression(node.args[k]));
-                if (sig?.defaults && k in sig.defaults) return ts.factory.createPropertyAssignment(k, sig.defaults[k]);
+                if (k in node.args) {
+                    const resolved = k === 'nodes' ? resolveNodes(node.args[k]) : node.args[k];
+                    return ts.factory.createPropertyAssignment(k, createValueExpression(resolved));
+                }
+                if (sig?.defaults && k in sig.defaults) {
+                    let expr = sig.defaults[k];
+                    if (k === 'nodes' && ts.isArrayLiteralExpression(expr) && expr.elements.length === 0) {
+                        expr = createValueExpression([0]);
+                    }
+                    return ts.factory.createPropertyAssignment(k, expr);
+                }
                 return null;
             })
             .filter((p): p is ts.PropertyAssignment => p !== null),
         ...Object.entries(node.args)
             .filter(([k]) => !sigKeySet.has(k))
-            .map(([k, v]) => ts.factory.createPropertyAssignment(k, createValueExpression(v))),
+            .map(([k, v]) => {
+                const resolved = k === 'nodes' ? resolveNodes(v) : v;
+                return ts.factory.createPropertyAssignment(k, createValueExpression(resolved));
+            }),
     ];
 
     const callExpr = call(node.type!, [ts.factory.createObjectLiteralExpression(properties, true)]);
