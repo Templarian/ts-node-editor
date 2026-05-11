@@ -88,6 +88,8 @@
   .btn-primary:hover { background: #6370e8; }
   .btn-reset { background: #252840; color: #94a3b8; border: 1px solid #3d4270; }
   .btn-reset:hover { background: #3d4270; color: #e2e8f0; }
+  .btn-play { background: #162616; color: #4ade80; border: 1px solid #22c55e55; }
+  .btn-play:hover { border-color: #22c55e; background: #1a3620; }
 
   .arg-input { background: #0f1117; border: 1px solid #3d4270; color: #e2e8f0; border-radius: 6px; padding: 5px 8px; font-size: 13px; width: 100%; font-family: monospace; outline: none; }
   .arg-input:focus { border-color: #7c8cf8; }
@@ -106,6 +108,8 @@
   .sv-node.sv-entry { border-color: #7c8cf8; background: #1e2244; }
   .sv-node.dragging { opacity: 0.85; z-index: 10; cursor: grabbing; box-shadow: 0 4px 20px #0008; }
   .sv-node.selected { box-shadow: 0 0 0 2px #7c8cf8; }
+  .sv-node.sv-active { border-color: #4ade80 !important; }
+  .sv-node.sv-active .sv-type { color: #4ade80; }
   .sv-connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .sv-type { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; cursor: grab; user-select: none; padding: 5px 8px; border-bottom: 1px solid #2d3148; flex-shrink: 0; display: flex; align-items: center; }
   .sv-type-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -139,6 +143,10 @@
   <h1>ts-node playground</h1>
   <select id="scriptSelect"></select>
   <button class="btn btn-reset" onclick="resetScript()">↺ Reset</button>
+  <div id="scriptControls" style="display:none;align-items:center;gap:6px">
+    <button class="btn btn-play" onclick="playStep()">▶ Play</button>
+    <button class="btn btn-play" onclick="resetPlay()">↺ Reset</button>
+  </div>
   <div class="view-toggle">
     <button id="btnPlayground" class="toggle-btn active" onclick="setView('playground')">Playground</button>
     <button id="btnScript" class="toggle-btn" onclick="setView('script')">Script</button>
@@ -462,6 +470,7 @@ function showError(msg) {
 function loadScript(script, inheritedState) {
   currentScript = script;
   _selected.clear();
+  resetPlay();
   historyCards = [];
   state = inheritedState || new Map(Object.entries(script.initialState || {}));
   window._pendingDialogNode = null;
@@ -486,6 +495,8 @@ async function setView(view) {
   currentView = view;
   document.getElementById('layoutView').style.display = view === 'playground' ? 'flex' : 'none';
   document.getElementById('scriptView').style.display = view === 'script' ? 'flex' : 'none';
+  document.getElementById('scriptControls').style.display = view === 'script' ? 'flex' : 'none';
+  if (view !== 'script') clearPlayHighlight();
   document.getElementById('btnPlayground').classList.toggle('active', view === 'playground');
   document.getElementById('btnScript').classList.toggle('active', view === 'script');
   if (view === 'script') await renderScriptView();
@@ -493,6 +504,11 @@ async function setView(view) {
 }
 
 const nodeDefCache = new Map();
+const nodeCompiledCache = new Map();
+let _playStack = null;
+let _playState = null;
+let _playCallstack = null;
+let _playActive = null;
 
 async function fetchNodeDef(type) {
   if (nodeDefCache.has(type)) return nodeDefCache.get(type);
@@ -563,6 +579,9 @@ async function renderScriptView() {
   }).join('') + '<div id="svSpacer" style="position:absolute;left:0;top:0;width:1px;height:1px;pointer-events:none;"></div>';
   updateCanvasSize();
   requestAnimationFrame(drawConnections);
+  if (_playActive !== null) {
+    document.querySelector('.sv-node[data-id="' + _playActive + '"]')?.classList.add('sv-active');
+  }
 }
 
 async function loadScriptByName(name) {
@@ -945,6 +964,92 @@ async function addNodeAtPos(type) {
   const node = await res.json();
   currentScript.nodes.push(node);
   await renderScriptView();
+}
+
+async function loadCompiledNode(type) {
+  if (nodeCompiledCache.has(type)) return nodeCompiledCache.get(type);
+  try {
+    const mod = await import('/api/nodes/' + type + '/compiled');
+    const fn = mod[type];
+    const paramMatch = fn ? fn.toString().match(/\(\s*\{([^)]*?)\}/) : null;
+    const params = paramMatch ? paramMatch[1].split(',').map(p => (p.trim().match(/\w+/) ?? [''])[0]) : [];
+    const entry = { mod, usesNodeParam: params.includes('node') };
+    nodeCompiledCache.set(type, entry);
+    return entry;
+  } catch {
+    const entry = { mod: {}, usesNodeParam: false };
+    nodeCompiledCache.set(type, entry);
+    return entry;
+  }
+}
+
+function buildPlayArgs(scriptNode, def, nodeId) {
+  const args = {};
+  for (const a of (def?.args ?? [])) {
+    const val = scriptNode.args[a.key];
+    args[a.key] = val !== undefined ? (a.editor === 'Number' ? Number(val) : val)
+                                    : (a.value !== undefined ? a.value : (a.editor === 'Number' ? 0 : ''));
+  }
+  for (const p of (def?.nodes ?? [])) {
+    const arr = scriptNode.args[p.key];
+    const list = Array.isArray(arr) ? arr.filter(n => n !== 0) : [];
+    args[p.key] = list.length === 0 ? [0] : list;
+  }
+  args.state = _playState;
+  args.node = nodeId;
+  args.callstack = _playCallstack;
+  return args;
+}
+
+function clearPlayHighlight() {
+  document.querySelectorAll('.sv-node.sv-active').forEach(el => el.classList.remove('sv-active'));
+  _playActive = null;
+}
+
+function resetPlay() {
+  _playStack = null;
+  _playState = null;
+  _playCallstack = null;
+  clearPlayHighlight();
+}
+
+async function playStep() {
+  if (!currentScript) return;
+  clearPlayHighlight();
+  if (_playStack === null) {
+    _playStack = [1];
+    _playState = new Map(Object.entries(currentScript.initialState ?? {}));
+    _playCallstack = [];
+  }
+  while (_playStack.length > 0) {
+    const nodeId = _playStack.pop();
+    if (nodeId === 0) {
+      if (_playState.has('noop')) { _playStack.push(_playState.get('noop')); _playState.delete('noop'); }
+      continue;
+    }
+    const scriptNode = currentScript.nodes.find(n => n.id === nodeId);
+    if (!scriptNode || !scriptNode.type) continue;
+    _playActive = nodeId;
+    document.querySelector('.sv-node[data-id="' + nodeId + '"]')?.classList.add('sv-active');
+    try {
+      if (!nodeDefCache.has(scriptNode.type)) await fetchNodeDef(scriptNode.type);
+      const { mod, usesNodeParam } = await loadCompiledNode(scriptNode.type);
+      const fn = mod[scriptNode.type];
+      if (!fn) { resetPlay(); return; }
+      _playCallstack.push(nodeId);
+      const result = await fn(buildPlayArgs(scriptNode, nodeDefCache.get(scriptNode.type), nodeId));
+      if (!usesNodeParam) _playCallstack.shift();
+      const results = Array.isArray(result) ? result : (result != null ? [result] : []);
+      for (let i = results.length - 1; i >= 0; i--) {
+        if (results[i] != null) _playStack.push(results[i]);
+      }
+    } catch (err) {
+      console.error('Node ' + nodeId + ' error:', err);
+      resetPlay();
+    }
+    return;
+  }
+  resetPlay();
 }
 
 async function init() {
