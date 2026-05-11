@@ -59,7 +59,7 @@ export async function getApiNodeCompiled(
     _req: Req,
     res: Res,
 ) {
-    res.setHeader('content-type', 'application/json');
+    res.setHeader('content-type', 'text/javascript');
     const filePath = join(nodesDir, `${name}.ts`);
     if (!existsSync(filePath)) {
         res.statusCode = 401;
@@ -73,7 +73,7 @@ export async function getApiNodeCompiled(
             target: ts.ScriptTarget.ESNext,
         },
     });
-    res.end(JSON.stringify(outputText));
+    res.end(outputText);
 }
 
 export function postApiNode(
