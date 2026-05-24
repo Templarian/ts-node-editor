@@ -28,8 +28,8 @@ export async function run(state: State): Promise<State> {
                     state,
                     node: 1,
                     nodes: [2, 3],
-                    character: `Guide`,
-                    text: `Which door will you choose?`
+                    character: 'Guide',
+                    text: 'Which door will you choose?'
                 });
                 stack.push(...r1.slice().reverse());
                 continue;
@@ -39,7 +39,7 @@ export async function run(state: State): Promise<State> {
                     state,
                     callstack,
                     nodes: [4],
-                    text: `Red Door`
+                    text: 'Red Door'
                 });
                 stack.push(r2[0]);
                 break;
@@ -49,23 +49,23 @@ export async function run(state: State): Promise<State> {
                     state,
                     callstack,
                     nodes: [5],
-                    text: `Blue Door`
+                    text: 'Blue Door'
                 });
                 stack.push(r3[0]);
                 break;
             case 4:
                 // 49 1 - -
                 const r4 = log({
-                    message: `You entered the red room`,
-                    nodes: [0]
+                    nodes: [0],
+                    message: 'You entered the red room'
                 });
                 stack.push(r4[0]);
                 break;
             case 5:
                 // 49 9 - -
                 const r5 = log({
-                    message: `You entered the blue room`,
-                    nodes: [0]
+                    nodes: [0],
+                    message: 'You entered the blue room'
                 });
                 stack.push(r5[0]);
                 break;
